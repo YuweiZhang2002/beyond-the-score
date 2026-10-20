@@ -3,12 +3,15 @@ from pathlib import Path
 from html import escape
 import json
 import re
+from robofail_visuals import expanded_cases, visibility_experiment
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = json.loads((ROOT / 'data/report.json').read_text())
 PUB = json.loads((ROOT / 'data/publication.json').read_text())
 RBM_CASES = json.loads((ROOT / 'data/rbm-cases.json').read_text())['cases']
 ROBOFAIL_CASES = json.loads((ROOT / 'data/robofail-cases.json').read_text())['cases']
+VISIBILITY_PATH = ROOT / 'data/robofail-visibility.json'
+VISIBILITY = json.loads(VISIBILITY_PATH.read_text()) if VISIBILITY_PATH.exists() else None
 CONFIRMED = json.loads((ROOT / 'data/confirmed-blog.json').read_text())
 IMAGE_SIZES = json.loads((ROOT / 'data/media-dimensions.json').read_text())
 LANG = 'zh'
@@ -182,6 +185,8 @@ def article():
     raw += ''.join('<blockquote><strong>' + t('零样本', 'Zero-shot') + '</strong><p lang="en">' + escape(r['answer']) + '</p></blockquote>' if i == 0 else '<blockquote><strong>' + t('五示例', 'Five-example') + '</strong><p lang="en">' + escape(r['answer']) + '</p></blockquote>' for i, r in enumerate(slicing['responses']))
     body += detail('切片案例的参考与模型原文', 'Slicing reference and original responses', raw)
     body += p('这两例在评测后选取，用于检查标签与理由的分歧，不用于估计错误频率。模型文字并不能证明参考标签有误，也不独立验证其声称的物理原因。', 'These post-hoc examples examine disagreements in labels and reasons, not error frequencies. Model text neither establishes that a reference label is wrong nor independently verifies a stated physical cause.', 'fine')
+    body += expanded_cases(ROBOFAIL_CASES, t)
+    body += visibility_experiment(VISIBILITY, ROBOFAIL_CASES, t)
     out += section('failure', '5. 子任务成败判断', '5. Subtask success and failure', body)
 
     body = p('五示例条件的综合 ROUGE-L 从 0.185 增加到 0.499。这个指标不只衡量失败解释。按 AHA 评测规则，正确成功回答计 1 分，正确失败回答按解释与参考答案的词干化 ROUGE-L F1 计分，成败标签错误则计 0 分。所有问题得分相加后除以 57。评分使用原始英文回答，不使用本文的中文转述。', 'Composite ROUGE-L rises from 0.185 to 0.499 in the five-example condition. This metric does not measure failure explanations alone. Under the AHA rules, a correct success answer receives 1; a correct failure receives stemmed ROUGE-L F1 against the reference explanation; and a label disagreement receives 0. Scores are summed and divided by 57. Evaluation uses the original English answers, not the Chinese paraphrases in this article.')
@@ -267,6 +272,7 @@ def render():
         ('progress-results','3. 任务进度估计','3. Task progress estimation',False),
         ('progress-icl','4. 上下文示例的影响（ICL）','4. Effects of in-context examples (ICL)',False),
         ('failure','5. 子任务成败判断','5. Subtask classification',False), ('robofail-cases','Case Study · 判断与理由','Case Study · Labels and reasons',True),
+        ('robofail-gallery','更多可视化案例','More visual cases',True), ('robofail-visibility','补充实验 · 可见证据','Experiment · Visible evidence',True),
         ('explanations','6. 失败解释与得分','6. Explanations and scores',False),
         ('outlook','7. 讨论与局限','7. Discussion and limitations',False), ('limitations','7.1 研究局限','7.1 Limitations',True), ('next-steps','7.2 强化学习验证','7.2 Reinforcement learning',True),
         ('resources','数据与参考文献','Data and references',False),

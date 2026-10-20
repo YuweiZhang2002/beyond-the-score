@@ -54,6 +54,8 @@
 <a class="" href="#progress-icl">4. Effects of in-context examples (ICL)</a>
 <a class="" href="#failure">5. Subtask classification</a>
 <a class="subsection" href="#robofail-cases">Case Study · Labels and reasons</a>
+<a class="subsection" href="#robofail-gallery">More visual cases</a>
+<a class="subsection" href="#robofail-visibility">Experiment · Visible evidence</a>
 <a class="" href="#explanations">6. Explanations and scores</a>
 <a class="" href="#outlook">7. Discussion and limitations</a>
 <a class="subsection" href="#limitations">7.1 Limitations</a>
@@ -1074,6 +1076,335 @@
 </blockquote>
 </details>
 <p class="fine">These post-hoc examples examine disagreements in labels and reasons, not error frequencies. Model text neither establishes that a reference label is wrong nor independently verifies a stated physical cause.</p>
+<div class="robofail-extra">
+<h3 id="robofail-gallery" data-toc>More cases: corrected alarms and missed failures</h3>
+<p>These additional cases use the same saved zero-shot and external five-shot evaluations. Each pairs the source replay and observed input frames with the released reference and verbatim responses. They are post-hoc illustrations and do not change the aggregate scores on 57 questions.</p>
+<article class="robo-expanded-case" id="robo-case-50">
+<h4>Coffee-machine button: a corrected false alarm</h4>
+<p>Zero-shot treats the absence of visible activation as failure; five-shot agrees with the released success label. This illustrates improved success recognition, without establishing button contact or the machine&#x27;s internal state from the answer alone.</p>
+<div class="robo-case-columns">
+<div>
+<figure>
+<video controls playsinline muted preload="none" src="assets/robofail/case-050-source-replay.mp4" poster="assets/robofail/case-050-frame-2.jpg" aria-label="Press the coffee-machine button">
+</video>
+<figcaption>Figure 14. Source episode replay at original speed; this continuous video was not supplied to the model.</figcaption>
+</figure>
+<figure>
+<button type="button" data-zoom aria-label="Enlarge observed frames">
+<img loading="lazy" src="assets/robofail/case-050-observations.jpg" alt="Visible observations from the actual input, in temporal order" width="960" height="1088">
+</button>
+<figcaption>Figure 15. Observed input tiles in original order, rearranged for readability; the exact montage is linked below.</figcaption>
+</figure>
+</div>
+<div>
+<p>
+<strong>Released reference · Success</strong>
+</p>
+<blockquote lang="en">Yes, the robot succeed at the sub-task.</blockquote>
+<p>
+<strong>Zero-shot · False alarm</strong>
+</p>
+<blockquote lang="en">No. The robot arm is near the coffee machine, but it has not visibly pressed the button. The end effector appears misaligned with the control, and there is no visible indication that the machine has been activated.</blockquote>
+<p>
+<strong>External 5-shot · Label matches</strong>
+</p>
+<blockquote lang="en">Yes, the robot successfully pressed the button on the coffee machine.</blockquote>
+</div>
+</div>
+<details class="research-detail">
+<summary>Exact input and evidence boundary</summary>
+<p>
+<a class="inline-link" href="assets/robofail/case-050-input.jpg" target="_blank" rel="noopener">Open the exact original input montage ↗</a>
+</p>
+<p lang="en">In the image, it contains many frames from a single view at different time steps in a matrix arrangement depicting the robot arm press the button on the coffee machine.         Each frame is labeled with the corresponding timestep reflecting the temporal information from left to right.        The white grid represents future sub-tasks that has yet to happen and should be ignore.        For the given sub-tasks, first determine it has succeed by choosing from [&quot;yes&quot;, &quot;no&quot;], and then explain the reason why the current sub-tasks has failed.</p>
+<p>Video identity was checked by pixel matching and visual inspection. Observation positions are neither human failure intervals nor model alarm times. Model explanations do not independently verify physical causes.</p>
+</details>
+</article>
+<article class="robo-expanded-case" id="robo-case-33">
+<h4>Picking up a knife: the same failure label, different reasons</h4>
+<p>Both conditions detect failure. Zero-shot describes a failed knife grasp, whereas five-shot names a spoon instead of the knife, corresponding more directly to the reference&#x27;s wrong-object explanation. Agreement on the label does not imply agreement on the reason.</p>
+<div class="robo-case-columns">
+<div>
+<figure>
+<video controls playsinline muted preload="none" src="assets/robofail/case-033-source-replay.mp4" poster="assets/robofail/case-033-frame-2.jpg" aria-label="Grasp the knife">
+</video>
+<figcaption>Figure 16. Source episode replay at original speed; this continuous video was not supplied to the model.</figcaption>
+</figure>
+<figure>
+<button type="button" data-zoom aria-label="Enlarge observed frames">
+<img loading="lazy" src="assets/robofail/case-033-observations.jpg" alt="Visible observations from the actual input, in temporal order" width="960" height="1088">
+</button>
+<figcaption>Figure 17. Observed input tiles in original order, rearranged for readability; the exact montage is linked below.</figcaption>
+</figure>
+</div>
+<div>
+<p>
+<strong>Released reference · Failure</strong>
+</p>
+<blockquote lang="en">No, The robot execute the action on the wrong object.</blockquote>
+<p>
+<strong>Zero-shot · Label matches</strong>
+</p>
+<blockquote lang="en">No. The knife remains on the countertop beside the sink while the robot arm lifts away without securing it. The grasp failed, so the knife was not picked up.</blockquote>
+<p>
+<strong>External 5-shot · Label matches</strong>
+</p>
+<blockquote lang="en">No, The robot picked up the spoon instead of the knife.</blockquote>
+</div>
+</div>
+<details class="research-detail">
+<summary>Exact input and evidence boundary</summary>
+<p>
+<a class="inline-link" href="assets/robofail/case-033-input.jpg" target="_blank" rel="noopener">Open the exact original input montage ↗</a>
+</p>
+<p lang="en">In the image, it contains many frames from a single view at different time steps in a matrix arrangement depicting the robot arm performing pick up the knife.         Each frame is labeled with the corresponding timestep reflecting the temporal information from left to right.        The white grid represents future sub-tasks that has yet to happen and should be ignore.        For the given sub-tasks, first determine it has succeed by choosing from [&quot;yes&quot;, &quot;no&quot;], and then explain the reason why the current sub-tasks has failed.</p>
+<p>Video identity was checked by pixel matching and visual inspection. Observation positions are neither human failure intervals nor model alarm times. Model explanations do not independently verify physical causes.</p>
+</details>
+</article>
+<article class="robo-expanded-case" id="robo-case-2">
+<h4>Picking up an apple: agreement on success</h4>
+<p>Both conditions answer success, matching the released subtask label. This is a correct-success contrast case; it concerns the current grasp, not the success of the entire subsequent trajectory.</p>
+<div class="robo-case-columns">
+<div>
+<figure>
+<video controls playsinline muted preload="none" src="assets/robofail/case-002-source-replay.mp4" poster="assets/robofail/case-002-frame-2.jpg" aria-label="Grasp the apple">
+</video>
+<figcaption>Figure 18. Source episode replay at original speed; this continuous video was not supplied to the model.</figcaption>
+</figure>
+<figure>
+<button type="button" data-zoom aria-label="Enlarge observed frames">
+<img loading="lazy" src="assets/robofail/case-002-observations.jpg" alt="Visible observations from the actual input, in temporal order" width="960" height="1088">
+</button>
+<figcaption>Figure 19. Observed input tiles in original order, rearranged for readability; the exact montage is linked below.</figcaption>
+</figure>
+</div>
+<div>
+<p>
+<strong>Released reference · Success</strong>
+</p>
+<blockquote lang="en">Yes, the robot succeed at the sub-task.</blockquote>
+<p>
+<strong>Zero-shot · Label matches</strong>
+</p>
+<blockquote lang="en">Yes. The robot has successfully picked up the apple: in frame 2, the apple is held by the gripper and lifted clear of the countertop. No failure is visible.</blockquote>
+<p>
+<strong>External 5-shot · Label matches</strong>
+</p>
+<blockquote lang="en">Yes, the robot successfully grasped the apple and lifted it off the countertop.</blockquote>
+</div>
+</div>
+<details class="research-detail">
+<summary>Exact input and evidence boundary</summary>
+<p>
+<a class="inline-link" href="assets/robofail/case-002-input.jpg" target="_blank" rel="noopener">Open the exact original input montage ↗</a>
+</p>
+<p lang="en">In the image, it contains many frames from a single view at different time steps in a matrix arrangement depicting the robot arm performing pick up of the apple.         Each frame is labeled with the corresponding timestep reflecting the temporal information from left to right.        The white grid represents future sub-tasks that has yet to happen and should be ignore.        For the given sub-tasks, first determine it has succeed by choosing from [&quot;yes&quot;, &quot;no&quot;], and then explain the reason why the current sub-tasks has failed.</p>
+<p>Video identity was checked by pixel matching and visual inspection. Observation positions are neither human failure intervals nor model alarm times. Model explanations do not independently verify physical causes.</p>
+</details>
+</article>
+<article class="robo-expanded-case" id="robo-case-49">
+<h4>Placing in a bowl: recognizing an action can still miss a task error</h4>
+<p>The reference attributes failure to the wrong object. Zero-shot predicts failure but cites an unreleased strawberry; five-shot calls the placement successful and misses the released failure label. Whether an action occurred and whether it involved the correct task object need separate checks.</p>
+<div class="robo-case-columns">
+<div>
+<figure>
+<video controls playsinline muted preload="none" src="assets/robofail/case-049-source-replay.mp4" poster="assets/robofail/case-049-frame-3.jpg" aria-label="Place the object in the bowl">
+</video>
+<figcaption>Figure 20. Source episode replay at original speed; this continuous video was not supplied to the model.</figcaption>
+</figure>
+<figure>
+<button type="button" data-zoom aria-label="Enlarge observed frames">
+<img loading="lazy" src="assets/robofail/case-049-observations.jpg" alt="Visible observations from the actual input, in temporal order" width="960" height="1636">
+</button>
+<figcaption>Figure 21. Observed input tiles in original order, rearranged for readability; the exact montage is linked below.</figcaption>
+</figure>
+</div>
+<div>
+<p>
+<strong>Released reference · Failure</strong>
+</p>
+<blockquote lang="en">No, The robot execute the action on the wrong object.</blockquote>
+<p>
+<strong>Zero-shot · Label matches</strong>
+</p>
+<blockquote lang="en">No. The robot lowers the strawberry into the bowl but appears to still be holding it with the gripper. The placement is incomplete because the strawberry has not been released.</blockquote>
+<p>
+<strong>External 5-shot · Missed failure</strong>
+</p>
+<blockquote lang="en">Yes, the robot successfully placed the strawberry in the bowl.</blockquote>
+</div>
+</div>
+<details class="research-detail">
+<summary>Exact input and evidence boundary</summary>
+<p>
+<a class="inline-link" href="assets/robofail/case-049-input.jpg" target="_blank" rel="noopener">Open the exact original input montage ↗</a>
+</p>
+<p lang="en">In the image, it contains many frames from a single view at different time steps in a matrix arrangement depicting the robot arm place in the bowl.         Each frame is labeled with the corresponding timestep reflecting the temporal information from left to right.        The white grid represents future sub-tasks that has yet to happen and should be ignore.        For the given sub-tasks, first determine it has succeed by choosing from [&quot;yes&quot;, &quot;no&quot;], and then explain the reason why the current sub-tasks has failed.</p>
+<p>Video identity was checked by pixel matching and visual inspection. Observation positions are neither human failure intervals nor model alarm times. Model explanations do not independently verify physical causes.</p>
+</details>
+</article>
+</div>
+<div class="visibility-study">
+<h3 id="robofail-visibility" data-toc>Supplementary experiment: how does visible evidence affect judgments?</h3>
+<p>We made 12 fresh requests on the existing knob-grasping and carrot-slicing illustrations. For each case, retain the first frame, first two frames, or all observed frames, under zero-shot and the same external five-shot condition. Every request uses GPT-6 Astra with low reasoning effort, including a fresh full-visibility control.</p>
+<p class="method-note">Added October 20, 2026, separately from the benchmark above. Withheld-frame variants retain the original retrospective question. There is no time-specific ground truth for partial inputs, so we do not score their accuracy or interpret them as online alarms. With one response per condition, differences cannot be attributed solely to visible-frame count.</p>
+<article class="visibility-case">
+<h4>Grasp the stove knob</h4>
+<div class="visibility-matrix" role="group" aria-label="Model judgments by condition">
+<span>
+</span>
+<strong>1 frames</strong>
+<strong>2 frames</strong>
+<strong>All 4 frames</strong>
+<strong>Zero-shot</strong>
+<span class="visibility-label no">Failure</span>
+<span class="visibility-label no">Failure</span>
+<span class="visibility-label no">Failure</span>
+<strong>5-shot</strong>
+<span class="visibility-label no">Failure</span>
+<span class="visibility-label no">Failure</span>
+<span class="visibility-label yes">Success</span>
+</div>
+<p class="fine">Colors indicate the predicted outcome, not whether the answer is correct.</p>
+<p>Knob grasping: zero-shot answers failure with 1, 2, and 4 frames. Five-shot answers failure with 1 and 2 frames, then success with all 4. Its full-visibility answer again misses the failure in the released reference. In this case, more observations do not coincide with a more reliable final judgment.</p>
+<details class="research-detail visibility-response">
+<summary>1 frames: input and both original responses</summary>
+<div class="experiment-input" tabindex="0" role="region" aria-label="Scroll horizontally through the experimental input">
+<a href="assets/robofail/visibility/case-055-visible-1.png" target="_blank" rel="noopener">
+<img loading="lazy" src="assets/robofail/visibility/case-055-visible-1.png" alt="Withheld later observations are white; click for full resolution" width="6440" height="720">
+</a>
+</div>
+<p>
+<strong>Zero-shot</strong>
+</p>
+<blockquote lang="en">No. The gripper is positioned near the sink, away from the stove knobs, and has not closed around a knob.</blockquote>
+<p class="fine">Returned model label: gpt-6-astra-2026-09-03</p>
+<p>
+<strong>External 5-shot</strong>
+</p>
+<blockquote lang="en">No, the robot’s gripper is positioned away from the stove knobs and has not grasped one.</blockquote>
+<p class="fine">Returned model label: gpt-6-astra</p>
+</details>
+<details class="research-detail visibility-response">
+<summary>2 frames: input and both original responses</summary>
+<div class="experiment-input" tabindex="0" role="region" aria-label="Scroll horizontally through the experimental input">
+<a href="assets/robofail/visibility/case-055-visible-2.png" target="_blank" rel="noopener">
+<img loading="lazy" src="assets/robofail/visibility/case-055-visible-2.png" alt="Withheld later observations are white; click for full resolution" width="6440" height="720">
+</a>
+</div>
+<p>
+<strong>Zero-shot</strong>
+</p>
+<blockquote lang="en">No. The gripper is positioned above the pot near the sink rather than around a stove knob, so it has not established a grasp on the target.</blockquote>
+<p class="fine">Returned model label: gpt-6-astra-2026-09-03</p>
+<p>
+<strong>External 5-shot</strong>
+</p>
+<blockquote lang="en">No, the robot grasped and lifted the pot instead of grasping the stove knob.</blockquote>
+<p class="fine">Returned model label: gpt-6-astra</p>
+</details>
+<details class="research-detail visibility-response" open>
+<summary>4 frames: input and both original responses</summary>
+<div class="experiment-input" tabindex="0" role="region" aria-label="Scroll horizontally through the experimental input">
+<a href="assets/robofail/visibility/case-055-visible-4.png" target="_blank" rel="noopener">
+<img loading="lazy" src="assets/robofail/visibility/case-055-visible-4.png" alt="Withheld later observations are white; click for full resolution" width="6440" height="720">
+</a>
+</div>
+<p>
+<strong>Zero-shot</strong>
+</p>
+<blockquote lang="en">No. The robot moves its gripper toward the stove, but it does not securely grasp a stove knob. The gripper remains above the burner area rather than closing around the knob.</blockquote>
+<p class="fine">Returned model label: gpt-6-astra-2026-09-03</p>
+<p>
+<strong>External 5-shot</strong>
+</p>
+<blockquote lang="en">Yes, the robot successfully grasped the stove knob.</blockquote>
+<p class="fine">Returned model label: gpt-6-astra</p>
+</details>
+</article>
+<article class="visibility-case">
+<h4>Slice the carrot</h4>
+<div class="visibility-matrix" role="group" aria-label="Model judgments by condition">
+<span>
+</span>
+<strong>1 frames</strong>
+<strong>2 frames</strong>
+<strong>All 3 frames</strong>
+<strong>Zero-shot</strong>
+<span class="visibility-label no">Failure</span>
+<span class="visibility-label no">Failure</span>
+<span class="visibility-label no">Failure</span>
+<strong>5-shot</strong>
+<span class="visibility-label no">Failure</span>
+<span class="visibility-label no">Failure</span>
+<span class="visibility-label no">Failure</span>
+</div>
+<p class="fine">Colors indicate the predicted outcome, not whether the answer is correct.</p>
+<p>Carrot slicing: both prompting conditions answer failure with 1, 2, and 3 frames. Even at full visibility, both disagree with the released success label; adding the remaining observations does not remove this false alarm in these calls. The explanations emphasize the absence of a visibly separated slice, which does not independently establish that the reference is wrong.</p>
+<details class="research-detail visibility-response">
+<summary>1 frames: input and both original responses</summary>
+<div class="experiment-input" tabindex="0" role="region" aria-label="Scroll horizontally through the experimental input">
+<a href="assets/robofail/visibility/case-036-visible-1.png" target="_blank" rel="noopener">
+<img loading="lazy" src="assets/robofail/visibility/case-036-visible-1.png" alt="Withheld later observations are white; click for full resolution" width="10310" height="720">
+</a>
+</div>
+<p>
+<strong>Zero-shot</strong>
+</p>
+<blockquote lang="en">No. The carrot remains intact on the cutting board; the robot has not completed a cut or separated a slice.</blockquote>
+<p class="fine">Returned model label: gpt-6-astra-2026-09-03</p>
+<p>
+<strong>External 5-shot</strong>
+</p>
+<blockquote lang="en">No, the carrot remains whole on the counter; the robot has not cut it into slices.</blockquote>
+<p class="fine">Returned model label: gpt-6-astra</p>
+</details>
+<details class="research-detail visibility-response">
+<summary>2 frames: input and both original responses</summary>
+<div class="experiment-input" tabindex="0" role="region" aria-label="Scroll horizontally through the experimental input">
+<a href="assets/robofail/visibility/case-036-visible-2.png" target="_blank" rel="noopener">
+<img loading="lazy" src="assets/robofail/visibility/case-036-visible-2.png" alt="Withheld later observations are white; click for full resolution" width="10310" height="720">
+</a>
+</div>
+<p>
+<strong>Zero-shot</strong>
+</p>
+<blockquote lang="en">No. The robot arm moves upward without visibly completing a cut through the carrot. The carrot remains on the cutting board, with no newly separated slice visible.</blockquote>
+<p class="fine">Returned model label: gpt-6-astra-2026-09-03</p>
+<p>
+<strong>External 5-shot</strong>
+</p>
+<blockquote lang="en">No, the robot picked up the knife but did not slice the carrot; the carrot remains whole on the countertop.</blockquote>
+<p class="fine">Returned model label: gpt-6-astra</p>
+</details>
+<details class="research-detail visibility-response" open>
+<summary>3 frames: input and both original responses</summary>
+<div class="experiment-input" tabindex="0" role="region" aria-label="Scroll horizontally through the experimental input">
+<a href="assets/robofail/visibility/case-036-visible-3.png" target="_blank" rel="noopener">
+<img loading="lazy" src="assets/robofail/visibility/case-036-visible-3.png" alt="Withheld later observations are white; click for full resolution" width="10310" height="720">
+</a>
+</div>
+<p>
+<strong>Zero-shot</strong>
+</p>
+<blockquote lang="en">No. The arm moves toward the carrot, but the blade does not complete a cut through it. The carrot remains intact, with no visibly separated slice.</blockquote>
+<p class="fine">Returned model label: gpt-6-astra-2026-09-03</p>
+<p>
+<strong>External 5-shot</strong>
+</p>
+<blockquote lang="en">No, the robot placed the knife across the carrot but did not cut through it. The carrot remains whole.</blockquote>
+<p class="fine">Returned model label: gpt-6-astra</p>
+</details>
+</article>
+<p>This small experiment shows answers under different amounts of evidence rather than a new benchmark ranking. Fresh full-input responses can also differ from earlier evaluations; sampling variation and relay-backend differences remain possible.</p>
+<details class="research-detail">
+<summary>Protocol and complete records</summary>
+<p>Only withheld later observation tiles are made white. Canvas size, tile positions, the original question, and five external demonstrations are retained. Every variant is a lossless PNG of decoded JPEG pixels. Neither the test answer nor its filename is sent. No answer-quality retries are performed.</p>
+<p>
+<a class="inline-link" href="data/robofail-visibility.json" download>Download protocol, 12 original answers, and token usage ↓</a>
+</p>
+</details>
+</div>
 </section>
 <section id="explanations" class="" data-toc>
 <h2>6. Failure explanations and composite scores</h2>
@@ -1083,7 +1414,7 @@
 <button type="button" data-zoom aria-label="Enlarge: Composite ROUGE-L including AHA and other baselines">
 <img loading="lazy" src="assets/figures/05_robofail_icl.png" alt="Composite ROUGE-L including AHA and other baselines" width="1180" height="875">
 </button>
-<figcaption>Figure 14. Full composite ROUGE-L chart retaining the original literature baselines. The score includes both success recognition and failure explanations; it is not explanation accuracy.<span class="zoom-label" aria-hidden="true">Enlarge ↗</span>
+<figcaption>Figure 22. Full composite ROUGE-L chart retaining the original literature baselines. The score includes both success recognition and failure explanations; it is not explanation accuracy.<span class="zoom-label" aria-hidden="true">Enlarge ↗</span>
 </figcaption>
 </figure>
 <figure class="study-figure">
@@ -1115,7 +1446,7 @@
 <span>0</span>
 <span>0.55</span>
 </div>
-<figcaption>Figure 15. Components of composite ROUGE-L, both divided by 57. Both bars use a 0–0.55 scale. Components and totals are rounded separately and may differ in the last decimal.</figcaption>
+<figcaption>Figure 23. Components of composite ROUGE-L, both divided by 57. Both bars use a 0–0.55 scale. Components and totals are rounded separately and may differ in the last decimal.</figcaption>
 </figure>
 <p class="">The correct-success term rises from 0.0877 to 0.3684. Its increase, 16 / 57 ≈ 0.2807, accounts for about 89.3% of the reported total gain of 0.3144. The failure-explanation term rises from 0.0969 to 0.1305, accounting for the remaining 10.7%. A score of 0.499 therefore does not mean that 49.9% of failure explanations are correct. Most of the gain comes from recognizing success.</p>
 <p class="">The explanation term also depends on which failures are detected and on lexical overlap with reference text. It does not independently distinguish a correct paraphrase from a similarly worded but incorrect diagnosis. Assessing the stated cause requires additional semantic review and physical evidence.</p>

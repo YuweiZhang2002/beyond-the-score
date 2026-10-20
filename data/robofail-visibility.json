@@ -1,0 +1,433 @@
+{
+  "protocol": {
+    "date": "2026-10-20",
+    "model": "gpt-6-astra",
+    "reasoning_effort": "low",
+    "case_ids": [
+      55,
+      36
+    ],
+    "selection": "Two pre-existing post-hoc website illustrations, selected before new calls.",
+    "design": "2 cases × 3 visibility levels × 2 prompting conditions; one fresh response per cell.",
+    "intervention": "Keep the first 1, first 2, or all observed tiles. Replace withheld tiles with white; preserve canvas dimensions, tile positions, original question, and external demonstrations.",
+    "encoding": "All query variants, including full visibility, are lossless PNG encodings of the decoded original JPEG. Visible pixels are unchanged.",
+    "not_online_evaluation": "The original retrospective question is unchanged. Partial inputs are evidence-withholding stress tests, not temporally annotated success/failure judgments.",
+    "reference_scope": "Released final subtask labels apply to full inputs only; partial variants receive no accuracy score.",
+    "same_backend_snapshot_confirmed": false,
+    "sampling": "First complete nonempty response; no response-quality retries. One response per cell cannot establish a causal or repeatable effect.",
+    "network": "Direct requests with trust_env=False",
+    "request_settings": {
+      "max_completion_tokens": 4096,
+      "image_detail": "auto",
+      "temperature": "omitted",
+      "top_p": "omitted"
+    },
+    "jobs": [
+      {
+        "case_id": 55,
+        "visible_frames": 1,
+        "total_frames": 4,
+        "condition": "zero",
+        "image": "assets/robofail/visibility/case-055-visible-1.png",
+        "image_sha256": "a75fda08090e6e3d926209f6e1dfd5a910824b46b0bf95290c4d680bad9ff94e"
+      },
+      {
+        "case_id": 55,
+        "visible_frames": 1,
+        "total_frames": 4,
+        "condition": "external5",
+        "image": "assets/robofail/visibility/case-055-visible-1.png",
+        "image_sha256": "a75fda08090e6e3d926209f6e1dfd5a910824b46b0bf95290c4d680bad9ff94e"
+      },
+      {
+        "case_id": 55,
+        "visible_frames": 2,
+        "total_frames": 4,
+        "condition": "zero",
+        "image": "assets/robofail/visibility/case-055-visible-2.png",
+        "image_sha256": "4e5359a59de3549ed017430f00c94d3ac158269bc2dd575b67b0ad62e306b266"
+      },
+      {
+        "case_id": 55,
+        "visible_frames": 2,
+        "total_frames": 4,
+        "condition": "external5",
+        "image": "assets/robofail/visibility/case-055-visible-2.png",
+        "image_sha256": "4e5359a59de3549ed017430f00c94d3ac158269bc2dd575b67b0ad62e306b266"
+      },
+      {
+        "case_id": 55,
+        "visible_frames": 4,
+        "total_frames": 4,
+        "condition": "zero",
+        "image": "assets/robofail/visibility/case-055-visible-4.png",
+        "image_sha256": "3f0b4e66617c8998a677b911a0925a0347f4222d5850eec122afa0933e03e205"
+      },
+      {
+        "case_id": 55,
+        "visible_frames": 4,
+        "total_frames": 4,
+        "condition": "external5",
+        "image": "assets/robofail/visibility/case-055-visible-4.png",
+        "image_sha256": "3f0b4e66617c8998a677b911a0925a0347f4222d5850eec122afa0933e03e205"
+      },
+      {
+        "case_id": 36,
+        "visible_frames": 1,
+        "total_frames": 3,
+        "condition": "zero",
+        "image": "assets/robofail/visibility/case-036-visible-1.png",
+        "image_sha256": "6921d39300561eacbe15244eb059776ff69153ac8c49bd78b5b765bc81c8703f"
+      },
+      {
+        "case_id": 36,
+        "visible_frames": 1,
+        "total_frames": 3,
+        "condition": "external5",
+        "image": "assets/robofail/visibility/case-036-visible-1.png",
+        "image_sha256": "6921d39300561eacbe15244eb059776ff69153ac8c49bd78b5b765bc81c8703f"
+      },
+      {
+        "case_id": 36,
+        "visible_frames": 2,
+        "total_frames": 3,
+        "condition": "zero",
+        "image": "assets/robofail/visibility/case-036-visible-2.png",
+        "image_sha256": "3f9b4ec7e700d3fa96be716867fc826ba5ff73452fd5befd5df13591a932b807"
+      },
+      {
+        "case_id": 36,
+        "visible_frames": 2,
+        "total_frames": 3,
+        "condition": "external5",
+        "image": "assets/robofail/visibility/case-036-visible-2.png",
+        "image_sha256": "3f9b4ec7e700d3fa96be716867fc826ba5ff73452fd5befd5df13591a932b807"
+      },
+      {
+        "case_id": 36,
+        "visible_frames": 3,
+        "total_frames": 3,
+        "condition": "zero",
+        "image": "assets/robofail/visibility/case-036-visible-3.png",
+        "image_sha256": "d368ad8b8d123168a6daeef55a8928a0b4c4ab1a2f380e890eb3a6174582af63"
+      },
+      {
+        "case_id": 36,
+        "visible_frames": 3,
+        "total_frames": 3,
+        "condition": "external5",
+        "image": "assets/robofail/visibility/case-036-visible-3.png",
+        "image_sha256": "d368ad8b8d123168a6daeef55a8928a0b4c4ab1a2f380e890eb3a6174582af63"
+      }
+    ]
+  },
+  "completed": 12,
+  "planned": 12,
+  "usage": {
+    "prompt_tokens": 339915,
+    "completion_tokens": 414,
+    "total_tokens": 340329
+  },
+  "results": [
+    {
+      "case_id": 55,
+      "visible_frames": 1,
+      "total_frames": 4,
+      "condition": "zero",
+      "image": "assets/robofail/visibility/case-055-visible-1.png",
+      "image_sha256": "a75fda08090e6e3d926209f6e1dfd5a910824b46b0bf95290c4d680bad9ff94e",
+      "answer": "No. The gripper is positioned near the sink, away from the stove knobs, and has not closed around a knob.",
+      "label": "no",
+      "returned_model": "gpt-6-astra-2026-09-03",
+      "usage": {
+        "prompt_tokens": 926,
+        "completion_tokens": 28,
+        "total_tokens": 954,
+        "completion_tokens_details": {
+          "audio_tokens": 0,
+          "reasoning_tokens": 0
+        },
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        }
+      },
+      "completed_at": "2026-10-20T13:45:12.492812+00:00"
+    },
+    {
+      "case_id": 55,
+      "visible_frames": 1,
+      "total_frames": 4,
+      "condition": "external5",
+      "image": "assets/robofail/visibility/case-055-visible-1.png",
+      "image_sha256": "a75fda08090e6e3d926209f6e1dfd5a910824b46b0bf95290c4d680bad9ff94e",
+      "answer": "No, the robot’s gripper is positioned away from the stove knobs and has not grasped one.",
+      "label": "no",
+      "returned_model": "gpt-6-astra",
+      "usage": {
+        "prompt_tokens": 54163,
+        "completion_tokens": 24,
+        "total_tokens": 54187,
+        "completion_tokens_details": {
+          "audio_tokens": 0,
+          "reasoning_tokens": 0
+        },
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        }
+      },
+      "completed_at": "2026-10-20T13:48:35.069821+00:00"
+    },
+    {
+      "case_id": 55,
+      "visible_frames": 2,
+      "total_frames": 4,
+      "condition": "zero",
+      "image": "assets/robofail/visibility/case-055-visible-2.png",
+      "image_sha256": "4e5359a59de3549ed017430f00c94d3ac158269bc2dd575b67b0ad62e306b266",
+      "answer": "No. The gripper is positioned above the pot near the sink rather than around a stove knob, so it has not established a grasp on the target.",
+      "label": "no",
+      "returned_model": "gpt-6-astra-2026-09-03",
+      "usage": {
+        "prompt_tokens": 926,
+        "completion_tokens": 34,
+        "total_tokens": 960,
+        "completion_tokens_details": {
+          "audio_tokens": 0,
+          "reasoning_tokens": 0
+        },
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        }
+      },
+      "completed_at": "2026-10-20T13:48:45.217889+00:00"
+    },
+    {
+      "case_id": 55,
+      "visible_frames": 2,
+      "total_frames": 4,
+      "condition": "external5",
+      "image": "assets/robofail/visibility/case-055-visible-2.png",
+      "image_sha256": "4e5359a59de3549ed017430f00c94d3ac158269bc2dd575b67b0ad62e306b266",
+      "answer": "No, the robot grasped and lifted the pot instead of grasping the stove knob.",
+      "label": "no",
+      "returned_model": "gpt-6-astra",
+      "usage": {
+        "prompt_tokens": 54163,
+        "completion_tokens": 21,
+        "total_tokens": 54184,
+        "completion_tokens_details": {
+          "audio_tokens": 0,
+          "reasoning_tokens": 0
+        },
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        }
+      },
+      "completed_at": "2026-10-20T13:50:26.937715+00:00"
+    },
+    {
+      "case_id": 55,
+      "visible_frames": 4,
+      "total_frames": 4,
+      "condition": "zero",
+      "image": "assets/robofail/visibility/case-055-visible-4.png",
+      "image_sha256": "3f0b4e66617c8998a677b911a0925a0347f4222d5850eec122afa0933e03e205",
+      "answer": "No. The robot moves its gripper toward the stove, but it does not securely grasp a stove knob. The gripper remains above the burner area rather than closing around the knob.",
+      "label": "no",
+      "returned_model": "gpt-6-astra-2026-09-03",
+      "usage": {
+        "prompt_tokens": 926,
+        "completion_tokens": 40,
+        "total_tokens": 966,
+        "completion_tokens_details": {
+          "audio_tokens": 0,
+          "reasoning_tokens": 0
+        },
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        }
+      },
+      "completed_at": "2026-10-20T13:50:45.389840+00:00"
+    },
+    {
+      "case_id": 55,
+      "visible_frames": 4,
+      "total_frames": 4,
+      "condition": "external5",
+      "image": "assets/robofail/visibility/case-055-visible-4.png",
+      "image_sha256": "3f0b4e66617c8998a677b911a0925a0347f4222d5850eec122afa0933e03e205",
+      "answer": "Yes, the robot successfully grasped the stove knob.",
+      "label": "yes",
+      "returned_model": "gpt-6-astra",
+      "usage": {
+        "prompt_tokens": 54163,
+        "completion_tokens": 14,
+        "total_tokens": 54177,
+        "completion_tokens_details": {
+          "audio_tokens": 0,
+          "reasoning_tokens": 0
+        },
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        }
+      },
+      "completed_at": "2026-10-20T13:52:13.148609+00:00"
+    },
+    {
+      "case_id": 36,
+      "visible_frames": 1,
+      "total_frames": 3,
+      "condition": "zero",
+      "image": "assets/robofail/visibility/case-036-visible-1.png",
+      "image_sha256": "6921d39300561eacbe15244eb059776ff69153ac8c49bd78b5b765bc81c8703f",
+      "answer": "No. The carrot remains intact on the cutting board; the robot has not completed a cut or separated a slice.",
+      "label": "no",
+      "returned_model": "gpt-6-astra-2026-09-03",
+      "usage": {
+        "prompt_tokens": 716,
+        "completion_tokens": 26,
+        "total_tokens": 742,
+        "completion_tokens_details": {
+          "audio_tokens": 0,
+          "reasoning_tokens": 0
+        },
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        }
+      },
+      "completed_at": "2026-10-20T13:52:19.590931+00:00"
+    },
+    {
+      "case_id": 36,
+      "visible_frames": 1,
+      "total_frames": 3,
+      "condition": "external5",
+      "image": "assets/robofail/visibility/case-036-visible-1.png",
+      "image_sha256": "6921d39300561eacbe15244eb059776ff69153ac8c49bd78b5b765bc81c8703f",
+      "answer": "No, the carrot remains whole on the counter; the robot has not cut it into slices.",
+      "label": "no",
+      "returned_model": "gpt-6-astra",
+      "usage": {
+        "prompt_tokens": 57500,
+        "completion_tokens": 22,
+        "total_tokens": 57522,
+        "completion_tokens_details": {
+          "audio_tokens": 0,
+          "reasoning_tokens": 0
+        },
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        }
+      },
+      "completed_at": "2026-10-20T13:52:54.685484+00:00"
+    },
+    {
+      "case_id": 36,
+      "visible_frames": 2,
+      "total_frames": 3,
+      "condition": "zero",
+      "image": "assets/robofail/visibility/case-036-visible-2.png",
+      "image_sha256": "3f9b4ec7e700d3fa96be716867fc826ba5ff73452fd5befd5df13591a932b807",
+      "answer": "No. The robot arm moves upward without visibly completing a cut through the carrot. The carrot remains on the cutting board, with no newly separated slice visible.",
+      "label": "no",
+      "returned_model": "gpt-6-astra-2026-09-03",
+      "usage": {
+        "prompt_tokens": 716,
+        "completion_tokens": 74,
+        "total_tokens": 790,
+        "completion_tokens_details": {
+          "audio_tokens": 0,
+          "reasoning_tokens": 34
+        },
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        }
+      },
+      "completed_at": "2026-10-20T13:53:05.207073+00:00"
+    },
+    {
+      "case_id": 36,
+      "visible_frames": 2,
+      "total_frames": 3,
+      "condition": "external5",
+      "image": "assets/robofail/visibility/case-036-visible-2.png",
+      "image_sha256": "3f9b4ec7e700d3fa96be716867fc826ba5ff73452fd5befd5df13591a932b807",
+      "answer": "No, the robot picked up the knife but did not slice the carrot; the carrot remains whole on the countertop.",
+      "label": "no",
+      "returned_model": "gpt-6-astra",
+      "usage": {
+        "prompt_tokens": 57500,
+        "completion_tokens": 26,
+        "total_tokens": 57526,
+        "completion_tokens_details": {
+          "audio_tokens": 0,
+          "reasoning_tokens": 0
+        },
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        }
+      },
+      "completed_at": "2026-10-20T13:54:33.771974+00:00"
+    },
+    {
+      "case_id": 36,
+      "visible_frames": 3,
+      "total_frames": 3,
+      "condition": "zero",
+      "image": "assets/robofail/visibility/case-036-visible-3.png",
+      "image_sha256": "d368ad8b8d123168a6daeef55a8928a0b4c4ab1a2f380e890eb3a6174582af63",
+      "answer": "No. The arm moves toward the carrot, but the blade does not complete a cut through it. The carrot remains intact, with no visibly separated slice.",
+      "label": "no",
+      "returned_model": "gpt-6-astra-2026-09-03",
+      "usage": {
+        "prompt_tokens": 716,
+        "completion_tokens": 80,
+        "total_tokens": 796,
+        "completion_tokens_details": {
+          "audio_tokens": 0,
+          "reasoning_tokens": 40
+        },
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        }
+      },
+      "completed_at": "2026-10-20T13:54:45.486638+00:00"
+    },
+    {
+      "case_id": 36,
+      "visible_frames": 3,
+      "total_frames": 3,
+      "condition": "external5",
+      "image": "assets/robofail/visibility/case-036-visible-3.png",
+      "image_sha256": "d368ad8b8d123168a6daeef55a8928a0b4c4ab1a2f380e890eb3a6174582af63",
+      "answer": "No, the robot placed the knife across the carrot but did not cut through it. The carrot remains whole.",
+      "label": "no",
+      "returned_model": "gpt-6-astra",
+      "usage": {
+        "prompt_tokens": 57500,
+        "completion_tokens": 25,
+        "total_tokens": 57525,
+        "completion_tokens_details": {
+          "audio_tokens": 0,
+          "reasoning_tokens": 0
+        },
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cached_tokens": 0
+        }
+      },
+      "completed_at": "2026-10-20T13:55:38.867053+00:00"
+    }
+  ]
+}

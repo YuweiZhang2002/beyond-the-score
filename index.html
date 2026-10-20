@@ -54,6 +54,8 @@
 <a class="" href="#progress-icl">4. 上下文示例的影响（ICL）</a>
 <a class="" href="#failure">5. 子任务成败判断</a>
 <a class="subsection" href="#robofail-cases">Case Study · 判断与理由</a>
+<a class="subsection" href="#robofail-gallery">更多可视化案例</a>
+<a class="subsection" href="#robofail-visibility">补充实验 · 可见证据</a>
 <a class="" href="#explanations">6. 失败解释与得分</a>
 <a class="" href="#outlook">7. 讨论与局限</a>
 <a class="subsection" href="#limitations">7.1 研究局限</a>
@@ -1075,6 +1077,335 @@
 </blockquote>
 </details>
 <p class="fine">这两例在评测后选取，用于检查标签与理由的分歧，不用于估计错误频率。模型文字并不能证明参考标签有误，也不独立验证其声称的物理原因。</p>
+<div class="robofail-extra">
+<h3 id="robofail-gallery" data-toc>更多案例：从误报纠正到失败漏检</h3>
+<p>以下补充案例来自同一批已保存的 zero-shot 与外部 5-shot 测评。每例并排展示源视频、模型实际看到的观测帧、公开参考和模型原文。它们是事后挑选的定性案例，不改变 57 个问题的总体分数。</p>
+<article class="robo-expanded-case" id="robo-case-50">
+<h4>按咖啡机按钮：误报得到纠正</h4>
+<p>零样本将缺少可见激活迹象解释为失败，5-shot 则给出与公开成功标签一致的判断。这个例子展示成功识别的改善，但不能单凭回答确定按钮实际接触或机器内部状态。</p>
+<div class="robo-case-columns">
+<div>
+<figure>
+<video controls playsinline muted preload="none" src="assets/robofail/case-050-source-replay.mp4" poster="assets/robofail/case-050-frame-2.jpg" aria-label="Press the coffee-machine button">
+</video>
+<figcaption>图 14. 原始轨迹回放，保持原速；该连续视频未输入模型。</figcaption>
+</figure>
+<figure>
+<button type="button" data-zoom aria-label="放大观测帧">
+<img loading="lazy" src="assets/robofail/case-050-observations.jpg" alt="实际输入中的可见观测帧，按时间排序" width="960" height="1088">
+</button>
+<figcaption>图 15. 输入观测帧，按原顺序展示；为便于阅读重新排版，完整原图见下方。</figcaption>
+</figure>
+</div>
+<div>
+<p>
+<strong>公开参考 · 成功</strong>
+</p>
+<blockquote lang="en">Yes, the robot succeed at the sub-task.</blockquote>
+<p>
+<strong>零样本 · 误报</strong>
+</p>
+<blockquote lang="en">No. The robot arm is near the coffee machine, but it has not visibly pressed the button. The end effector appears misaligned with the control, and there is no visible indication that the machine has been activated.</blockquote>
+<p>
+<strong>外部 5-shot · 标签一致</strong>
+</p>
+<blockquote lang="en">Yes, the robot successfully pressed the button on the coffee machine.</blockquote>
+</div>
+</div>
+<details class="research-detail">
+<summary>原始输入与证据边界</summary>
+<p>
+<a class="inline-link" href="assets/robofail/case-050-input.jpg" target="_blank" rel="noopener">查看完整原始输入拼图 ↗</a>
+</p>
+<p lang="en">In the image, it contains many frames from a single view at different time steps in a matrix arrangement depicting the robot arm press the button on the coffee machine.         Each frame is labeled with the corresponding timestep reflecting the temporal information from left to right.        The white grid represents future sub-tasks that has yet to happen and should be ignore.        For the given sub-tasks, first determine it has succeed by choosing from [&quot;yes&quot;, &quot;no&quot;], and then explain the reason why the current sub-tasks has failed.</p>
+<p>视频对应关系通过观测帧的像素匹配与视觉检查核验。关键帧位置不是人工失败区间，也不是模型报警时间；模型解释不构成独立的物理原因验证。</p>
+</details>
+</article>
+<article class="robo-expanded-case" id="robo-case-33">
+<h4>拿刀：相同失败标签，不同原因</h4>
+<p>两个条件都识别出失败，但零样本解释为未抓住刀，5-shot 则指出拿了勺子而不是刀，后者与参考中的“操作对象错误”更直接对应。标签一致并不意味着解释相同。</p>
+<div class="robo-case-columns">
+<div>
+<figure>
+<video controls playsinline muted preload="none" src="assets/robofail/case-033-source-replay.mp4" poster="assets/robofail/case-033-frame-2.jpg" aria-label="Grasp the knife">
+</video>
+<figcaption>图 16. 原始轨迹回放，保持原速；该连续视频未输入模型。</figcaption>
+</figure>
+<figure>
+<button type="button" data-zoom aria-label="放大观测帧">
+<img loading="lazy" src="assets/robofail/case-033-observations.jpg" alt="实际输入中的可见观测帧，按时间排序" width="960" height="1088">
+</button>
+<figcaption>图 17. 输入观测帧，按原顺序展示；为便于阅读重新排版，完整原图见下方。</figcaption>
+</figure>
+</div>
+<div>
+<p>
+<strong>公开参考 · 失败</strong>
+</p>
+<blockquote lang="en">No, The robot execute the action on the wrong object.</blockquote>
+<p>
+<strong>零样本 · 标签一致</strong>
+</p>
+<blockquote lang="en">No. The knife remains on the countertop beside the sink while the robot arm lifts away without securing it. The grasp failed, so the knife was not picked up.</blockquote>
+<p>
+<strong>外部 5-shot · 标签一致</strong>
+</p>
+<blockquote lang="en">No, The robot picked up the spoon instead of the knife.</blockquote>
+</div>
+</div>
+<details class="research-detail">
+<summary>原始输入与证据边界</summary>
+<p>
+<a class="inline-link" href="assets/robofail/case-033-input.jpg" target="_blank" rel="noopener">查看完整原始输入拼图 ↗</a>
+</p>
+<p lang="en">In the image, it contains many frames from a single view at different time steps in a matrix arrangement depicting the robot arm performing pick up the knife.         Each frame is labeled with the corresponding timestep reflecting the temporal information from left to right.        The white grid represents future sub-tasks that has yet to happen and should be ignore.        For the given sub-tasks, first determine it has succeed by choosing from [&quot;yes&quot;, &quot;no&quot;], and then explain the reason why the current sub-tasks has failed.</p>
+<p>视频对应关系通过观测帧的像素匹配与视觉检查核验。关键帧位置不是人工失败区间，也不是模型报警时间；模型解释不构成独立的物理原因验证。</p>
+</details>
+</article>
+<article class="robo-expanded-case" id="robo-case-2">
+<h4>抓取苹果：共同识别成功</h4>
+<p>两种条件都回答成功，与该子任务的公开标签一致。该例提供一个正确成功判断的对照；它只涉及当前抓取子任务，不代表整个后续轨迹成功。</p>
+<div class="robo-case-columns">
+<div>
+<figure>
+<video controls playsinline muted preload="none" src="assets/robofail/case-002-source-replay.mp4" poster="assets/robofail/case-002-frame-2.jpg" aria-label="Grasp the apple">
+</video>
+<figcaption>图 18. 原始轨迹回放，保持原速；该连续视频未输入模型。</figcaption>
+</figure>
+<figure>
+<button type="button" data-zoom aria-label="放大观测帧">
+<img loading="lazy" src="assets/robofail/case-002-observations.jpg" alt="实际输入中的可见观测帧，按时间排序" width="960" height="1088">
+</button>
+<figcaption>图 19. 输入观测帧，按原顺序展示；为便于阅读重新排版，完整原图见下方。</figcaption>
+</figure>
+</div>
+<div>
+<p>
+<strong>公开参考 · 成功</strong>
+</p>
+<blockquote lang="en">Yes, the robot succeed at the sub-task.</blockquote>
+<p>
+<strong>零样本 · 标签一致</strong>
+</p>
+<blockquote lang="en">Yes. The robot has successfully picked up the apple: in frame 2, the apple is held by the gripper and lifted clear of the countertop. No failure is visible.</blockquote>
+<p>
+<strong>外部 5-shot · 标签一致</strong>
+</p>
+<blockquote lang="en">Yes, the robot successfully grasped the apple and lifted it off the countertop.</blockquote>
+</div>
+</div>
+<details class="research-detail">
+<summary>原始输入与证据边界</summary>
+<p>
+<a class="inline-link" href="assets/robofail/case-002-input.jpg" target="_blank" rel="noopener">查看完整原始输入拼图 ↗</a>
+</p>
+<p lang="en">In the image, it contains many frames from a single view at different time steps in a matrix arrangement depicting the robot arm performing pick up of the apple.         Each frame is labeled with the corresponding timestep reflecting the temporal information from left to right.        The white grid represents future sub-tasks that has yet to happen and should be ignore.        For the given sub-tasks, first determine it has succeed by choosing from [&quot;yes&quot;, &quot;no&quot;], and then explain the reason why the current sub-tasks has failed.</p>
+<p>视频对应关系通过观测帧的像素匹配与视觉检查核验。关键帧位置不是人工失败区间，也不是模型报警时间；模型解释不构成独立的物理原因验证。</p>
+</details>
+</article>
+<article class="robo-expanded-case" id="robo-case-49">
+<h4>放入碗中：识别动作仍可能漏掉任务错误</h4>
+<p>参考将失败归因于操作对象错误。零样本虽回答失败，却解释为尚未释放草莓；5-shot 回答放置成功，从而漏掉公开失败标签。这提示应把动作是否发生与任务对象是否正确分开核查。</p>
+<div class="robo-case-columns">
+<div>
+<figure>
+<video controls playsinline muted preload="none" src="assets/robofail/case-049-source-replay.mp4" poster="assets/robofail/case-049-frame-3.jpg" aria-label="Place the object in the bowl">
+</video>
+<figcaption>图 20. 原始轨迹回放，保持原速；该连续视频未输入模型。</figcaption>
+</figure>
+<figure>
+<button type="button" data-zoom aria-label="放大观测帧">
+<img loading="lazy" src="assets/robofail/case-049-observations.jpg" alt="实际输入中的可见观测帧，按时间排序" width="960" height="1636">
+</button>
+<figcaption>图 21. 输入观测帧，按原顺序展示；为便于阅读重新排版，完整原图见下方。</figcaption>
+</figure>
+</div>
+<div>
+<p>
+<strong>公开参考 · 失败</strong>
+</p>
+<blockquote lang="en">No, The robot execute the action on the wrong object.</blockquote>
+<p>
+<strong>零样本 · 标签一致</strong>
+</p>
+<blockquote lang="en">No. The robot lowers the strawberry into the bowl but appears to still be holding it with the gripper. The placement is incomplete because the strawberry has not been released.</blockquote>
+<p>
+<strong>外部 5-shot · 漏检</strong>
+</p>
+<blockquote lang="en">Yes, the robot successfully placed the strawberry in the bowl.</blockquote>
+</div>
+</div>
+<details class="research-detail">
+<summary>原始输入与证据边界</summary>
+<p>
+<a class="inline-link" href="assets/robofail/case-049-input.jpg" target="_blank" rel="noopener">查看完整原始输入拼图 ↗</a>
+</p>
+<p lang="en">In the image, it contains many frames from a single view at different time steps in a matrix arrangement depicting the robot arm place in the bowl.         Each frame is labeled with the corresponding timestep reflecting the temporal information from left to right.        The white grid represents future sub-tasks that has yet to happen and should be ignore.        For the given sub-tasks, first determine it has succeed by choosing from [&quot;yes&quot;, &quot;no&quot;], and then explain the reason why the current sub-tasks has failed.</p>
+<p>视频对应关系通过观测帧的像素匹配与视觉检查核验。关键帧位置不是人工失败区间，也不是模型报警时间；模型解释不构成独立的物理原因验证。</p>
+</details>
+</article>
+</div>
+<div class="visibility-study">
+<h3 id="robofail-visibility" data-toc>补充实验：可见证据如何影响判断？</h3>
+<p>我们对网页原有的旋钮抓取与胡萝卜切片两例补做了 12 次请求。每例保留前 1 帧、前 2 帧或全部已观测帧，分别使用 zero-shot 与相同的外部 5-shot，均请求 GPT-6 Astra、low 推理。所有结果均为新请求，包含全部帧的对照条件。</p>
+<p class="method-note">本实验于 2026 年 10 月 20 日新增，独立于上文正式测评。遮蔽后仍使用原来的回顾性问题；少帧条件没有对应的时间级真值，因此不计算准确率，也不解释为在线报警。每个条件仅请求一次，不能把变化完全归因于可见帧数量。</p>
+<article class="visibility-case">
+<h4>抓取炉灶旋钮</h4>
+<div class="visibility-matrix" role="group" aria-label="各条件下的模型判断">
+<span>
+</span>
+<strong>1 帧</strong>
+<strong>2 帧</strong>
+<strong>全部 4 帧</strong>
+<strong>零样本</strong>
+<span class="visibility-label no">失败</span>
+<span class="visibility-label no">失败</span>
+<span class="visibility-label no">失败</span>
+<strong>5-shot</strong>
+<span class="visibility-label no">失败</span>
+<span class="visibility-label no">失败</span>
+<span class="visibility-label yes">成功</span>
+</div>
+<p class="fine">颜色仅表示模型回答“成功”或“失败”，不表示回答正确与否。</p>
+<p>旋钮抓取：零样本在 1、2、4 帧条件下均回答失败；5-shot 在前两种条件下回答失败，却在看到全部 4 帧后回答成功。全部帧条件下的 5-shot 回答再次漏掉了公开参考中的失败。这个案例提示，增加画面不一定伴随更可靠的最终判断。</p>
+<details class="research-detail visibility-response">
+<summary>1 帧：输入与两种条件的模型原文</summary>
+<div class="experiment-input" tabindex="0" role="region" aria-label="横向滚动查看实验输入">
+<a href="assets/robofail/visibility/case-055-visible-1.png" target="_blank" rel="noopener">
+<img loading="lazy" src="assets/robofail/visibility/case-055-visible-1.png" alt="未提供的后续观测帧以白色遮蔽；点击查看原尺寸" width="6440" height="720">
+</a>
+</div>
+<p>
+<strong>零样本</strong>
+</p>
+<blockquote lang="en">No. The gripper is positioned near the sink, away from the stove knobs, and has not closed around a knob.</blockquote>
+<p class="fine">返回模型标识：gpt-6-astra-2026-09-03</p>
+<p>
+<strong>External 5-shot</strong>
+</p>
+<blockquote lang="en">No, the robot’s gripper is positioned away from the stove knobs and has not grasped one.</blockquote>
+<p class="fine">返回模型标识：gpt-6-astra</p>
+</details>
+<details class="research-detail visibility-response">
+<summary>2 帧：输入与两种条件的模型原文</summary>
+<div class="experiment-input" tabindex="0" role="region" aria-label="横向滚动查看实验输入">
+<a href="assets/robofail/visibility/case-055-visible-2.png" target="_blank" rel="noopener">
+<img loading="lazy" src="assets/robofail/visibility/case-055-visible-2.png" alt="未提供的后续观测帧以白色遮蔽；点击查看原尺寸" width="6440" height="720">
+</a>
+</div>
+<p>
+<strong>零样本</strong>
+</p>
+<blockquote lang="en">No. The gripper is positioned above the pot near the sink rather than around a stove knob, so it has not established a grasp on the target.</blockquote>
+<p class="fine">返回模型标识：gpt-6-astra-2026-09-03</p>
+<p>
+<strong>External 5-shot</strong>
+</p>
+<blockquote lang="en">No, the robot grasped and lifted the pot instead of grasping the stove knob.</blockquote>
+<p class="fine">返回模型标识：gpt-6-astra</p>
+</details>
+<details class="research-detail visibility-response" open>
+<summary>4 帧：输入与两种条件的模型原文</summary>
+<div class="experiment-input" tabindex="0" role="region" aria-label="横向滚动查看实验输入">
+<a href="assets/robofail/visibility/case-055-visible-4.png" target="_blank" rel="noopener">
+<img loading="lazy" src="assets/robofail/visibility/case-055-visible-4.png" alt="未提供的后续观测帧以白色遮蔽；点击查看原尺寸" width="6440" height="720">
+</a>
+</div>
+<p>
+<strong>零样本</strong>
+</p>
+<blockquote lang="en">No. The robot moves its gripper toward the stove, but it does not securely grasp a stove knob. The gripper remains above the burner area rather than closing around the knob.</blockquote>
+<p class="fine">返回模型标识：gpt-6-astra-2026-09-03</p>
+<p>
+<strong>External 5-shot</strong>
+</p>
+<blockquote lang="en">Yes, the robot successfully grasped the stove knob.</blockquote>
+<p class="fine">返回模型标识：gpt-6-astra</p>
+</details>
+</article>
+<article class="visibility-case">
+<h4>切胡萝卜</h4>
+<div class="visibility-matrix" role="group" aria-label="各条件下的模型判断">
+<span>
+</span>
+<strong>1 帧</strong>
+<strong>2 帧</strong>
+<strong>全部 3 帧</strong>
+<strong>零样本</strong>
+<span class="visibility-label no">失败</span>
+<span class="visibility-label no">失败</span>
+<span class="visibility-label no">失败</span>
+<strong>5-shot</strong>
+<span class="visibility-label no">失败</span>
+<span class="visibility-label no">失败</span>
+<span class="visibility-label no">失败</span>
+</div>
+<p class="fine">颜色仅表示模型回答“成功”或“失败”，不表示回答正确与否。</p>
+<p>胡萝卜切片：两种提示条件在 1、2、3 帧下均回答失败。即使补足全部观测，两个回答仍与公开成功标签不符；这一误报没有在本次请求中随着画面补全而消失。模型解释主要诉诸“没有看到分离的切片”，但这并不能独立证明参考标注错误。</p>
+<details class="research-detail visibility-response">
+<summary>1 帧：输入与两种条件的模型原文</summary>
+<div class="experiment-input" tabindex="0" role="region" aria-label="横向滚动查看实验输入">
+<a href="assets/robofail/visibility/case-036-visible-1.png" target="_blank" rel="noopener">
+<img loading="lazy" src="assets/robofail/visibility/case-036-visible-1.png" alt="未提供的后续观测帧以白色遮蔽；点击查看原尺寸" width="10310" height="720">
+</a>
+</div>
+<p>
+<strong>零样本</strong>
+</p>
+<blockquote lang="en">No. The carrot remains intact on the cutting board; the robot has not completed a cut or separated a slice.</blockquote>
+<p class="fine">返回模型标识：gpt-6-astra-2026-09-03</p>
+<p>
+<strong>External 5-shot</strong>
+</p>
+<blockquote lang="en">No, the carrot remains whole on the counter; the robot has not cut it into slices.</blockquote>
+<p class="fine">返回模型标识：gpt-6-astra</p>
+</details>
+<details class="research-detail visibility-response">
+<summary>2 帧：输入与两种条件的模型原文</summary>
+<div class="experiment-input" tabindex="0" role="region" aria-label="横向滚动查看实验输入">
+<a href="assets/robofail/visibility/case-036-visible-2.png" target="_blank" rel="noopener">
+<img loading="lazy" src="assets/robofail/visibility/case-036-visible-2.png" alt="未提供的后续观测帧以白色遮蔽；点击查看原尺寸" width="10310" height="720">
+</a>
+</div>
+<p>
+<strong>零样本</strong>
+</p>
+<blockquote lang="en">No. The robot arm moves upward without visibly completing a cut through the carrot. The carrot remains on the cutting board, with no newly separated slice visible.</blockquote>
+<p class="fine">返回模型标识：gpt-6-astra-2026-09-03</p>
+<p>
+<strong>External 5-shot</strong>
+</p>
+<blockquote lang="en">No, the robot picked up the knife but did not slice the carrot; the carrot remains whole on the countertop.</blockquote>
+<p class="fine">返回模型标识：gpt-6-astra</p>
+</details>
+<details class="research-detail visibility-response" open>
+<summary>3 帧：输入与两种条件的模型原文</summary>
+<div class="experiment-input" tabindex="0" role="region" aria-label="横向滚动查看实验输入">
+<a href="assets/robofail/visibility/case-036-visible-3.png" target="_blank" rel="noopener">
+<img loading="lazy" src="assets/robofail/visibility/case-036-visible-3.png" alt="未提供的后续观测帧以白色遮蔽；点击查看原尺寸" width="10310" height="720">
+</a>
+</div>
+<p>
+<strong>零样本</strong>
+</p>
+<blockquote lang="en">No. The arm moves toward the carrot, but the blade does not complete a cut through it. The carrot remains intact, with no visibly separated slice.</blockquote>
+<p class="fine">返回模型标识：gpt-6-astra-2026-09-03</p>
+<p>
+<strong>External 5-shot</strong>
+</p>
+<blockquote lang="en">No, the robot placed the knife across the carrot but did not cut through it. The carrot remains whole.</blockquote>
+<p class="fine">返回模型标识：gpt-6-astra</p>
+</details>
+</article>
+<p>这一小规模实验展示同一问题在不同证据量下的回答，而非提供新的基准排名。全部帧的新回答也可能与先前测评不同；采样变化及中转后端差异仍然存在。</p>
+<details class="research-detail">
+<summary>实验协议与完整记录</summary>
+<p>只将未提供的后续观测格置白；保留画布大小、格子位置、原始问题和五个外部示例。所有变体均将原 JPEG 解码后无损保存为 PNG，可见像素不变。未向模型提供测试答案或文件名。不因回答内容或质量重试。</p>
+<p>
+<a class="inline-link" href="data/robofail-visibility.json" download>下载实验协议、12 条原始回答与 token 用量 ↓</a>
+</p>
+</details>
+</div>
 </section>
 <section id="explanations" class="" data-toc>
 <h2>6. 失败解释与综合得分</h2>
@@ -1084,7 +1415,7 @@
 <button type="button" data-zoom aria-label="放大: 包含 AHA 及其他 baseline 的综合 ROUGE-L 对比">
 <img loading="lazy" src="assets/figures/05_robofail_icl.png" alt="包含 AHA 及其他 baseline 的综合 ROUGE-L 对比" width="1180" height="875">
 </button>
-<figcaption>图 14. 综合 ROUGE-L 完整图。保留原有文献 baseline；分数同时包含成功识别与失败解释项，不能读作解释正确率。<span class="zoom-label" aria-hidden="true">放大 ↗</span>
+<figcaption>图 22. 综合 ROUGE-L 完整图。保留原有文献 baseline；分数同时包含成功识别与失败解释项，不能读作解释正确率。<span class="zoom-label" aria-hidden="true">放大 ↗</span>
 </figcaption>
 </figure>
 <figure class="study-figure">
@@ -1116,7 +1447,7 @@
 <span>0</span>
 <span>0.55</span>
 </div>
-<figcaption>图 15. 综合 ROUGE-L 的组成，两项均以 57 为分母。两条形使用相同的 0–0.55 刻度。分项和总分分别取整，末位可能有舍入差异。</figcaption>
+<figcaption>图 23. 综合 ROUGE-L 的组成，两项均以 57 为分母。两条形使用相同的 0–0.55 刻度。分项和总分分别取整，末位可能有舍入差异。</figcaption>
 </figure>
 <p class="">正确成功项从 0.0877 增至 0.3684，增量约为 16 / 57 = 0.2807，占报告总增量 0.3144 的约 89.3%。失败解释项从 0.0969 增至 0.1305，占剩余约 10.7%。因此，0.499 不能读作“49.9% 的失败解释正确”；大部分增量来自识别成功，而非失败解释项。</p>
 <p class="">解释项还取决于哪些失败被检测到，以及回答与参考文本的词汇重合度。它无法独立区分语义正确的改写和措辞相似但原因错误的回答。要评价失败原因是否可信，需要额外的语义核验与物理证据。</p>

@@ -2,7 +2,7 @@
 const $ = (s, root = document) => root.querySelector(s);
 const $$ = (s, root = document) => [...root.querySelectorAll(s)];
 const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let report, cases, failureCases, selectedCase, selectedObservation = 0;
+let report, cases, failureCases, visibility, selectedCase, selectedObservation = 0;
 
 function pressed(selector, value, key) {
   $$(selector).forEach(button => button.setAttribute('aria-pressed', String(button.dataset[key] === String(value))));
@@ -97,16 +97,55 @@ function selectFailure(id) {
   $('#failure-task').textContent=c.task;$('#failure-id').textContent=`CASE ${c.id}`;
   $('#failure-keyframes').innerHTML=c.keyframes.map(f=>`<button data-seek="${f.matched_source_time_seconds}" aria-label="Seek input frame ${f.index}, ${f.matched_source_time_seconds.toFixed(1)} seconds"><img loading="lazy" src="${f.image}" alt="Input observation ${f.index}"><span>Frame ${f.index} · ${f.matched_source_time_seconds.toFixed(1)}s</span></button>`).join('');
   $$('[data-seek]').forEach(b=>b.addEventListener('click',()=>{video.pause();video.currentTime=Number(b.dataset.seek);}));
-  $('#failure-answers').innerHTML=`<article class="answer-card reference"><div><span class="eyebrow">RELEASED REFERENCE</span><span class="tag">${escapeHTML(c.reference_label)}</span></div><p>${escapeHTML(c.ground_truth)}</p></article>`+c.responses.map(r=>{const failure=r.answer.toLowerCase().startsWith('no');const correct=failure===(c.reference_label==='Failure');return `<article class="answer-card"><div><span class="eyebrow">ASTRA LOW · ${escapeHTML(r.condition)}</span><span class="answer-status ${correct?'match':''}">${correct?'Label matches':failure?'False alarm':'Missed failure'}</span></div><p>“${escapeHTML(r.answer)}”</p></article>`;}).join('')+`<p class="answer-note">${c.id===55?'Zero-shot matches the failure label but cites a different reason from the reference. With five examples, the same subtask is judged successful.':'Both conditions call this a failure, disagreeing with the released success label. These quotations do not independently establish whether the physical cut succeeded.'}</p>`;
+  $('#failure-answers').innerHTML=`<article class="answer-card reference"><div><span class="eyebrow">RELEASED REFERENCE</span><span class="tag">${escapeHTML(c.reference_label)}</span></div><p>${escapeHTML(c.ground_truth)}</p></article>`+c.responses.map(r=>{const failure=r.answer.trim().toLowerCase().startsWith('no');const correct=failure===(c.reference_label==='Failure');return `<article class="answer-card"><div><span class="eyebrow">ASTRA LOW · ${escapeHTML(r.condition)}</span><span class="answer-status ${correct?'match':''}">${correct?'Label matches':failure?'False alarm':'Missed failure'}</span></div><p>“${escapeHTML(r.answer)}”</p></article>`;}).join('')+`<p class="answer-note">${escapeHTML(c.interpretation||'Compare the quoted diagnoses with the released reference and the visible observations.')}</p>`;
   $('#failure-question').textContent=c.question.replace(/^<image>\s*/, '');
   $('#failure-input').src=c.original_input_image;$('#input-link').href=c.original_input_image;
 }
 
+function renderFailureGallery() {
+  $('#failure-gallery').innerHTML=failureCases.map(c=>{
+    const outcomes=c.responses.map(r=>{
+      const failure=r.answer.trim().toLowerCase().startsWith('no');
+      return failure===(c.reference_label==='Failure')?'Label matches':failure?'False alarm':'Missed failure';
+    });
+    return `<button class="failure-tile" data-failure="${c.id}" aria-pressed="false"><img src="${c.poster}" loading="lazy" alt="${escapeHTML(c.task)}"><span class="failure-tile-body"><span class="eyebrow">CASE ${c.id} · REFERENCE ${escapeHTML(c.reference_label)}</span><strong>${escapeHTML(c.task)}</strong><span class="tile-outcome">Zero-shot: ${outcomes[0]}<br>5-shot: ${outcomes[1]}</span></span></button>`;
+  }).join('');
+  $('#gallery-count').textContent=`${failureCases.length} cases · source videos, input observations, and saved answers`;
+}
+
+function selectVisibility(id, count) {
+  const c=failureCases.find(c=>c.id===id);
+  const rows=visibility.results.filter(r=>r.case_id===id);
+  const levels=[...new Set(rows.map(r=>r.visible_frames))];
+  const selected=rows.filter(r=>r.visible_frames===count);
+  pressed('[data-visibility-case]',id,'visibilityCase');
+  $('#visibility-task').textContent=c.task;
+  $('#visibility-levels').innerHTML=levels.map(n=>{
+    const responses=rows.filter(r=>r.visible_frames===n);
+    return `<button data-visibility-level="${n}" aria-pressed="${n===count}"><strong>${n===rows[0].total_frames?'All '+n:n} frame${n===1?'':'s'}</strong><span>${responses.map(r=>`${r.condition==='zero'?'Zero-shot':'5-shot'}: ${r.label==='yes'?'Success':r.label==='no'?'Failure':'Unparsed'}`).join('<br>')}</span></button>`;
+  }).join('');
+  $$('[data-visibility-level]').forEach(b=>b.addEventListener('click',()=>selectVisibility(id,Number(b.dataset.visibilityLevel))));
+  $('#visibility-input').src=selected[0].image;
+  $('#visibility-input-link').href=selected[0].image;
+  $('#visibility-evidence').textContent=`${count} of ${rows[0].total_frames} observed frames retained. ${count===rows[0].total_frames?'Full-visibility control, queried again in this experiment.':'Later observed tiles are withheld in white; the original question remains unchanged.'}`;
+  $('#visibility-answers').innerHTML=selected.map(r=>`<article class="answer-card"><div><span class="eyebrow">${r.condition==='zero'?'ZERO-SHOT':'EXTERNAL 5-SHOT'} · FRESH RESPONSE</span><span class="tag">${r.label==='yes'?'Success':r.label==='no'?'Failure':'Unparsed'}</span></div><p>“${escapeHTML(r.answer)}”</p><small>Returned label: ${escapeHTML(r.returned_model)}</small></article>`).join('');
+}
+
+function renderVisibility() {
+  if(!visibility||visibility.completed!==visibility.planned) return;
+  $('#visibility-experiment').hidden=false;
+  const ids=[...new Set(visibility.results.map(r=>r.case_id))];
+  $('#visibility-cases').innerHTML=ids.map(id=>`<button data-visibility-case="${id}" aria-pressed="false">${escapeHTML(failureCases.find(c=>c.id===id).task)}</button>`).join('');
+  $$('[data-visibility-case]').forEach(b=>b.addEventListener('click',()=>selectVisibility(Number(b.dataset.visibilityCase),1)));
+  $('#visibility-summary').textContent=`${visibility.completed} fresh responses · 2 cases × 3 visibility levels × 2 prompting conditions · ${visibility.protocol.date}`;
+  selectVisibility(ids[0],1);
+}
+
 async function initialize(){
   const data=window.REPORT_DATA;
-  if(!Array.isArray(data)||data.length!==3)throw new Error('Report data is unavailable');
-  [report]=data;cases=data[1].cases;failureCases=data[2].cases;
-  renderMetric('voc');renderTables();selectCase('Q0041');renderDiagnosis(0);renderRouge();selectFailure(55);
+  if(!Array.isArray(data)||data.length<3)throw new Error('Report data is unavailable');
+  [report]=data;cases=data[1].cases;failureCases=data[2].cases;visibility=data[3];
+  renderMetric('voc');renderTables();selectCase('Q0041');renderDiagnosis(0);renderRouge();renderFailureGallery();selectFailure(55);renderVisibility();
   $$('[data-metric]').forEach(b=>b.addEventListener('click',()=>renderMetric(b.dataset.metric)));
   $$('[data-case]').forEach(b=>b.addEventListener('click',()=>selectCase(b.dataset.case)));
   $$('[data-condition]').forEach(b=>b.addEventListener('click',()=>renderDiagnosis(Number(b.dataset.condition))));

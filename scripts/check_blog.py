@@ -38,12 +38,14 @@ parsed={name:Page(text) for name,text in pages.items()}
 confirmed=json.loads((ROOT/'data/confirmed-blog.json').read_text())
 report=json.loads((ROOT/'data/report.json').read_text())
 robo=json.loads((ROOT/'data/robofail-cases.json').read_text())
+visibility=json.loads((ROOT/'data/robofail-visibility.json').read_text())
+expected_videos=14+len(robo['cases'])
 checks={}
 for name,text in pages.items():
     p=parsed[name]
     assert len(p.ids)==len(set(p.ids)),f'{name}: duplicate ids'
     assert all(int(i.get('width',0))>0 and int(i.get('height',0))>0 for i in p.images),f'{name}: missing intrinsic image size'
-    assert len(p.media)==16 and len(set(p.media))==16,(name,p.media)
+    assert len(p.media)==expected_videos and len(set(p.media))==expected_videos,(name,p.media)
     assert len([x for x in p.media if 'assets/case-studies/' in x])==10
     assert len([h for h in p.headings if h.startswith('Case Study')])==8 # 7 RBM + combined RoboFail group
     assert not any(re.search(r'\b(?:Q\d{4}|T\d{3}|055|036)\b',h) for h in p.headings)
@@ -61,6 +63,13 @@ for name,text in pages.items():
         for answer in originals:assert unescape(answer) in unescape(text),(name,answer)
     for case in robo['cases']:
         for answer in [case['ground_truth']]+[r['answer'] for r in case['responses']]:assert answer in unescape(text),(name,answer)
+    assert visibility['completed']==visibility['planned']==12
+    assert len(visibility['results'])==12
+    assert len({(r['case_id'],r['condition'],r['visible_frames']) for r in visibility['results']})==12
+    for row in visibility['results']:
+        assert row['answer'] in unescape(text),(name,'missing experimental response')
+        assert row['returned_model'] in text
+    assert len(re.findall(r'class="visibility-label ',text))==12
     assert 'VOC ×100' not in text and 'VOC（未缩放）' not in text and 'VOC (unscaled)' not in text
     assert all(str(n) in text for n in [93.6,94.2,0.8166,0.7953,92.4,64.91,85.96,89.3,90.51,95.36,0.0407,0.1312])
     icl=text.split('<section id="progress-icl"',1)[1].split('</section>',1)[0]
@@ -72,7 +81,7 @@ for name,text in pages.items():
         assert re.search(r'<a class="" href="#'+ident+r'">',text),(name,ident,'missing top-level TOC link')
     assert len(p.section_media['progress-results'])==3
     assert len(p.section_media['progress-icl'])==1
-    assert len(p.section_media['failure'])==2
+    assert len(p.section_media['failure'])==len(robo['cases'])
     assert all(x in progress for x in ['93.6','105','Case Study'])
     assert all(x not in progress for x in ['94.2','0.7953','95.36','0.1312','assets/figures/03_progress.png'])
     assert all(x in icl for x in ['94.2','0.7953','95.36','0.1312'])
@@ -84,7 +93,7 @@ for name,text in pages.items():
     assert len(merged)==1 and all(n in merged[0] for n in ['18','2','6']),name
     assert 'A<sub>pref</sub> = (100 / 6)' in text
     assert text.count('href="assets/Beyond-the-Score.pdf"')==1
-    checks[name]={'unique_videos':16,'paired_input_replays':10,'rbm_cases':7,'robofail_cases':2,'local_references_checked':len(p.refs),'raw_answers_preserved':True,'merged_robofail_paragraph':True,'progress_and_icl_are_separate_chapters':True}
+    checks[name]={'unique_videos':expected_videos,'paired_input_replays':10,'rbm_cases':7,'robofail_cases':len(robo['cases']),'new_experimental_responses':12,'local_references_checked':len(p.refs),'raw_answers_preserved':True,'merged_robofail_paragraph':True,'progress_and_icl_are_separate_chapters':True}
 assert parsed['index.html'].ids==parsed['en.html'].ids
 assert parsed['index.html'].media==parsed['en.html'].media
 # A rebuild must reproduce both committed-to-disk artifacts exactly.

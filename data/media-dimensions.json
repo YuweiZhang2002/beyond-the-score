@@ -30,5 +30,137 @@
   "assets/robofail/case-036-keyframes.gif": [
     480,
     270
+  ],
+  "assets/robofail/case-055-frame-3.jpg": [
+    960,
+    540
+  ],
+  "assets/robofail/case-055-input.jpg": [
+    6440,
+    720
+  ],
+  "assets/robofail/case-055-frame-2.jpg": [
+    960,
+    540
+  ],
+  "assets/robofail/case-055-frame-4.jpg": [
+    960,
+    540
+  ],
+  "assets/robofail/case-036-frame-2.jpg": [
+    960,
+    540
+  ],
+  "assets/robofail/case-036-input.jpg": [
+    10310,
+    720
+  ],
+  "assets/robofail/case-036-frame-1.jpg": [
+    960,
+    540
+  ],
+  "assets/robofail/case-036-observations.jpg": [
+    752,
+    1280
+  ],
+  "assets/robofail/case-055-frame-1.jpg": [
+    960,
+    540
+  ],
+  "assets/robofail/case-036-frame-3.jpg": [
+    960,
+    540
+  ],
+  "assets/robofail/visibility/case-055-visible-2.png": [
+    6440,
+    720
+  ],
+  "assets/robofail/visibility/case-055-visible-4.png": [
+    6440,
+    720
+  ],
+  "assets/robofail/visibility/case-055-visible-1.png": [
+    6440,
+    720
+  ],
+  "assets/robofail/visibility/case-036-visible-1.png": [
+    10310,
+    720
+  ],
+  "assets/robofail/visibility/case-036-visible-2.png": [
+    10310,
+    720
+  ],
+  "assets/robofail/visibility/case-036-visible-3.png": [
+    10310,
+    720
+  ],
+  "assets/robofail/case-033-frame-1.jpg": [
+    960,
+    540
+  ],
+  "assets/robofail/case-049-frame-2.jpg": [
+    960,
+    540
+  ],
+  "assets/robofail/case-002-observations.jpg": [
+    960,
+    1088
+  ],
+  "assets/robofail/case-033-frame-2.jpg": [
+    960,
+    540
+  ],
+  "assets/robofail/case-050-observations.jpg": [
+    960,
+    1088
+  ],
+  "assets/robofail/case-033-input.jpg": [
+    3860,
+    720
+  ],
+  "assets/robofail/case-049-frame-3.jpg": [
+    960,
+    540
+  ],
+  "assets/robofail/case-050-input.jpg": [
+    5150,
+    720
+  ],
+  "assets/robofail/case-050-frame-2.jpg": [
+    960,
+    540
+  ],
+  "assets/robofail/case-033-observations.jpg": [
+    960,
+    1088
+  ],
+  "assets/robofail/case-049-frame-1.jpg": [
+    960,
+    540
+  ],
+  "assets/robofail/case-002-input.jpg": [
+    3860,
+    720
+  ],
+  "assets/robofail/case-050-frame-1.jpg": [
+    960,
+    540
+  ],
+  "assets/robofail/case-002-frame-1.jpg": [
+    960,
+    540
+  ],
+  "assets/robofail/case-002-frame-2.jpg": [
+    960,
+    540
+  ],
+  "assets/robofail/case-049-observations.jpg": [
+    960,
+    1636
+  ],
+  "assets/robofail/case-049-input.jpg": [
+    3860,
+    720
   ]
 }

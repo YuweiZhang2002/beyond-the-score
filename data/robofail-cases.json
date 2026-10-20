@@ -58,7 +58,8 @@
       "mapping_note": "We independently matched the montage observations to source-video frames using pixel similarity and visual inspection. Times are approximate observation-frame positions, not author-provided failure intervals or model alarm times.",
       "reference_failure_interval": null,
       "model_alarm_times": null,
-      "evidence_note": "Ground-truth labels are those released by AHA. Model descriptions are quotations, not independently verified physical causes."
+      "evidence_note": "Ground-truth labels are those released by AHA. Model descriptions are quotations, not independently verified physical causes.",
+      "interpretation": "Zero-shot matches the failure label but cites a different reason from the reference. With five examples, the same subtask is judged successful."
     },
     {
       "id": 36,
@@ -111,7 +112,209 @@
       "mapping_note": "We independently matched the montage observations to source-video frames using pixel similarity and visual inspection. Times are approximate observation-frame positions, not author-provided failure intervals or model alarm times.",
       "reference_failure_interval": null,
       "model_alarm_times": null,
-      "evidence_note": "Ground-truth labels are those released by AHA. Model descriptions are quotations, not independently verified physical causes."
+      "evidence_note": "Ground-truth labels are those released by AHA. Model descriptions are quotations, not independently verified physical causes.",
+      "interpretation": "Both conditions call this a failure, disagreeing with the released success label. The quotations do not independently establish whether the physical cut succeeded."
+    },
+    {
+      "id": 50,
+      "title": "A corrected false alarm",
+      "task": "Press the coffee-machine button",
+      "reference_label": "Success",
+      "ground_truth": "Yes, the robot succeed at the sub-task.",
+      "question": "<image>\n In the image, it contains many frames from a single view at different time steps in a matrix arrangement depicting the robot arm press the button on the coffee machine.         Each frame is labeled with the corresponding timestep reflecting the temporal information from left to right.        The white grid represents future sub-tasks that has yet to happen and should be ignore.        For the given sub-tasks, first determine it has succeed by choosing from [\"yes\", \"no\"], and then explain the reason why the current sub-tasks has failed.",
+      "original_input_image": "assets/robofail/case-050-input.jpg",
+      "observation_contact_sheet": "assets/robofail/case-050-observations.jpg",
+      "keyframes": [
+        {
+          "index": 1,
+          "image": "assets/robofail/case-050-frame-1.jpg",
+          "matched_source_time_seconds": 24.366666666666667
+        },
+        {
+          "index": 2,
+          "image": "assets/robofail/case-050-frame-2.jpg",
+          "matched_source_time_seconds": 29.233333333333334
+        }
+      ],
+      "video": "assets/robofail/case-050-source-replay.mp4",
+      "poster": "assets/robofail/case-050-frame-2.jpg",
+      "source_episode": "makeCoffee3",
+      "source_duration_seconds": 148.0,
+      "responses": [
+        {
+          "condition": "Zero-shot",
+          "requested_model": "gpt-6-astra",
+          "reasoning_effort": "low",
+          "returned_model": "gpt-6-astra-2026-09-03",
+          "answer": "No. The robot arm is near the coffee machine, but it has not visibly pressed the button. The end effector appears misaligned with the control, and there is no visible indication that the machine has been activated."
+        },
+        {
+          "condition": "External 5-shot",
+          "requested_model": "gpt-6-astra",
+          "reasoning_effort": "low",
+          "returned_model": "gpt-6-astra",
+          "answer": "Yes, the robot successfully pressed the button on the coffee machine."
+        }
+      ],
+      "selection": "Post-hoc qualitative illustration",
+      "video_caption": "Source episode replay. The model saw the released montage and question, not this continuous video.",
+      "mapping_note": "Input observations were independently matched to source-video frames using pixel similarity and visual inspection. Times locate observed frames, not author-provided failure intervals or model alarm times. White future placeholders are omitted from the observation strip but preserved in the original input.",
+      "reference_failure_interval": null,
+      "model_alarm_times": null,
+      "evidence_note": "Released AHA reference labels are retained. Model descriptions are quotations, not independently verified physical causes.",
+      "interpretation": "Five-shot corrects a zero-shot false alarm on the coffee-machine action. Agreement with the success label does not independently verify the causal explanation."
+    },
+    {
+      "id": 33,
+      "title": "The wrong tool",
+      "task": "Grasp the knife",
+      "reference_label": "Failure",
+      "ground_truth": "No, The robot execute the action on the wrong object.",
+      "question": "<image>\n In the image, it contains many frames from a single view at different time steps in a matrix arrangement depicting the robot arm performing pick up the knife.         Each frame is labeled with the corresponding timestep reflecting the temporal information from left to right.        The white grid represents future sub-tasks that has yet to happen and should be ignore.        For the given sub-tasks, first determine it has succeed by choosing from [\"yes\", \"no\"], and then explain the reason why the current sub-tasks has failed.",
+      "original_input_image": "assets/robofail/case-033-input.jpg",
+      "observation_contact_sheet": "assets/robofail/case-033-observations.jpg",
+      "keyframes": [
+        {
+          "index": 1,
+          "image": "assets/robofail/case-033-frame-1.jpg",
+          "matched_source_time_seconds": 30.0
+        },
+        {
+          "index": 2,
+          "image": "assets/robofail/case-033-frame-2.jpg",
+          "matched_source_time_seconds": 37.63333333333333
+        }
+      ],
+      "video": "assets/robofail/case-033-source-replay.mp4",
+      "poster": "assets/robofail/case-033-frame-2.jpg",
+      "source_episode": "sauteeCarrot1",
+      "source_duration_seconds": 318.06666666666666,
+      "responses": [
+        {
+          "condition": "Zero-shot",
+          "requested_model": "gpt-6-astra",
+          "reasoning_effort": "low",
+          "returned_model": "gpt-6-astra-2026-09-03",
+          "answer": "No. The knife remains on the countertop beside the sink while the robot arm lifts away without securing it. The grasp failed, so the knife was not picked up."
+        },
+        {
+          "condition": "External 5-shot",
+          "requested_model": "gpt-6-astra",
+          "reasoning_effort": "low",
+          "returned_model": "gpt-6-astra-2026-09-03",
+          "answer": "No, The robot picked up the spoon instead of the knife."
+        }
+      ],
+      "selection": "Post-hoc qualitative illustration",
+      "video_caption": "Source episode replay. The model saw the released montage and question, not this continuous video.",
+      "mapping_note": "Input observations were independently matched to source-video frames using pixel similarity and visual inspection. Times locate observed frames, not author-provided failure intervals or model alarm times. White future placeholders are omitted from the observation strip but preserved in the original input.",
+      "reference_failure_interval": null,
+      "model_alarm_times": null,
+      "evidence_note": "Released AHA reference labels are retained. Model descriptions are quotations, not independently verified physical causes.",
+      "interpretation": "Both conditions identify failure. Five-shot names the spoon-versus-knife mismatch stated by the released wrong-object reference."
+    },
+    {
+      "id": 2,
+      "title": "A correctly recognized grasp",
+      "task": "Grasp the apple",
+      "reference_label": "Success",
+      "ground_truth": "Yes, the robot succeed at the sub-task.",
+      "question": "<image>\n In the image, it contains many frames from a single view at different time steps in a matrix arrangement depicting the robot arm performing pick up of the apple.         Each frame is labeled with the corresponding timestep reflecting the temporal information from left to right.        The white grid represents future sub-tasks that has yet to happen and should be ignore.        For the given sub-tasks, first determine it has succeed by choosing from [\"yes\", \"no\"], and then explain the reason why the current sub-tasks has failed.",
+      "original_input_image": "assets/robofail/case-002-input.jpg",
+      "observation_contact_sheet": "assets/robofail/case-002-observations.jpg",
+      "keyframes": [
+        {
+          "index": 1,
+          "image": "assets/robofail/case-002-frame-1.jpg",
+          "matched_source_time_seconds": 25.166666666666668
+        },
+        {
+          "index": 2,
+          "image": "assets/robofail/case-002-frame-2.jpg",
+          "matched_source_time_seconds": 55.733333333333334
+        }
+      ],
+      "video": "assets/robofail/case-002-source-replay.mp4",
+      "poster": "assets/robofail/case-002-frame-2.jpg",
+      "source_episode": "putAppleBowl2",
+      "source_duration_seconds": 76.8,
+      "responses": [
+        {
+          "condition": "Zero-shot",
+          "requested_model": "gpt-6-astra",
+          "reasoning_effort": "low",
+          "returned_model": "gpt-6-astra-2026-09-03",
+          "answer": "Yes. The robot has successfully picked up the apple: in frame 2, the apple is held by the gripper and lifted clear of the countertop. No failure is visible."
+        },
+        {
+          "condition": "External 5-shot",
+          "requested_model": "gpt-6-astra",
+          "reasoning_effort": "low",
+          "returned_model": "gpt-6-astra",
+          "answer": "Yes, the robot successfully grasped the apple and lifted it off the countertop."
+        }
+      ],
+      "selection": "Post-hoc qualitative illustration",
+      "video_caption": "Source episode replay. The model saw the released montage and question, not this continuous video.",
+      "mapping_note": "Input observations were independently matched to source-video frames using pixel similarity and visual inspection. Times locate observed frames, not author-provided failure intervals or model alarm times. White future placeholders are omitted from the observation strip but preserved in the original input.",
+      "reference_failure_interval": null,
+      "model_alarm_times": null,
+      "evidence_note": "Released AHA reference labels are retained. Model descriptions are quotations, not independently verified physical causes.",
+      "interpretation": "Both conditions agree that the apple-grasp subtask succeeded. This local success does not imply that the full episode succeeded."
+    },
+    {
+      "id": 49,
+      "title": "A missed wrong-object failure",
+      "task": "Place the object in the bowl",
+      "reference_label": "Failure",
+      "ground_truth": "No, The robot execute the action on the wrong object.",
+      "question": "<image>\n In the image, it contains many frames from a single view at different time steps in a matrix arrangement depicting the robot arm place in the bowl.         Each frame is labeled with the corresponding timestep reflecting the temporal information from left to right.        The white grid represents future sub-tasks that has yet to happen and should be ignore.        For the given sub-tasks, first determine it has succeed by choosing from [\"yes\", \"no\"], and then explain the reason why the current sub-tasks has failed.",
+      "original_input_image": "assets/robofail/case-049-input.jpg",
+      "observation_contact_sheet": "assets/robofail/case-049-observations.jpg",
+      "keyframes": [
+        {
+          "index": 1,
+          "image": "assets/robofail/case-049-frame-1.jpg",
+          "matched_source_time_seconds": 21.766666666666666
+        },
+        {
+          "index": 2,
+          "image": "assets/robofail/case-049-frame-2.jpg",
+          "matched_source_time_seconds": 31.966666666666665
+        },
+        {
+          "index": 3,
+          "image": "assets/robofail/case-049-frame-3.jpg",
+          "matched_source_time_seconds": 59.93333333333333
+        }
+      ],
+      "video": "assets/robofail/case-049-source-replay.mp4",
+      "poster": "assets/robofail/case-049-frame-3.jpg",
+      "source_episode": "putFruitsBowl1",
+      "source_duration_seconds": 197.86666666666667,
+      "responses": [
+        {
+          "condition": "Zero-shot",
+          "requested_model": "gpt-6-astra",
+          "reasoning_effort": "low",
+          "returned_model": "gpt-6-astra-2026-09-03",
+          "answer": "No. The robot lowers the strawberry into the bowl but appears to still be holding it with the gripper. The placement is incomplete because the strawberry has not been released."
+        },
+        {
+          "condition": "External 5-shot",
+          "requested_model": "gpt-6-astra",
+          "reasoning_effort": "low",
+          "returned_model": "gpt-6-astra",
+          "answer": "Yes, the robot successfully placed the strawberry in the bowl."
+        }
+      ],
+      "selection": "Post-hoc qualitative illustration",
+      "video_caption": "Source episode replay. The model saw the released montage and question, not this continuous video.",
+      "mapping_note": "Input observations were independently matched to source-video frames using pixel similarity and visual inspection. Times locate observed frames, not author-provided failure intervals or model alarm times. White future placeholders are omitted from the observation strip but preserved in the original input.",
+      "reference_failure_interval": null,
+      "model_alarm_times": null,
+      "evidence_note": "Released AHA reference labels are retained. Model descriptions are quotations, not independently verified physical causes.",
+      "interpretation": "Five-shot calls the strawberry placement successful, whereas the released reference marks a wrong-object failure. Zero-shot matches the failure label but cites incomplete release rather than the reference reason."
     }
   ]
 }
