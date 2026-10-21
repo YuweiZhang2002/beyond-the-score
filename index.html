@@ -286,15 +286,29 @@
 <h2>2. 结果</h2>
 <section id="quality-results" class="result-topic" data-toc>
 <h3>2.1 轨迹质量与偏好</h3>
-<p class="">为了检验 Astra 能否判断机器人执行得好不好、任务完成了多少，我们使用 RBM 的机器人轨迹进行评估。RBM-EVAL-OOD 包含来自六个数据来源的真实机器人轨迹，覆盖成功、次优和失败等执行情况。我们在其中测试了单条轨迹评分和执行过程中的进度估计，另用 1,192 组固定 RBM 轨迹对测试直接偏好判断。</p>
+<p class="">我们使用 RBM 的机器人轨迹，比较通用多模态模型评价执行质量的能力。评测涵盖 GPT-6 Astra<sup class="citation">
+<a href="#ref-astra" aria-label="OpenAI: GPT-6 Astra">[1]</a>
+</sup>、GPT-5.6-sol<sup class="citation">
+<a href="#ref-sol" aria-label="OpenAI: GPT-5.6 Sol">[6]</a>
+</sup> 和 DeepSeek-V4.1-Flash<sup class="citation">
+<a href="#ref-deepseek" aria-label="DeepSeek-V4.1-Flash">[7]</a>
+</sup>，包括对单条轨迹独立评分，以及同时观察两条轨迹后直接判断偏好。总体结果呈现三种模型的差异；案例分析以 Astra 为代表，检查评分和解释如何对应实际执行。</p>
 <p class="fine">以下先呈现零样本结果与案例。文献数值沿用各自评测协议，用作背景，不能据此作同协议排名；上下文示例的对照集中在第 2.3 节。</p>
 <h4 id="ranking-results" data-toc>2.1.1 轨迹质量排序</h4>
-<p>对 567 条轨迹分别评分，Astra 的 Kendall τa 达到 <strong>0.8166</strong>，高于专门训练的 RynnValue-8B（0.675）<sup class="citation">
+<p>在 567 条轨迹的零样本独立评分中，GPT-6 Astra、GPT-5.6-sol 和 DeepSeek-V4.1-Flash 的 Kendall τ<sub>a</sub> 分别为 <strong>0.8166、0.7500 和 0.5300</strong>。这一指标衡量模型评分导出的顺序与参考质量顺序的一致性，越接近 1 越好。三种通用多模态模型都表现出质量区分能力，但一致性存在明显的数值差异；Astra 在本次评测中最高。</p>
+<p>Astra 和 GPT-5.6-sol 的排序数值还高于专用模型 RynnValue-8B（0.675）<sup class="citation">
 <a href="#ref-rynnvalue" aria-label="RynnValue">[5]</a>
 </sup>和 Robometer（0.655）<sup class="citation">
 <a href="#ref-robometer" aria-label="Robometer">[2]</a>
-</sup>的报告数值。该指标衡量预测排序与参考质量顺序的一致性，越接近 1 越好。这表明 Astra 无需任务专用微调，便具备较强的机器人执行质量区分能力。</p>
-<p>为了解这些排序错误从何而来，我们进一步查看了模型给出的分数和判断理由。</p>
+</sup>的已报告结果。这说明<strong>无需任务专用微调的多模态模型已能获得较强的离线排序表现</strong>。图中将本研究与文献记录分组，跨研究数值不作为同协议下的排名。</p>
+<figure class="figure">
+<button type="button" data-zoom aria-label="三种通用多模态模型的零样本排序结果与专用模型文献参照">
+<img loading="lazy" src="assets/figures/01_ranking_zero_shot.png" alt="三种通用多模态模型的零样本排序结果与专用模型文献参照" width="1600" height="767">
+</button>
+<figcaption>图 1. 零样本轨迹质量排序。上：本研究的三种通用多模态模型；下：两种专用模型的文献参照。Kendall τa 越高越好；文献评测的样本与输入协议未与本研究完全对齐。<span class="zoom-label" aria-hidden="true">放大 ↗</span>
+</figcaption>
+</figure>
+<p>以下以 Astra 的独立评分记录检查具体判断。总体排序较强，并不意味着每一种执行质量差异都能被正确识别。</p>
 <h5 class="case-title">失败原因分析</h5>
 <p>排序会在两处失分：不同未完成行为的分数顺序与参考相反；参考等级不同的轨迹又可能被打成相同高分。Astra 虽然能指出执行中的问题，但对不同未完成行为的质量区分能力仍显不足。</p>
 <h5 class="case-title" id="banana-case">Case Study：搬错物体与抬盘失误</h5>
@@ -387,14 +401,14 @@
 </dl>
 </details>
 <h4 id="preference-results" data-toc>2.1.2 直接偏好判断</h4>
-<p>同时观察两条轨迹，选择执行得更好的一条。在 1,192 组固定轨迹对上，Astra 的<strong>来源等权准确率达到 92.4%</strong>，高于 Robometer 报告的 82.5%<sup class="citation">
+<p>直接偏好判断将两条轨迹同时提供给模型，要求选择更好的执行。在 1,192 组固定轨迹对上，Astra、GPT-5.6-sol 和 DeepSeek-V4.1-Flash 的来源等权准确率分别为 <strong>92.4%、90.7% 和 82.2%</strong>。三者的点估计顺序与独立评分一致；Astra 与 GPT-5.6-sol 的差距为 1.7 个百分点。作为文献参照，Robometer 报告的准确率为 82.5%<sup class="citation">
 <a href="#ref-robometer" aria-label="Robometer">[2]</a>
-</sup>。该指标统计模型选对较优执行的比例，体现出 Astra 较强的轨迹比较与择优判断能力。</p>
+</sup>。</p>
 <figure class="figure">
 <button type="button" data-zoom aria-label="放大直接偏好判断图">
 <img loading="lazy" src="assets/figures/02_preference.png" alt="直接偏好判断：Astra 在 1,192 组固定轨迹对上的来源等权准确率为 92.4%。" width="1384" height="576">
 </button>
-<figcaption>图 1. <span>直接偏好判断。两条轨迹各八帧，同次比较；准确率按六个来源等权汇总。</span>
+<figcaption>图 2. <span>直接偏好判断。两条轨迹各八帧，同次比较；准确率按六个来源等权汇总。</span>
 <span class="zoom-label" aria-hidden="true">放大 ↗</span>
 </figcaption>
 </figure>
@@ -505,17 +519,17 @@
 <figure>
 <video controls playsinline muted preload="none" poster="assets/rbm/q0041-poster.jpg" src="assets/rbm/q0041-replay.mp4" aria-label="杯子任务的成功轨迹">
 </video>
-<figcaption>图 2. 成功放入水槽</figcaption>
+<figcaption>图 3. 成功放入水槽</figcaption>
 </figure>
 <figure>
 <video controls playsinline muted preload="none" poster="assets/rbm/q0039-poster.jpg" src="assets/rbm/q0039-replay.mp4" aria-label="杯子任务的部分完成轨迹">
 </video>
-<figcaption>图 3. 杯子滑落在槽外</figcaption>
+<figcaption>图 4. 杯子滑落在槽外</figcaption>
 </figure>
 <figure>
 <video controls playsinline muted preload="none" poster="assets/rbm/q0037-poster.jpg" src="assets/rbm/q0037-replay.mp4" aria-label="杯子任务的对象错误轨迹">
 </video>
-<figcaption>图 4. 搬动了错误物体</figcaption>
+<figcaption>图 5. 搬动了错误物体</figcaption>
 </figure>
 </div>
 <p class="fine">视频为采样帧回放，并非连续原速视频；评测时，模型只看到截至当时的采样观测。</p>
@@ -531,7 +545,7 @@
 <button type="button" data-zoom aria-label="放大进度估计零样本与 ICL 对照图">
 <img loading="lazy" src="assets/figures/03_progress.png?v=voc" alt="任务进度估计：Astra 零样本 VOC 为 93.6，单轨迹示例 ICL 为 94.2；外部文献报告值采用不同协议。" width="1384" height="960">
 </button>
-<figcaption>图 5. <span>进度估计的零样本与单轨迹示例 ICL 对照（VOC）。模型仅使用截至当前时刻的观测；外部数值沿用各论文协议。</span>
+<figcaption>图 6. <span>进度估计的零样本与单轨迹示例 ICL 对照（VOC）。模型仅使用截至当前时刻的观测；外部数值沿用各论文协议。</span>
 <span class="zoom-label" aria-hidden="true">放大 ↗</span>
 </figcaption>
 </figure>
@@ -541,7 +555,7 @@
 <button type="button" data-zoom aria-label="放大轨迹排序零样本与 ICL 对照图">
 <img loading="lazy" src="assets/figures/01_ranking.png" alt="轨迹质量排序：Astra 零样本 Kendall τa 为 0.8166，三轨迹示例 ICL 为 0.7953；外部文献报告值采用不同协议。" width="1384" height="1104">
 </button>
-<figcaption>图 6. <span>轨迹排序的零样本与三轨迹示例 ICL 对照。每条待评轨迹独立输入八帧图像评分；外部数值沿用各论文协议。</span>
+<figcaption>图 7. <span>轨迹排序的零样本与三轨迹示例 ICL 对照。每条待评轨迹独立输入八帧图像评分；外部数值沿用各论文协议。</span>
 <span class="zoom-label" aria-hidden="true">放大 ↗</span>
 </figcaption>
 </figure>
@@ -551,7 +565,7 @@
 <figure class="case-media">
 <video controls playsinline muted preload="none" poster="assets/rbm/t098-poster.jpg" src="assets/rbm/t098-replay.mp4" aria-label="开瓶任务的采样帧回放">
 </video>
-<figcaption>图 7. 视频为采样帧回放，并非连续原速视频；模型依据的是截至各时刻的观测，而非完整连续视频。</figcaption>
+<figcaption>图 8. 视频为采样帧回放，并非连续原速视频；模型依据的是截至各时刻的观测，而非完整连续视频。</figcaption>
 </figure>
 <p>这条轨迹的参考终态是成功。零样本回答认为瓶盖已与瓶口分离，最终进度为 1.00；加入示例后，回答改为瓶盖似乎仍在原位、没有明确取下，最终进度降至 0.35。下表将最终进度与整段评分的时间相关性（VOC）、误差（MSE）并列，展示这两种判断在不同指标上的差异。</p>
 <div class="table-scroll" role="region" tabindex="0">
@@ -637,7 +651,7 @@
 </span>
 </div>
 <p class="stack-values">正确顺序 83.21% · 平分 13.11% · 颠倒 3.68%</p>
-<figcaption>图 8. 与报告得分一致的加权成对结果，非独立轨迹对的未加权计数。τa 等于正确顺序权重减去颠倒权重。</figcaption>
+<figcaption>图 9. 与报告得分一致的加权成对结果，非独立轨迹对的未加权计数。τa 等于正确顺序权重减去颠倒权重。</figcaption>
 </figure>
 </details>
 <details class="research-detail">
@@ -847,7 +861,7 @@
 <button type="button" data-zoom aria-label="放大: 包含 AHA 及其他 baseline 的成败分类对比">
 <img loading="lazy" src="assets/figures/04_robofail_icl.png" alt="包含 AHA 及其他 baseline 的成败分类对比" width="1180" height="875">
 </button>
-<figcaption>图 9. 本研究与 AHA 文献成败分类完整图。保留 AHA-7B/13B、GPT-4o、LLaVA、Qwen-VL 与 Gemini 记录；本研究和文献用分隔线区分，精确问题集合尚未对齐。<span class="zoom-label" aria-hidden="true">放大 ↗</span>
+<figcaption>图 10. 本研究与 AHA 文献成败分类完整图。保留 AHA-7B/13B、GPT-4o、LLaVA、Qwen-VL 与 Gemini 记录；本研究和文献用分隔线区分，精确问题集合尚未对齐。<span class="zoom-label" aria-hidden="true">放大 ↗</span>
 </figcaption>
 </figure>
 <figure class="diagnosis">
@@ -893,7 +907,7 @@
 <b data-cell>32</b>正确失败</div>
 </div>
 </div>
-    <figcaption>图 10. 同一组 57 个问题上的成败判断。失败为正类；误报指实际成功但预测失败，漏检指实际失败但预测成功。这是离线分类，未测量在线报警时间。</figcaption>
+    <figcaption>图 11. 同一组 57 个问题上的成败判断。失败为正类；误报指实际成功但预测失败，漏检指实际失败但预测成功。这是离线分类，未测量在线报警时间。</figcaption>
 </figure>
 <p class="">一个不读取图像的参照是所有问题都回答“失败”：根据当前标签数量，它会答对 34 / 57，准确率为 59.65%。零样本比这一参照高 5.26 个百分点，但以漏掉 2 个失败换来了识别 5 个成功。这个由标签分布算出的对照说明，准确率需要与两类错误一起读，不能只看“检测到了多少失败”。</p>
 <p class="">成功样本的误报率从 78.26% 降到 8.70%，失败样本的漏检率则从 5.88% 升到 17.65%。五示例条件更善于认可成功，但更容易漏掉失败。实际应用中如何取舍，需要考虑误报干预和失败漏检的成本；本研究没有测量这些成本。</p>
@@ -1138,14 +1152,14 @@
 <figure>
 <video controls playsinline muted preload="none" poster="assets/robofail/case-055-frame-4.jpg" src="assets/robofail/case-055-source-replay.mp4" aria-label="RoboFail 抓住炉灶旋钮的来源视频">
 </video>
-<figcaption>图 11. <strong>抓住炉灶旋钮</strong>
+<figcaption>图 12. <strong>抓住炉灶旋钮</strong>
 <span>参考判为失败，原因是夹爪没有闭合。零样本也判失败，却归因于抓取位置错误；五示例条件则判为成功。</span>
 </figcaption>
 </figure>
 <figure>
 <video controls playsinline muted preload="none" poster="assets/robofail/case-036-frame-3.jpg" src="assets/robofail/case-036-source-replay.mp4" aria-label="RoboFail 切胡萝卜的来源视频">
 </video>
-<figcaption>图 12. <strong>切胡萝卜</strong>
+<figcaption>图 13. <strong>切胡萝卜</strong>
 <span>参考判为成功。零样本和五示例条件都因未看到完整切片而判为失败。</span>
 </figcaption>
 </figure>
@@ -1175,7 +1189,7 @@
 <button type="button" data-zoom aria-label="放大炉灶旋钮案例关键帧">
 <img loading="lazy" src="assets/robofail/case-055-observations.jpg" alt="RoboFail 炉灶旋钮案例：与原始输入匹配的四张关键帧，供检查成败判断与解释。" width="1280" height="722">
 </button>
-<figcaption>图 13. <span>旋钮案例评测输入中的四张关键帧。</span>
+<figcaption>图 14. <span>旋钮案例评测输入中的四张关键帧。</span>
 <span class="zoom-label" aria-hidden="true">放大 ↗</span>
 </figcaption>
 </figure>
@@ -1229,13 +1243,13 @@
 <figure>
 <video controls playsinline muted preload="none" src="assets/robofail/case-050-source-replay.mp4" poster="assets/robofail/case-050-frame-2.jpg" aria-label="Press the coffee-machine button">
 </video>
-<figcaption>图 14. 原始轨迹回放，保持原速；该连续视频未输入模型。</figcaption>
+<figcaption>图 15. 原始轨迹回放，保持原速；该连续视频未输入模型。</figcaption>
 </figure>
 <figure>
 <button type="button" data-zoom aria-label="放大观测帧">
 <img loading="lazy" src="assets/robofail/case-050-observations.jpg" alt="实际输入中的可见观测帧，按时间排序" width="960" height="1088">
 </button>
-<figcaption>图 15. 输入观测帧，按原顺序展示；为便于阅读重新排版，完整原图见下方。</figcaption>
+<figcaption>图 16. 输入观测帧，按原顺序展示；为便于阅读重新排版，完整原图见下方。</figcaption>
 </figure>
 </div>
 <div>
@@ -1270,13 +1284,13 @@
 <figure>
 <video controls playsinline muted preload="none" src="assets/robofail/case-033-source-replay.mp4" poster="assets/robofail/case-033-frame-2.jpg" aria-label="Grasp the knife">
 </video>
-<figcaption>图 16. 原始轨迹回放，保持原速；该连续视频未输入模型。</figcaption>
+<figcaption>图 17. 原始轨迹回放，保持原速；该连续视频未输入模型。</figcaption>
 </figure>
 <figure>
 <button type="button" data-zoom aria-label="放大观测帧">
 <img loading="lazy" src="assets/robofail/case-033-observations.jpg" alt="实际输入中的可见观测帧，按时间排序" width="960" height="1088">
 </button>
-<figcaption>图 17. 输入观测帧，按原顺序展示；为便于阅读重新排版，完整原图见下方。</figcaption>
+<figcaption>图 18. 输入观测帧，按原顺序展示；为便于阅读重新排版，完整原图见下方。</figcaption>
 </figure>
 </div>
 <div>
@@ -1311,13 +1325,13 @@
 <figure>
 <video controls playsinline muted preload="none" src="assets/robofail/case-002-source-replay.mp4" poster="assets/robofail/case-002-frame-2.jpg" aria-label="Grasp the apple">
 </video>
-<figcaption>图 18. 原始轨迹回放，保持原速；该连续视频未输入模型。</figcaption>
+<figcaption>图 19. 原始轨迹回放，保持原速；该连续视频未输入模型。</figcaption>
 </figure>
 <figure>
 <button type="button" data-zoom aria-label="放大观测帧">
 <img loading="lazy" src="assets/robofail/case-002-observations.jpg" alt="实际输入中的可见观测帧，按时间排序" width="960" height="1088">
 </button>
-<figcaption>图 19. 输入观测帧，按原顺序展示；为便于阅读重新排版，完整原图见下方。</figcaption>
+<figcaption>图 20. 输入观测帧，按原顺序展示；为便于阅读重新排版，完整原图见下方。</figcaption>
 </figure>
 </div>
 <div>
@@ -1352,13 +1366,13 @@
 <figure>
 <video controls playsinline muted preload="none" src="assets/robofail/case-049-source-replay.mp4" poster="assets/robofail/case-049-frame-3.jpg" aria-label="Place the object in the bowl">
 </video>
-<figcaption>图 20. 原始轨迹回放，保持原速；该连续视频未输入模型。</figcaption>
+<figcaption>图 21. 原始轨迹回放，保持原速；该连续视频未输入模型。</figcaption>
 </figure>
 <figure>
 <button type="button" data-zoom aria-label="放大观测帧">
 <img loading="lazy" src="assets/robofail/case-049-observations.jpg" alt="实际输入中的可见观测帧，按时间排序" width="960" height="1636">
 </button>
-<figcaption>图 21. 输入观测帧，按原顺序展示；为便于阅读重新排版，完整原图见下方。</figcaption>
+<figcaption>图 22. 输入观测帧，按原顺序展示；为便于阅读重新排版，完整原图见下方。</figcaption>
 </figure>
 </div>
 <div>
@@ -1558,7 +1572,7 @@
 <button type="button" data-zoom aria-label="放大: 包含 AHA 及其他 baseline 的综合 ROUGE-L 对比">
 <img loading="lazy" src="assets/figures/05_robofail_icl.png" alt="包含 AHA 及其他 baseline 的综合 ROUGE-L 对比" width="1180" height="875">
 </button>
-<figcaption>图 22. 综合 ROUGE-L 完整图。保留原有文献 baseline；分数同时包含成功识别与失败解释项，不能读作解释正确率。<span class="zoom-label" aria-hidden="true">放大 ↗</span>
+<figcaption>图 23. 综合 ROUGE-L 完整图。保留原有文献 baseline；分数同时包含成功识别与失败解释项，不能读作解释正确率。<span class="zoom-label" aria-hidden="true">放大 ↗</span>
 </figcaption>
 </figure>
 <figure class="study-figure">
@@ -1590,7 +1604,7 @@
 <span>0</span>
 <span>0.55</span>
 </div>
-<figcaption>图 23. 综合 ROUGE-L 的组成，两项均以 57 为分母。两条形使用相同的 0–0.55 刻度。分项和总分分别取整，末位可能有舍入差异。</figcaption>
+<figcaption>图 24. 综合 ROUGE-L 的组成，两项均以 57 为分母。两条形使用相同的 0–0.55 刻度。分项和总分分别取整，末位可能有舍入差异。</figcaption>
 </figure>
 <p class="">正确成功项从 0.0877 增至 0.3684，增量约为 16 / 57 = 0.2807，占报告总增量 0.3144 的约 89.3%。失败解释项从 0.0969 增至 0.1305，占剩余约 10.7%。因此，0.499 不能读作“49.9% 的失败解释正确”；大部分增量来自识别成功，而非失败解释项。</p>
 <p class="">解释项还取决于哪些失败被检测到，以及回答与参考文本的词汇重合度。它无法独立区分语义正确的改写和措辞相似但原因错误的回答。要评价失败原因是否可信，需要额外的语义核验与物理证据。</p>

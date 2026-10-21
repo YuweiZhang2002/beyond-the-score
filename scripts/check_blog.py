@@ -89,6 +89,9 @@ for name,text in pages.items():
     assert not any(x in text for x in ['Progress and context','Progress estimation and context examples','进度与上下文','进度估计与上下文示例'])
     quality=text.split('<section id="quality-results"',1)[1].split('<section id="progress-results"',1)[0]
     assert 'assets/figures/01_ranking.png' not in quality and '0.7953' not in quality
+    assert quality.count('assets/figures/01_ranking_zero_shot.png') == 1
+    assert quality.index('assets/figures/01_ranking_zero_shot.png') < quality.index('id="banana-case"')
+    assert all(value in quality for value in ['0.8166', '0.7500', '0.5300', 'DeepSeek-V4.1-Flash'])
     assert text.count('assets/figures/02_preference.png')==1
     merged=[x for x in p.paragraphs if all(n in x for n in ['85.96%','66.1%','0.185','0.499','0.290','89.3%'])]
     assert len(merged)==1 and all(n in merged[0] for n in ['18','2','6']),name

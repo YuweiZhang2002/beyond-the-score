@@ -196,7 +196,7 @@ def article():
     result_topics = ''
 
 
-    body = p('为了检验 Astra 能否判断机器人执行得好不好、任务完成了多少，我们使用 RBM 的机器人轨迹进行评估。RBM-EVAL-OOD 包含来自六个数据来源的真实机器人轨迹，覆盖成功、次优和失败等执行情况。我们在其中测试了单条轨迹评分和执行过程中的进度估计，另用 1,192 组固定 RBM 轨迹对测试直接偏好判断。', 'We use RBM robot trajectories to test whether Astra can judge execution quality and task progress. RBM-EVAL-OOD includes real robot trajectories from six sources with successful, suboptimal, and failed executions. We evaluate independent trajectory scores and progress on this support, and direct preference on a further 1,192 fixed RBM pairs.')
+    body = p('我们使用 RBM 的机器人轨迹，比较通用多模态模型评价执行质量的能力。评测涵盖 GPT-6 Astra[[cite:astra]]、GPT-5.6-sol[[cite:sol]] 和 DeepSeek-V4.1-Flash[[cite:deepseek]]，包括对单条轨迹独立评分，以及同时观察两条轨迹后直接判断偏好。总体结果呈现三种模型的差异；案例分析以 Astra 为代表，检查评分和解释如何对应实际执行。', 'We use RBM robot trajectories to compare how general-purpose multimodal models evaluate execution quality. We test GPT-6 Astra[[cite:astra]], GPT-5.6-sol[[cite:sol]], and DeepSeek-V4.1-Flash[[cite:deepseek]] on independent trajectory scoring and direct preference judgments with two trajectories shown together. Aggregate results compare the three models; detailed cases use Astra as a representative to examine how scores and explanations relate to the observed executions.')
     body += p('以下先呈现零样本结果与案例。文献数值沿用各自评测协议，用作背景，不能据此作同协议排名；上下文示例的对照集中在第 2.3 节。', 'We first present zero-shot results and cases. Published values retain their own evaluation protocols and provide context, rather than a matched-protocol ranking. Context-example comparisons are grouped in Section 2.3.', 'fine')
     body += h3('ranking-results', '2.1.1 轨迹质量排序', '2.1.1 Trajectory quality ranking')
     body += confirmed('ranking')
