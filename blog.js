@@ -47,9 +47,9 @@ function reading() {
   activeId = active?.id || 'takeaways';
   let tocId = activeId;
   const activeLink = tocLinks.find(a => a.hash === '#' + activeId);
-  if (mobile && activeLink?.classList.contains('subsection')) {
+  if (!activeLink || (mobile && activeLink.classList.contains('subsection'))) {
     let parent = document.getElementById(activeId).closest('section');
-    while (parent && !tocLinks.some(a => !a.classList.contains('subsection') && a.hash === '#' + parent.id)) {
+    while (parent && !tocLinks.some(a => (!mobile || !a.classList.contains('subsection')) && a.hash === '#' + parent.id)) {
       parent = parent.parentElement?.closest('section');
     }
     tocId = parent?.id || activeId;

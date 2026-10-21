@@ -76,9 +76,10 @@ for name,text in pages.items():
     assert 'RoboFail' not in icl and 'ROBOFAIL' not in icl
     assert icl.count('assets/figures/01_ranking.png')==1 and icl.count('assets/figures/03_progress.png')==1
     progress=text.split('<section id="progress-results"',1)[1].split('</section>',1)[0]
-    for ident in ['progress-results','progress-icl','failure']:
-        assert p.section_parents[ident] is None,(name,ident,'must be a separate chapter')
-        assert re.search(r'<a class="" href="#'+ident+r'">',text),(name,ident,'missing top-level TOC link')
+    assert p.section_parents['results'] is None
+    for ident in ['quality-results','progress-results','progress-icl','failure','explanations']:
+        assert p.section_parents[ident] == 'results',(name,ident,'must be a Results subsection')
+        assert re.search(r'<a class="subsection" href="#'+ident+r'">',text),(name,ident,'missing Results subsection TOC link')
     assert len(p.section_media['progress-results'])==3
     assert len(p.section_media['progress-icl'])==1
     assert len(p.section_media['failure'])==len(robo['cases'])
@@ -86,14 +87,17 @@ for name,text in pages.items():
     assert all(x not in progress for x in ['94.2','0.7953','95.36','0.1312','assets/figures/03_progress.png'])
     assert all(x in icl for x in ['94.2','0.7953','95.36','0.1312'])
     assert not any(x in text for x in ['Progress and context','Progress estimation and context examples','进度与上下文','进度估计与上下文示例'])
-    quality=text.split('<section id="results"',1)[1].split('<section id="progress-results"',1)[0]
+    quality=text.split('<section id="quality-results"',1)[1].split('<section id="progress-results"',1)[0]
     assert 'assets/figures/01_ranking.png' not in quality and '0.7953' not in quality
     assert text.count('assets/figures/02_preference.png')==1
     merged=[x for x in p.paragraphs if all(n in x for n in ['85.96%','66.1%','0.185','0.499','0.290','89.3%'])]
     assert len(merged)==1 and all(n in merged[0] for n in ['18','2','6']),name
+    assert not any(x in text for x in ['AHA 改编', 'AHA adaptation', '[[cite:'])
+    for key in ['astra','sol','deepseek','robometer','rbm','reflect','rynnvalue','aha','guardian','primo']:
+        assert f'href="#ref-{key}"' in text,(name,key,'missing inline citation')
     assert 'A<sub>pref</sub> = (100 / 6)' in text
     assert text.count('href="assets/Beyond-the-Score.pdf"')==1
-    checks[name]={'unique_videos':expected_videos,'paired_input_replays':10,'rbm_cases':7,'robofail_cases':len(robo['cases']),'new_experimental_responses':12,'local_references_checked':len(p.refs),'raw_answers_preserved':True,'merged_robofail_paragraph':True,'progress_and_icl_are_separate_chapters':True}
+    checks[name]={'unique_videos':expected_videos,'paired_input_replays':10,'rbm_cases':7,'robofail_cases':len(robo['cases']),'new_experimental_responses':12,'local_references_checked':len(p.refs),'raw_answers_preserved':True,'merged_robofail_paragraph':True,'five_results_subsections':True}
 assert parsed['index.html'].ids==parsed['en.html'].ids
 assert parsed['index.html'].media==parsed['en.html'].media
 # A rebuild must reproduce both committed-to-disk artifacts exactly.
