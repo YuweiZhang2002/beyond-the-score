@@ -42,10 +42,8 @@
 <a class="" href="#takeaways">Key takeaways</a>
 <a class="" href="#overview">Introduction</a>
 <a class="" href="#setup">1. 研究设置</a>
-<a class="subsection" href="#benchmark-choice">1.1 Benchmark 选择</a>
-<a class="subsection" href="#evaluation-questions">1.2 评估问题</a>
-<a class="subsection" href="#metrics">1.3 指标计算</a>
-<a class="subsection" href="#comparison-protocol">1.4 比较方法</a>
+<a class="subsection" href="#benchmark-choice">1.1 评价任务与数据集</a>
+<a class="subsection" href="#comparison-protocol">1.2 模型配置与评测条件</a>
 <a class="" href="#results">2. 轨迹质量与偏好</a>
 <a class="subsection" href="#ranking-results">2.1 轨迹排序</a>
 <a class="subsection" href="#preference-results">2.2 直接偏好</a>
@@ -106,78 +104,72 @@
 </section>
 <section id="setup" class="" data-toc>
 <h2>1. 研究设置</h2>
-<p class="">我们把评审能力拆成两个尺度：一是完整执行及其过程，二是具体子任务的结果与解释。前者需要有任务描述、时间序列和质量差异的轨迹；后者需要子任务问题、成败标签和失败解释。因此，我们分别使用 RBM 的轨迹评测与 AHA 改编的 RoboFail。</p>
-<h3 id="benchmark-choice" data-toc>1.1 为什么选择这两个 benchmark</h3>
-<p class="">
-<strong>RBM：比较执行质量，并跟踪执行过程。</strong>同一任务下的成功、次优和失败轨迹，为质量比较提供参考；成功轨迹的时间序列，则允许检查进度预测是否随任务推进而变化。本研究的进度和独立排序使用 RBM-EVAL-OOD 的六个数据来源，分别覆盖 105 条成功轨迹，以及 41 个来源–任务组中的 567 条轨迹。我们另外评估 1,192 组固定偏好对，其具体划分组成仍需补全。</p>
-<p class="">
-<strong>RoboFail：判断具体子任务，并检查解释。</strong>我们使用 AHA 发布版本中的 57 个图像–问题样本，来自 15 组操作轨迹，其中 23 个标注成功、34 个标注失败。模型根据原始关键帧拼图回答当前子任务是否成功，并解释失败原因。它补充了 RBM 的整体质量比较：能够把两条执行排出高低，并不保证能判断某一步是否完成，也不保证能解释错误。</p>
-<p class="fine">两个 benchmark 覆盖的是不同评审接口，结果不能合并成一个总分。这里的 OOD 沿用 RBM 的数据划分含义，不证明相关场景从未出现在通用模型预训练中。RoboFail 也有多种改编版本；本文的 57 问题集合不等同于 Guardian 或 PRIMO 使用的集合。</p>
-<h3 id="evaluation-questions" data-toc>1.2 为什么分别评估第 2–6 节的能力</h3>
-<div class="table-scroll" role="region" aria-label="评估问题与潜在用途。本文测试这些用途需要的离线能力，未测试其闭环收益。" tabindex="0">
+<h3 id="benchmark-choice" data-toc>1.1 评价任务与数据集</h3>
+<p class="">我们使用两个互补的评测设置：RBM 用于考察完整轨迹的质量比较与执行过程中的进度估计；AHA 改编的 RoboFail 用于考察具体子任务的成败判断与解释。各任务分别评估，不合并为单一 critic 总分。</p>
+<div id="evaluation-questions">
+<div class="table-scroll" role="region" aria-label="评价任务、输入输出、样本规模与主要指标。" tabindex="0">
 <table>
-<caption>表 1. 评估问题与潜在用途。本文测试这些用途需要的离线能力，未测试其闭环收益。</caption>
+<caption>表 1. 评价任务、输入输出、样本规模与主要指标。</caption>
 <thead>
 <tr>
-<th scope="col">正文部分</th>
-<th scope="col">评审员需要回答什么</th>
-<th scope="col">为什么重要</th>
+<th scope="col">评价任务</th>
+<th scope="col">模型输入与输出</th>
+<th scope="col">评测规模</th>
+<th scope="col">主要指标</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<th scope="row">2 · 质量与偏好</th>
-<td>哪条执行更好？独立打分与直接比较是否一致地反映质量？</td>
-<td>用于筛选示范、选择候选轨迹或提供偏好监督，需要分数真正区分好坏。</td>
+<th scope="row">RBM · 独立评分与排序</th>
+<td>任务描述与每条轨迹的 8 帧图像 → 独立评分，再在同一来源–任务组内排序。</td>
+<td>567 条轨迹，41 个来源–任务组。</td>
+<td>Kendall τa</td>
 </tr>
 <tr>
-<th scope="row">3 · 任务进度估计</th>
-<td>任务推进了多少？</td>
-<td>稠密反馈有助于描述执行过程，但时间相关性可能掩盖停滞、回退或错误的完成判断。</td>
+<th scope="row">RBM · 直接偏好</th>
+<td>同一任务下两条轨迹，各 8 帧，同时输入 → 选择较优执行。</td>
+<td>1,192 组固定轨迹对。</td>
+<td>六来源等权准确率。</td>
 </tr>
 <tr>
-<th scope="row">4 · 上下文示例的影响</th>
-<td>示例是否改变进度、终点或排序判断？</td>
-<td>示例对不同评估接口的作用可能不同，需要分别检验。</td>
+<th scope="row">RBM · 进度估计</th>
+<td>任务描述、截至当前时刻采样的观测与此前评分 → 当前进度（0–1）及简要理由。</td>
+<td>105 条成功轨迹，每条 4 次预测；协议另设起点 0。</td>
+<td>VOC、时间参考 MSE。</td>
 </tr>
 <tr>
-<th scope="row">5 · 成败判断</th>
-<td>当前子任务是否成功？误报和漏检分别有多少？</td>
-<td>继续执行与触发干预依赖不同错误的代价；仅看准确率会隐藏漏检增加。</td>
-</tr>
-<tr>
-<th scope="row">6 · 失败解释</th>
-<td>标签正确时，解释是否指出了参考答案中的问题？</td>
-<td>诊断和后续修正需要具体依据；正确的成败标签不等于可信的失败原因。</td>
+<th scope="row">RoboFail · 成败判断与解释</th>
+<td>子任务问题与原始关键帧拼图 → 成败判断，失败时说明原因。</td>
+<td>15 组轨迹的 57 个问题：23 个成功、34 个失败。</td>
+<td>准确率、失败召回率、误报率、漏检率、综合 ROUGE-L。</td>
 </tr>
 </tbody>
 </table>
 </div>
-<h3 id="metrics" data-toc>1.3 输入、指标与计算方式</h3>
-<h4 class="method-group-title">
-<span>RBM</span>看懂执行质量与任务进度</h4>
-<dl class="protocol-list">
-<div>
-<dt>进度估计</dt>
-<dd>机器人执行到当前画面时，任务完成了多少？我们从 105 条成功轨迹中各选取四个时刻，分别向 Astra 提供任务描述、截至该时刻采样的观测图像，以及此前的评分，要求它给出当前任务的完成进度（0–1）并简要说明理由。</dd>
 </div>
-<div>
-<dt>轨迹排序</dt>
-<dd>Astra 能否区分不同轨迹的执行质量？我们从每条轨迹中采样八帧图像，与任务描述一起单独输入模型，让它为这条轨迹评分，再按分数从高到低排列。评测共包含 567 条轨迹，用于检验模型给出的排序是否与参考质量顺序一致。</dd>
-</div>
-<div>
-<dt>偏好判断</dt>
-<dd>如果直接比较两次执行，Astra 能否选出更好的一次？我们使用 1,192 组固定轨迹对，每组对应同一个任务。从两条轨迹中各采样八帧图像，在同一次请求中交给模型，要求它选出执行得更好的一条。</dd>
-</div>
-</dl>
-<h4 class="method-group-title">
-<span>ROBOFAIL</span>识别并解释失败</h4>
-<dl class="protocol-list">
-<div>
-<dt>子任务诊断</dt>
-<dd>除了判断整体执行质量，我们还希望知道 Astra 能否识别具体子任务中的失败并解释原因。我们使用 RoboFail 中 15 组轨迹对应的 57 个子任务问题，向模型提供关键帧拼图和问题，要求它判断子任务是否成功，并在失败时说明原因。随后在输入中加入五个外部示例，比较零样本和 In-Context Learning（ICL）条件下的表现。</dd>
-</div>
-</dl>
+<p class="fine">进度与独立排序使用 RBM-EVAL-OOD 的六个数据来源；OOD 沿用该数据集的划分含义，不代表通用模型预训练数据独立。1,192 组偏好对的具体划分组成仍未完整记录。本文采用的 RoboFail 57 问题集合与 Guardian、PRIMO 的改编版本不同。</p>
+<p class="">
+<strong>指标的含义。</strong>进度的参照是归一化时间，而非人工标注的语义完成度；偏好准确率按六个来源等权汇总；综合 ROUGE-L 同时包含成功识别与失败解释的文本重合度。成败分类同时报告误报与漏检，避免只用总体准确率概括表现。</p>
+<h3 id="comparison-protocol" data-toc>1.2 模型配置与评测条件</h3>
+<p class="">
+<strong>模型配置。</strong>我们以 GPT-6 Astra（low 推理设置）为主要研究对象，通过提示提供任务与观测，不进行额外的评价任务微调。RBM 的进度、独立排序与直接偏好任务另包含 GPT-5.6-sol（low）和 DeepSeek-V4.1-Flash（max）的零样本比较；RoboFail 的本研究结果包含 Astra 的零样本与外部五示例条件。</p>
+<p class="">
+<strong>上下文示例。</strong>Astra 的示例条件按评价任务分别设置：</p>
+<ul>
+<li>
+<strong>进度估计：</strong>一条相同或相近任务的训练轨迹，附六个阶段评分。</li>
+<li>
+<strong>独立排序：</strong>随机选取高、中、低分训练轨迹各一条，不要求与测试任务相同；中等参考分数不等于测试集的“次优”标签。</li>
+<li>
+<strong>RoboFail：</strong>五个固定的外部图像–问题–答案示例，报告为与测试轨迹不重叠。</li>
+</ul>
+<p class="method-note">直接偏好没有 ICL 结果。各条件的上下文长度与计算预算未匹配；RoboFail 虽请求相同模型名与 low 推理设置，返回后端标识仍存在差异，快照一致性尚未确认，因此不能把零样本与五示例的差异全部归因于示例。</p>
+<p class="">
+<strong>观测遮蔽。</strong>在两个既有 RoboFail 案例上，我们另做三种可见帧条件 × 两种提示条件的探索性实验，共 12 次新请求，每个条件仅一次。保留原问题并遮蔽后续观测；少帧条件没有对应的时间级真值，不计算准确率。这部分独立于原 57 问题评测，用于观察回答对可见信息的敏感性。</p>
+<p class="">
+<strong>比较范围。</strong>本研究直接评估的模型配置与文献结果分别标示。Robometer、RynnValue、AHA 等文献数值未在当前样本与输入上复测，训练、提示和聚合方式也可能不同，因此仅作为背景参照，不能据此作同协议排名。图中 [S] 表示本研究，[P]、[W]、[R]、[A] 分别对应 Robometer 论文、其网站、RynnValue 与 AHA；不同版本与缺失结果均按原记录保留。</p>
+<details id="metrics" class="research-detail">
+<summary>指标定义、聚合方式与解析参照</summary>
 <p class="fine">进度评测的起点 0 由协议设定，与四次模型预测共同构成五个评分位置；统计时使用同一时间参考。</p>
 <p class="">
 <strong>独立排序：Kendall τa，越高越好。</strong>在同一来源–任务组内，参考质量顺序为成功 &gt; 次优 &gt; 失败。对纳入评分的轨迹对，预测顺序正确计 +1、颠倒计 −1、预测平分计 0；参考质量相同的对不应被人为指定高低，其纳入方式沿用评分器。组内得分可写成 (C − D) / N，其中 C、D 是正确与颠倒的对数，N 是协议纳入的对数。平分保留在分母中，因此不能通过给所有轨迹相同分数获得较高 τa。跨组汇总需要沿用评分器的纳入规则与权重；本文保留报告聚合值，不把加权分解当成独立轨迹对的原始计数。</p>
@@ -194,9 +186,6 @@
 <strong>成败分类：准确率、失败召回率、误报率和漏检率。</strong>以失败为正类：TP 是正确识别的失败，FN 是漏掉的失败，TN 是正确识别的成功，FP 是把成功误判为失败。准确率为 (TP + TN) / 57；失败召回率为 TP / 34；误报率为 FP / 23；漏检率为 FN / 34。四项都以百分比报告。它们评估的是回答，不是机器人实际执行成功率。</p>
 <p class="">
 <strong>失败解释：AHA 综合 ROUGE-L，越高越好。</strong>标签错误计 0；正确成功计 1；正确失败按原始英文解释与参考答案的词干化 ROUGE-L F1 计分。对后一项，令 L 为两个词元序列的最长公共子序列长度，P = L / 生成词元数，R = L / 参考词元数，F1 = 2PR / (P + R)，无重合时为 0。将 57 个问题的得分求和后除以 57。该综合指标混合了成功识别与失败文本重合度，第 6 节会拆开报告，避免把它读成解释准确率。</p>
-<h3 id="comparison-protocol" data-toc>1.4 与哪些方法比较，如何读排序</h3>
-<p class="">本研究直接评估 Astra、GPT-5.6-sol 和 DeepSeek-V4.1-Flash 的相应通用模型配置；原文还收录了机器人奖励与评估方法的公开结果，包括 Robometer、RynnValue、RoboReward、RoboDopamine、GVL、VLAC、ReWiND、TOPReward 和 RL-VLM-F，以及 RoboFail 上的 AHA 等方法。它们也都是学习方法，不能统称为“非 AI”。Guardian 的 CLIP+MLP 对照同样含有学习组件，而且属于另一套 RoboFail 改编数据。</p>
-<p class="">完整对比图保留这些 baseline，并按图中对应指标的数值排列；VOC、τa、偏好准确率、分类准确率和 ROUGE-L 各自比较，不跨指标合并。图内标记区分本研究 [S]、Robometer 论文 [P]、网站 [W]、RynnValue [R] 与 AHA [A]。这只是记录值的排序：文献方法未在当前样本和输入上复测，样本数、模型训练、提示与聚合可能不同。Robometer 论文与网站版本各占一行，缺失值留空；ICL 与零样本也分开保留。</p>
 <p class="">非学习参照可以帮助判断指标本身是否足够。下表只列由定义或当前标签数量推导的参照，不是新增模型实验，也不混入实测排行。现有材料没有人工评审员、手写视觉规则或传感器阈值方法在同一输入上的独立实测结果，因此不能声称已经超过这些方法。公开质量标签和成败标注在这里是评分参照，不是一次人工评审员对照实验。</p>
 <div class="table-scroll" role="region" aria-label="非学习参照：解析推导，未作为实验运行。" tabindex="0">
 <table>
@@ -232,7 +221,7 @@
 </tbody>
 </table>
 </div>
-<p class="">上下文示例也按接口分别设置：进度使用一条相同或相近任务训练轨迹及六个阶段评分；排序使用随机选取的高、中、低分训练轨迹各一条，不要求任务相同，中等参考分数也不等于测试集“次优”标签；RoboFail 使用五个固定外部图像–问题–答案示例，报告为与测试轨迹不重叠。直接偏好没有 ICL 结果。这些条件不等上下文长度，也不保证等计算预算；RoboFail 的返回后端标识还有差异，第 5 节会单独说明。</p>
+</details>
 </section>
 <section id="results" class="" data-toc>
 <h2>2. 轨迹质量与偏好</h2>
