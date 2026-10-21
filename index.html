@@ -105,7 +105,12 @@
 <section id="setup" class="" data-toc>
 <h2>1. 研究设置</h2>
 <h3 id="benchmark-choice" data-toc>1.1 评价任务与数据集</h3>
-<p class="">我们使用两个互补的评测设置：RBM 用于考察完整轨迹的质量比较与执行过程中的进度估计；AHA 改编的 RoboFail 用于考察具体子任务的成败判断与解释。各任务分别评估，不合并为单一 critic 总分。</p>
+<p class="">我们从三个方面考察通用多模态模型评价机器人行为的能力：能否比较不同执行的质量，能否根据已观测的执行过程估计任务进度，以及能否判断子任务成败并解释失败。我们使用 RBM 开展轨迹排序、成对偏好与进度评测，并使用 AHA 改编的 RoboFail 考察成败判断与解释。在此基础上，我们进一步研究上下文示例与可见观测如何影响模型的评价。</p>
+<h3 id="comparison-protocol" data-toc>1.2 模型配置与评测条件</h3>
+<p class="">我们以 GPT-6 Astra 为主要研究对象，通过提示提供任务与观测，不进行额外的评价任务微调。RBM 评测另包含 GPT-5.6-sol 和 DeepSeek-V4.1-Flash 的零样本比较。</p>
+<p class="">我们在进度估计、独立排序与 RoboFail 成败判断中比较零样本和上下文示例条件，并在两个 RoboFail 案例上改变可见观测，考察评价对输入信息的敏感性。不同任务分别评估；文献结果作为背景参照，与本研究实测结果区分呈现。</p>
+<details id="metrics" class="research-detail">
+<summary>完整评测协议、指标定义与解析参照</summary>
 <div id="evaluation-questions">
 <div class="table-scroll" role="region" aria-label="评价任务与实验设置概览。↑／↓ 分别表示指标越高／越低越好。" tabindex="0">
 <table class="study-protocol-table">
@@ -178,7 +183,6 @@
 </table>
 </div>
 </div>
-<h3 id="comparison-protocol" data-toc>1.2 模型配置与评测条件</h3>
 <p class="">
 <strong>模型配置。</strong>我们以 GPT-6 Astra 为主要研究对象，通过提示提供任务与观测，不进行额外的评价任务微调。RBM 的进度、独立排序与直接偏好任务另包含 GPT-5.6-sol 和 DeepSeek-V4.1-Flash 的零样本比较；RoboFail 的本研究结果包含 Astra 的零样本与外部五示例条件。</p>
 <p class="">
@@ -196,8 +200,6 @@
 <strong>观测遮蔽。</strong>在两个既有 RoboFail 案例上，我们另做三种可见帧条件 × 两种提示条件的探索性实验，共 12 次新请求，每个条件仅一次。保留原问题并遮蔽后续观测；少帧条件没有对应的时间级真值，不计算准确率。这部分独立于原 57 问题评测，用于观察回答对可见信息的敏感性。</p>
 <p class="">
 <strong>比较范围。</strong>本研究直接评估的模型配置与文献结果分别标示。Robometer、RynnValue、AHA 等文献数值未在当前样本与输入上复测，训练、提示和聚合方式也可能不同，因此仅作为背景参照，不能据此作同协议排名。图中 [S] 表示本研究，[P]、[W]、[R]、[A] 分别对应 Robometer 论文、其网站、RynnValue 与 AHA；不同版本与缺失结果均按原记录保留。</p>
-<details id="metrics" class="research-detail">
-<summary>指标定义、聚合方式与解析参照</summary>
 <p class="fine">进度评测的起点 0 由协议设定，与四次模型预测共同构成五个评分位置；统计时使用同一时间参考。</p>
 <p class="">
 <strong>独立排序：Kendall τa，越高越好。</strong>在同一来源–任务组内，参考质量顺序为成功 &gt; 次优 &gt; 失败。对纳入评分的轨迹对，预测顺序正确计 +1、颠倒计 −1、预测平分计 0；参考质量相同的对不应被人为指定高低，其纳入方式沿用评分器。组内得分可写成 (C − D) / N，其中 C、D 是正确与颠倒的对数，N 是协议纳入的对数。平分保留在分母中，因此不能通过给所有轨迹相同分数获得较高 τa。跨组汇总需要沿用评分器的纳入规则与权重；本文保留报告聚合值，不把加权分解当成独立轨迹对的原始计数。</p>

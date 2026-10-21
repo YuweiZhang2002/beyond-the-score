@@ -105,7 +105,12 @@
 <section id="setup" class="" data-toc>
 <h2>1. Study design</h2>
 <h3 id="benchmark-choice" data-toc>1.1 Evaluation tasks and benchmarks</h3>
-<p class="">We use two complementary evaluation settings: RBM for comparing complete trajectories and estimating progress during execution, and the AHA adaptation of RoboFail for judging and explaining subtask outcomes. We evaluate each task separately rather than combine them into a single critic score.</p>
+<p class="">We examine three aspects of general-purpose multimodal models’ ability to evaluate robot behavior: comparing execution quality, estimating task progress from the execution observed so far, and judging subtask outcomes and explaining failures. We use RBM for trajectory ranking, pairwise preference, and progress evaluation, and the AHA adaptation of RoboFail for outcome judgment and explanation. We further investigate how in-context examples and visible observations affect these evaluations.</p>
+<h3 id="comparison-protocol" data-toc>1.2 Model configurations and evaluation conditions</h3>
+<p class="">Our primary subject is GPT-6 Astra, supplied with task descriptions and observations through prompts, without additional evaluation-task fine-tuning. The RBM evaluation also includes zero-shot comparisons with GPT-5.6-sol and DeepSeek-V4.1-Flash.</p>
+<p class="">We compare zero-shot and in-context conditions for progress estimation, independent ranking, and RoboFail outcome judgment. We also vary the visible observations in two RoboFail cases to examine sensitivity to input information. Tasks are evaluated separately, and published results are presented as contextual references, distinct from our measurements.</p>
+<details id="metrics" class="research-detail">
+<summary>Full evaluation protocol, metric definitions, and analytical references</summary>
 <div id="evaluation-questions">
 <div class="table-scroll" role="region" aria-label="Overview of evaluation tasks and experimental settings. ↑ / ↓ indicate higher / lower is better." tabindex="0">
 <table class="study-protocol-table">
@@ -178,7 +183,6 @@
 </table>
 </div>
 </div>
-<h3 id="comparison-protocol" data-toc>1.2 Model configurations and evaluation conditions</h3>
 <p class="">
 <strong>Model configurations.</strong> Our primary subject is GPT-6 Astra. Tasks and observations are supplied through prompts, without additional evaluation-task fine-tuning. RBM progress, independent ranking, and direct preference also include zero-shot comparisons with GPT-5.6-sol and DeepSeek-V4.1-Flash. Our RoboFail results cover Astra under zero-shot and external five-example conditions.</p>
 <p class="">
@@ -196,8 +200,6 @@
 <strong>Observation masking.</strong> On two existing RoboFail cases, we separately explore three visibility levels and two prompting conditions, making 12 new requests with one response per condition. We retain the original question and mask later observations. Partial inputs have no corresponding temporal ground truth and receive no accuracy score. This supplement is separate from the original 57-question evaluation and examines response sensitivity to visible information.</p>
 <p class="">
 <strong>Comparison scope.</strong> We distinguish directly evaluated configurations from published results. Literature values from Robometer, RynnValue, AHA, and other methods were not rerun on our samples and inputs; training, prompts, and aggregation may also differ. They provide context rather than a matched-protocol ranking. Chart tags [S], [P], [W], [R], and [A] denote this study, the Robometer paper, its website, RynnValue, and AHA, respectively. Versions and missing results are retained as recorded.</p>
-<details id="metrics" class="research-detail">
-<summary>Metric definitions, aggregation, and analytical references</summary>
 <p class="fine">The progress protocol fixes the initial score at zero. Together with four model predictions, this gives five evaluation positions against the same time reference.</p>
 <p class="">
 <strong>Independent ranking: Kendall τa, higher is better.</strong> Within a source–task group, the reference quality order is success &gt; suboptimal &gt; failure. For pairs included by the scoring protocol, a correct order contributes +1, an inversion −1, and a predicted tie 0. Reference-quality ties must not be given an invented order; their inclusion follows the scorer. A group score can be written as (C − D) / N, where C and D count concordant and discordant pairs and N is the protocol’s pair count. Ties remain in the denominator, so assigning every trajectory the same score cannot yield a high τa. Aggregation must preserve the scorer’s inclusion rules and weights. We retain reported aggregates rather than interpret weighted decompositions as raw independent-pair counts.</p>
