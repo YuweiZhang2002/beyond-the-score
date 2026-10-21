@@ -107,52 +107,80 @@
 <h3 id="benchmark-choice" data-toc>1.1 Evaluation tasks and benchmarks</h3>
 <p class="">We use two complementary evaluation settings: RBM for comparing complete trajectories and estimating progress during execution, and the AHA adaptation of RoboFail for judging and explaining subtask outcomes. We evaluate each task separately rather than combine them into a single critic score.</p>
 <div id="evaluation-questions">
-<div class="table-scroll" role="region" aria-label="Evaluation tasks, inputs and outputs, sample scope, and main metrics." tabindex="0">
-<table>
-<caption>Table 1. Evaluation tasks, inputs and outputs, sample scope, and main metrics.</caption>
+<div class="table-scroll" role="region" aria-label="Overview of evaluation tasks and experimental settings. ↑ / ↓ indicate higher / lower is better." tabindex="0">
+<table class="study-protocol-table">
+<caption>Table 1. Overview of evaluation tasks and experimental settings. ↑ / ↓ indicate higher / lower is better.</caption>
+<colgroup>
+<col class="protocol-task">
+<col class="protocol-interface">
+<col class="protocol-samples">
+<col class="protocol-metrics">
+</colgroup>
 <thead>
 <tr>
 <th scope="col">Evaluation task</th>
-<th scope="col">Model inputs and outputs</th>
-<th scope="col">Evaluation scope</th>
-<th scope="col">Main metrics</th>
+<th scope="col">Inputs and outputs</th>
+<th scope="col">Evaluation samples</th>
+<th scope="col">Metrics</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<th scope="row">RBM · Independent scoring and ranking</th>
-<td>Task description and eight frames per trajectory → an independent score, followed by ranking within each source–task group.</td>
-<td>567 trajectories in 41 source–task groups.</td>
-<td>Kendall τa</td>
+<th scope="row">Trajectory quality ranking<span class="protocol-dataset">RBM-EVAL-OOD</span>
+</th>
+<td>
+<span class="protocol-io">
+<b>Input</b>Task description; eight sampled frames per trajectory</span>
+<span class="protocol-io">
+<b>Output</b>Independent scores, ranked within each source–task group</span>
+</td>
+<td>567 trajectories<br>41 source–task groups</td>
+<td>Kendall τ<sub>a</sub> ↑</td>
 </tr>
 <tr>
-<th scope="row">RBM · Direct preference</th>
-<td>Two trajectories for the same task, with eight frames each, provided together → a choice of the better execution.</td>
-<td>1,192 fixed trajectory pairs.</td>
-<td>Equal-source accuracy across six sources.</td>
+<th scope="row">Direct preference judgment<span class="protocol-dataset">RBM</span>
+</th>
+<td>
+<span class="protocol-io">
+<b>Input</b>Two trajectories for the same task; eight sampled frames each</span>
+<span class="protocol-io">
+<b>Output</b>Choice of the better trajectory</span>
+</td>
+<td>1,192 trajectory pairs</td>
+<td>Accuracy ↑<span class="protocol-note">Six sources, equally weighted</span>
+</td>
 </tr>
 <tr>
-<th scope="row">RBM · Progress estimation</th>
-<td>Task description, observations sampled up to the current time, and previous scores → current progress (0–1) and a brief rationale.</td>
-<td>105 successful trajectories, with four predictions each and a protocol-defined initial score of zero.</td>
-<td>VOC and time-reference MSE.</td>
+<th scope="row">Task progress estimation<span class="protocol-dataset">RBM-EVAL-OOD</span>
+</th>
+<td>
+<span class="protocol-io">
+<b>Input</b>Task description; observations sampled up to the current time; previous scores</span>
+<span class="protocol-io">
+<b>Output</b>Progress score (0–1) and brief rationale</span>
+</td>
+<td>105 successful trajectories<br>Four predictions per trajectory</td>
+<td>VOC ↑<br>Time-reference MSE ↓</td>
 </tr>
 <tr>
-<th scope="row">RoboFail · Outcome judgments and explanations</th>
-<td>Subtask question and original keyframe montage → an outcome judgment and an explanation on failure.</td>
-<td>57 questions from 15 trajectory groups: 23 successes and 34 failures.</td>
-<td>Accuracy, failure recall, false-alarm rate, miss rate, and composite ROUGE-L.</td>
+<th scope="row">Outcome judgment and explanation<span class="protocol-dataset">RoboFail (AHA adaptation)</span>
+</th>
+<td>
+<span class="protocol-io">
+<b>Input</b>Subtask question; keyframe montage</span>
+<span class="protocol-io">
+<b>Output</b>Outcome label and failure explanation</span>
+</td>
+<td>57 questions / 15 trajectory groups<br>23 successes / 34 failures</td>
+<td>Accuracy ↑<br>Failure recall ↑<br>False-alarm / miss rate ↓<br>Composite ROUGE-L ↑</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
-<p class="fine">Progress and independent ranking use six sources from RBM-EVAL-OOD. OOD refers to the dataset split, not independence from general-purpose model pretraining. The exact split composition of the 1,192 preference pairs remains incompletely documented. The 57-question RoboFail set used here differs from the Guardian and PRIMO adaptations.</p>
-<p class="">
-<strong>Interpreting the metrics.</strong> Progress is scored against normalized time rather than human-annotated semantic completion. Preference accuracy weights the six sources equally. Composite ROUGE-L includes both success recognition and textual overlap for failure explanations. Outcome classification reports false alarms and misses alongside overall accuracy.</p>
 <h3 id="comparison-protocol" data-toc>1.2 Model configurations and evaluation conditions</h3>
 <p class="">
-<strong>Model configurations.</strong> Our primary subject is GPT-6 Astra with low reasoning effort. Tasks and observations are supplied through prompts, without additional evaluation-task fine-tuning. RBM progress, independent ranking, and direct preference also include zero-shot comparisons with GPT-5.6-sol (low) and DeepSeek-V4.1-Flash (max). Our RoboFail results cover Astra under zero-shot and external five-example conditions.</p>
+<strong>Model configurations.</strong> Our primary subject is GPT-6 Astra. Tasks and observations are supplied through prompts, without additional evaluation-task fine-tuning. RBM progress, independent ranking, and direct preference also include zero-shot comparisons with GPT-5.6-sol and DeepSeek-V4.1-Flash. Our RoboFail results cover Astra under zero-shot and external five-example conditions.</p>
 <p class="">
 <strong>In-context examples.</strong> Astra receives task-specific context conditions:</p>
 <ul>
@@ -163,7 +191,7 @@
 <li>
 <strong>RoboFail:</strong> five fixed external image–question–answer demonstrations, reported disjoint from test trajectories.</li>
 </ul>
-<p class="method-note">No ICL result is available for direct preference. Context length and compute budgets are not matched. On RoboFail, returned backend identifiers differ despite the same requested model name and low reasoning setting; snapshot consistency is unconfirmed, so the zero-shot versus five-example difference cannot be attributed entirely to examples.</p>
+<p class="method-note">No ICL result is available for direct preference. Context length and compute budgets are not matched. On RoboFail, returned backend identifiers differ despite the same requested model name and reasoning configuration; snapshot consistency is unconfirmed, so the zero-shot versus five-example difference cannot be attributed entirely to examples.</p>
 <p class="">
 <strong>Observation masking.</strong> On two existing RoboFail cases, we separately explore three visibility levels and two prompting conditions, making 12 new requests with one response per condition. We retain the original question and mask later observations. Partial inputs have no corresponding temporal ground truth and receive no accuracy score. This supplement is separate from the original 57-question evaluation and examines response sensitivity to visible information.</p>
 <p class="">
@@ -584,28 +612,28 @@
 </thead>
 <tbody>
 <tr>
-<th scope="row">GPT-6 Astra low (zero-shot)</th>
+<th scope="row">GPT-6 Astra (zero-shot)</th>
 <td>This study</td>
 <td>93.6</td>
 <td>0.8166</td>
 <td>92.4</td>
 </tr>
 <tr>
-<th scope="row">GPT-6 Astra low (ICL)</th>
+<th scope="row">GPT-6 Astra (ICL)</th>
 <td>This study</td>
 <td>94.2</td>
 <td>0.7953</td>
 <td>—</td>
 </tr>
 <tr>
-<th scope="row">GPT-5.6-sol low</th>
+<th scope="row">GPT-5.6-sol</th>
 <td>This study</td>
 <td>93.5</td>
 <td>0.7500</td>
 <td>90.7</td>
 </tr>
 <tr>
-<th scope="row">DpskV4.1-flash max</th>
+<th scope="row">DeepSeek-V4.1-Flash</th>
 <td>This study</td>
 <td>89.7</td>
 <td>0.5300</td>
@@ -775,7 +803,7 @@
 </figure>
 <p class="">An image-free reference always answers “failure.” From the current label counts, it gets 34 / 57 correct, or 59.65%. Zero-shot is 5.26 percentage points higher, recognizing five successes while missing two failures. This label-count deduction shows why accuracy must be read alongside both error types, rather than failure detection alone.</p>
 <p class="">The false-alarm rate on successful subtasks falls from 78.26% to 8.70%, while the miss rate on failures rises from 5.88% to 17.65%. The five-example condition recognizes success more often, but also misses more failures. The practical choice depends on the costs of unnecessary intervention and missed failures, which are not measured here.</p>
-<p class="method-note">Two limitations apply. The five demonstrations are reported as disjoint from test trajectories, which does not establish environment, embodiment, near-duplicate, or pretraining independence. Also, returned model identifiers differ despite the same requested model name and low reasoning setting. Backend snapshot consistency is unconfirmed, so the observed difference does not isolate a causal effect of ICL.</p>
+<p class="method-note">Two limitations apply. The five demonstrations are reported as disjoint from test trajectories, which does not establish environment, embodiment, near-duplicate, or pretraining independence. Also, returned model identifiers differ despite the same requested model name and reasoning configuration. Backend snapshot consistency is unconfirmed, so the observed difference does not isolate a causal effect of ICL.</p>
 <details class="research-detail">
 <summary>Full results and distinct RoboFail adaptations</summary>
 <div class="table-scroll" role="region" aria-label="This study and published AHA records; exact question alignment is unverified." tabindex="0">
@@ -1235,7 +1263,7 @@
 </div>
 <div class="visibility-study">
 <h3 id="robofail-visibility" data-toc>Supplementary experiment: how does visible evidence affect judgments?</h3>
-<p>We made 12 fresh requests on the existing knob-grasping and carrot-slicing illustrations. For each case, retain the first frame, first two frames, or all observed frames, under zero-shot and the same external five-shot condition. Every request uses GPT-6 Astra with low reasoning effort, including a fresh full-visibility control.</p>
+<p>We made 12 fresh requests on the existing knob-grasping and carrot-slicing illustrations. For each case, retain the first frame, first two frames, or all observed frames, under zero-shot and the same external five-shot condition. Every request uses GPT-6 Astra, including a fresh full-visibility control.</p>
 <p class="method-note">Added October 20, 2026, separately from the benchmark above. Withheld-frame variants retain the original retrospective question. There is no time-specific ground truth for partial inputs, so we do not score their accuracy or interpret them as online alarms. With one response per condition, differences cannot be attributed solely to visible-frame count.</p>
 <article class="visibility-case">
 <h4>Grasp the stove knob</h4>

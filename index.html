@@ -107,52 +107,80 @@
 <h3 id="benchmark-choice" data-toc>1.1 评价任务与数据集</h3>
 <p class="">我们使用两个互补的评测设置：RBM 用于考察完整轨迹的质量比较与执行过程中的进度估计；AHA 改编的 RoboFail 用于考察具体子任务的成败判断与解释。各任务分别评估，不合并为单一 critic 总分。</p>
 <div id="evaluation-questions">
-<div class="table-scroll" role="region" aria-label="评价任务、输入输出、样本规模与主要指标。" tabindex="0">
-<table>
-<caption>表 1. 评价任务、输入输出、样本规模与主要指标。</caption>
+<div class="table-scroll" role="region" aria-label="评价任务与实验设置概览。↑／↓ 分别表示指标越高／越低越好。" tabindex="0">
+<table class="study-protocol-table">
+<caption>表 1. 评价任务与实验设置概览。↑／↓ 分别表示指标越高／越低越好。</caption>
+<colgroup>
+<col class="protocol-task">
+<col class="protocol-interface">
+<col class="protocol-samples">
+<col class="protocol-metrics">
+</colgroup>
 <thead>
 <tr>
 <th scope="col">评价任务</th>
-<th scope="col">模型输入与输出</th>
-<th scope="col">评测规模</th>
-<th scope="col">主要指标</th>
+<th scope="col">输入与输出</th>
+<th scope="col">评测样本</th>
+<th scope="col">评价指标</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<th scope="row">RBM · 独立评分与排序</th>
-<td>任务描述与每条轨迹的 8 帧图像 → 独立评分，再在同一来源–任务组内排序。</td>
-<td>567 条轨迹，41 个来源–任务组。</td>
-<td>Kendall τa</td>
+<th scope="row">轨迹质量排序<span class="protocol-dataset">RBM-EVAL-OOD</span>
+</th>
+<td>
+<span class="protocol-io">
+<b>输入</b>任务描述；每条轨迹采样 8 帧</span>
+<span class="protocol-io">
+<b>输出</b>独立评分后，在来源–任务组内排序</span>
+</td>
+<td>567 条轨迹<br>41 个来源–任务组</td>
+<td>Kendall τ<sub>a</sub> ↑</td>
 </tr>
 <tr>
-<th scope="row">RBM · 直接偏好</th>
-<td>同一任务下两条轨迹，各 8 帧，同时输入 → 选择较优执行。</td>
-<td>1,192 组固定轨迹对。</td>
-<td>六来源等权准确率。</td>
+<th scope="row">直接偏好判断<span class="protocol-dataset">RBM</span>
+</th>
+<td>
+<span class="protocol-io">
+<b>输入</b>同一任务的两条轨迹；每条采样 8 帧</span>
+<span class="protocol-io">
+<b>输出</b>选择较优轨迹</span>
+</td>
+<td>1,192 组轨迹对</td>
+<td>准确率 ↑<span class="protocol-note">六来源等权</span>
+</td>
 </tr>
 <tr>
-<th scope="row">RBM · 进度估计</th>
-<td>任务描述、截至当前时刻采样的观测与此前评分 → 当前进度（0–1）及简要理由。</td>
-<td>105 条成功轨迹，每条 4 次预测；协议另设起点 0。</td>
-<td>VOC、时间参考 MSE。</td>
+<th scope="row">任务进度估计<span class="protocol-dataset">RBM-EVAL-OOD</span>
+</th>
+<td>
+<span class="protocol-io">
+<b>输入</b>任务描述；截至当前的采样观测；此前评分</span>
+<span class="protocol-io">
+<b>输出</b>进度评分（0–1）与简要理由</span>
+</td>
+<td>105 条成功轨迹<br>每条轨迹预测 4 次</td>
+<td>VOC ↑<br>时间参考 MSE ↓</td>
 </tr>
 <tr>
-<th scope="row">RoboFail · 成败判断与解释</th>
-<td>子任务问题与原始关键帧拼图 → 成败判断，失败时说明原因。</td>
-<td>15 组轨迹的 57 个问题：23 个成功、34 个失败。</td>
-<td>准确率、失败召回率、误报率、漏检率、综合 ROUGE-L。</td>
+<th scope="row">成败判断与解释<span class="protocol-dataset">RoboFail（AHA 改编）</span>
+</th>
+<td>
+<span class="protocol-io">
+<b>输入</b>子任务问题；关键帧拼图</span>
+<span class="protocol-io">
+<b>输出</b>成败标签与失败解释</span>
+</td>
+<td>57 个问题／15 组轨迹<br>23 个成功／34 个失败</td>
+<td>准确率 ↑<br>失败召回率 ↑<br>误报率／漏检率 ↓<br>综合 ROUGE-L ↑</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
-<p class="fine">进度与独立排序使用 RBM-EVAL-OOD 的六个数据来源；OOD 沿用该数据集的划分含义，不代表通用模型预训练数据独立。1,192 组偏好对的具体划分组成仍未完整记录。本文采用的 RoboFail 57 问题集合与 Guardian、PRIMO 的改编版本不同。</p>
-<p class="">
-<strong>指标的含义。</strong>进度的参照是归一化时间，而非人工标注的语义完成度；偏好准确率按六个来源等权汇总；综合 ROUGE-L 同时包含成功识别与失败解释的文本重合度。成败分类同时报告误报与漏检，避免只用总体准确率概括表现。</p>
 <h3 id="comparison-protocol" data-toc>1.2 模型配置与评测条件</h3>
 <p class="">
-<strong>模型配置。</strong>我们以 GPT-6 Astra（low 推理设置）为主要研究对象，通过提示提供任务与观测，不进行额外的评价任务微调。RBM 的进度、独立排序与直接偏好任务另包含 GPT-5.6-sol（low）和 DeepSeek-V4.1-Flash（max）的零样本比较；RoboFail 的本研究结果包含 Astra 的零样本与外部五示例条件。</p>
+<strong>模型配置。</strong>我们以 GPT-6 Astra 为主要研究对象，通过提示提供任务与观测，不进行额外的评价任务微调。RBM 的进度、独立排序与直接偏好任务另包含 GPT-5.6-sol 和 DeepSeek-V4.1-Flash 的零样本比较；RoboFail 的本研究结果包含 Astra 的零样本与外部五示例条件。</p>
 <p class="">
 <strong>上下文示例。</strong>Astra 的示例条件按评价任务分别设置：</p>
 <ul>
@@ -163,7 +191,7 @@
 <li>
 <strong>RoboFail：</strong>五个固定的外部图像–问题–答案示例，报告为与测试轨迹不重叠。</li>
 </ul>
-<p class="method-note">直接偏好没有 ICL 结果。各条件的上下文长度与计算预算未匹配；RoboFail 虽请求相同模型名与 low 推理设置，返回后端标识仍存在差异，快照一致性尚未确认，因此不能把零样本与五示例的差异全部归因于示例。</p>
+<p class="method-note">直接偏好没有 ICL 结果。各条件的上下文长度与计算预算未匹配；RoboFail 虽请求相同模型名与推理配置，返回后端标识仍存在差异，快照一致性尚未确认，因此不能把零样本与五示例的差异全部归因于示例。</p>
 <p class="">
 <strong>观测遮蔽。</strong>在两个既有 RoboFail 案例上，我们另做三种可见帧条件 × 两种提示条件的探索性实验，共 12 次新请求，每个条件仅一次。保留原问题并遮蔽后续观测；少帧条件没有对应的时间级真值，不计算准确率。这部分独立于原 57 问题评测，用于观察回答对可见信息的敏感性。</p>
 <p class="">
@@ -585,28 +613,28 @@
 </thead>
 <tbody>
 <tr>
-<th scope="row">GPT-6 Astra low (zero-shot)</th>
+<th scope="row">GPT-6 Astra (zero-shot)</th>
 <td>本研究</td>
 <td>93.6</td>
 <td>0.8166</td>
 <td>92.4</td>
 </tr>
 <tr>
-<th scope="row">GPT-6 Astra low (ICL)</th>
+<th scope="row">GPT-6 Astra (ICL)</th>
 <td>本研究</td>
 <td>94.2</td>
 <td>0.7953</td>
 <td>—</td>
 </tr>
 <tr>
-<th scope="row">GPT-5.6-sol low</th>
+<th scope="row">GPT-5.6-sol</th>
 <td>本研究</td>
 <td>93.5</td>
 <td>0.7500</td>
 <td>90.7</td>
 </tr>
 <tr>
-<th scope="row">DpskV4.1-flash max</th>
+<th scope="row">DeepSeek-V4.1-Flash</th>
 <td>本研究</td>
 <td>89.7</td>
 <td>0.5300</td>
@@ -776,7 +804,7 @@
 </figure>
 <p class="">一个不读取图像的参照是所有问题都回答“失败”：根据当前标签数量，它会答对 34 / 57，准确率为 59.65%。零样本比这一参照高 5.26 个百分点，但以漏掉 2 个失败换来了识别 5 个成功。这个由标签分布算出的对照说明，准确率需要与两类错误一起读，不能只看“检测到了多少失败”。</p>
 <p class="">成功样本的误报率从 78.26% 降到 8.70%，失败样本的漏检率则从 5.88% 升到 17.65%。五示例条件更善于认可成功，但更容易漏掉失败。实际应用中如何取舍，需要考虑误报干预和失败漏检的成本；本研究没有测量这些成本。</p>
-<p class="method-note">这一比较仍有两项限制。五个示例报告为与测试轨迹不重叠，但不保证环境、机器人形态、近重复样本或预训练数据独立。另外，两种条件请求相同模型名和 low 推理设置，返回模型标识却存在差异，后端快照一致性尚未确认。因此，观察到的差值不能作为 ICL 的独立因果效应。</p>
+<p class="method-note">这一比较仍有两项限制。五个示例报告为与测试轨迹不重叠，但不保证环境、机器人形态、近重复样本或预训练数据独立。另外，两种条件请求相同模型名和推理配置，返回模型标识却存在差异，后端快照一致性尚未确认。因此，观察到的差值不能作为 ICL 的独立因果效应。</p>
 <details class="research-detail">
 <summary>完整结果与不同 RoboFail 评测版本</summary>
 <div class="table-scroll" role="region" aria-label="本研究与 AHA 文献记录；精确问题集合对齐未验证。" tabindex="0">
@@ -1236,7 +1264,7 @@
 </div>
 <div class="visibility-study">
 <h3 id="robofail-visibility" data-toc>补充实验：可见证据如何影响判断？</h3>
-<p>我们对网页原有的旋钮抓取与胡萝卜切片两例补做了 12 次请求。每例保留前 1 帧、前 2 帧或全部已观测帧，分别使用 zero-shot 与相同的外部 5-shot，均请求 GPT-6 Astra、low 推理。所有结果均为新请求，包含全部帧的对照条件。</p>
+<p>我们对网页原有的旋钮抓取与胡萝卜切片两例补做了 12 次请求。每例保留前 1 帧、前 2 帧或全部已观测帧，分别使用 zero-shot 与相同的外部 5-shot，均请求 GPT-6 Astra。所有结果均为新请求，包含全部帧的对照条件。</p>
 <p class="method-note">本实验于 2026 年 10 月 20 日新增，独立于上文正式测评。遮蔽后仍使用原来的回顾性问题；少帧条件没有对应的时间级真值，因此不计算准确率，也不解释为在线报警。每个条件仅请求一次，不能把变化完全归因于可见帧数量。</p>
 <article class="visibility-case">
 <h4>抓取炉灶旋钮</h4>

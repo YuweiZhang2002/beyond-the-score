@@ -47,3 +47,19 @@ dialog{width:min(1280px,95vw);max-height:92vh;border:0;padding:44px 16px 16px;ba
 /* Source-grounded RoboFail media and visibility experiments. */
 .robo-expanded-case,.visibility-case{border-top:1px solid var(--line,#ddd);padding-top:24px;margin-top:32px}.robo-expanded-case h4,.visibility-case h4{font-size:1.12rem;margin:0 0 18px}.robo-case-columns{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px}.robo-case-columns figure{margin:0 0 18px}.robo-case-columns img,.robo-case-columns video{width:100%;height:auto}.robo-case-columns [data-zoom]{padding:0;border:0;background:transparent;width:100%;cursor:zoom-in}.robo-case-columns blockquote{margin:10px 0 22px;font-size:.86rem}.visibility-matrix{display:grid;grid-template-columns:1.15fr repeat(3,1fr);gap:6px;margin:22px 0}.visibility-matrix>strong{font-size:.75rem;padding:10px 4px}.visibility-label{text-align:center;padding:10px 4px;font-size:.82rem;border:1px solid #d5ddd8}.visibility-label.yes{background:#e4f2ed;color:#185944}.visibility-label.no{background:#f9e8dc;color:#93411b}.experiment-input{max-width:100%;overflow-x:auto;background:white;border:1px solid #ddd;margin:18px 0}.experiment-input a{display:block;width:max-content}.experiment-input img{display:block;width:auto;max-width:none;height:170px}.visibility-response blockquote{font-size:.88rem}.visibility-study{margin-top:42px}.robofail-extra{margin-top:34px}.visibility-study h3,.robofail-extra h3{scroll-margin-top:110px}
 @media(max-width:800px){.robo-case-columns{grid-template-columns:minmax(0,1fr);gap:6px}.visibility-matrix>strong{font-size:.64rem}.visibility-label{font-size:.72rem}.experiment-input img{height:145px}}
+
+/* Academic table layout, scoped to the evaluation overview. */
+#evaluation-questions .study-protocol-table{table-layout:fixed;min-width:680px;border-top:2px solid var(--ink,#202a24);border-bottom:2px solid var(--ink,#202a24);font-size:12px;line-height:1.65}
+#evaluation-questions .protocol-task{width:20%}
+#evaluation-questions .protocol-interface{width:34%}
+#evaluation-questions .protocol-samples{width:23%}
+#evaluation-questions .protocol-metrics{width:23%}
+#evaluation-questions th,#evaluation-questions td{text-align:left;vertical-align:top;min-width:0;padding:15px 12px;border-bottom:0;overflow-wrap:break-word}
+#evaluation-questions thead th{background:transparent;border-bottom:1px solid var(--ink,#202a24);font-weight:600;padding-block:11px}
+#evaluation-questions tbody tr:hover{background:transparent}
+#evaluation-questions tbody th{font-weight:600}
+#evaluation-questions .protocol-dataset,#evaluation-questions .protocol-note{display:block;font-size:10px;line-height:1.5;color:var(--muted);font-weight:400;margin-top:5px}
+#evaluation-questions .protocol-io{display:block}
+#evaluation-questions .protocol-io+.protocol-io{margin-top:8px}
+#evaluation-questions .protocol-io b{display:block;font-size:10px;font-weight:600;color:var(--muted);margin-bottom:2px}
+@media(max-width:800px){#evaluation-questions .study-protocol-table{font-size:11px}#evaluation-questions th,#evaluation-questions td{padding:12px 10px}}

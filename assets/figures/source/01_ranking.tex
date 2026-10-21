@@ -1,0 +1,89 @@
+\documentclass[tikz,border=5pt]{standalone}
+\usepackage{tikz}
+\usepackage{graphicx}
+\pagestyle{empty}
+\begin{document}
+\begin{tikzpicture}[x=1cm,y=1cm,font=\sffamily]
+\definecolor{cardbg}{HTML}{F7F8F3}
+\definecolor{trackbg}{HTML}{E9ECE4}
+\definecolor{mutedbar}{HTML}{C5CABF}
+\definecolor{astrabar}{HTML}{FF572F}
+\definecolor{iclbar}{HTML}{F4A082}
+\definecolor{studybar}{HTML}{79958A}
+\fill[cardbg,rounded corners=7pt] (-.4,1.8) rectangle (18.15,-12.92);
+\node[anchor=west,font=\sffamily\bfseries\Large] at (0,1.22) {RBM | Independent trajectory ranking};
+\node[anchor=west,fill=black!88,text=white,rounded corners=3pt,inner sep=6pt,font=\small] at (0,.52) {Kendall $\tau_a$ $\uparrow$};
+\node[anchor=east,text=black!60,font=\small] at (17.7,.52) {Sorted reported values | protocols differ};
+\node[anchor=west,font=\sffamily\small\bfseries] at (0,-0.25) {GPT-6 Astra (zero-shot) [S]};
+\fill[trackbg,rounded corners=2pt] (7.25,-0.45) rectangle (16.4,-0.05);
+\fill[astrabar,rounded corners=2pt] (7.25,-0.45) rectangle (14.721890,-0.05);
+\node[anchor=east,font=\sffamily\bfseries] at (17.7,-0.25) {0.8166};
+\node[anchor=west,font=\sffamily\small] at (0,-0.91) {GPT-6 Astra (ICL) [S]};
+\fill[trackbg,rounded corners=2pt] (7.25,-1.11) rectangle (16.4,-0.71);
+\fill[iclbar,rounded corners=2pt] (7.25,-1.11) rectangle (14.526995,-0.71);
+\node[anchor=east,font=\sffamily] at (17.7,-0.91) {0.7953};
+\node[anchor=west,font=\sffamily\small] at (0,-1.57) {GPT-5.6-sol [S]};
+\fill[trackbg,rounded corners=2pt] (7.25,-1.77) rectangle (16.4,-1.37);
+\fill[studybar,rounded corners=2pt] (7.25,-1.77) rectangle (14.112500,-1.37);
+\node[anchor=east,font=\sffamily] at (17.7,-1.57) {0.750};
+\node[anchor=west,font=\sffamily\small] at (0,-2.23) {RynnValue-8B [R]};
+\fill[trackbg,rounded corners=2pt] (7.25,-2.43) rectangle (16.4,-2.03);
+\fill[mutedbar,rounded corners=2pt] (7.25,-2.43) rectangle (13.426250,-2.03);
+\node[anchor=east,font=\sffamily] at (17.7,-2.23) {0.675};
+\node[anchor=west,font=\sffamily\small] at (0,-2.89) {RynnValue-4B [R]};
+\fill[trackbg,rounded corners=2pt] (7.25,-3.09) rectangle (16.4,-2.69);
+\fill[mutedbar,rounded corners=2pt] (7.25,-3.09) rectangle (13.380500,-2.69);
+\node[anchor=east,font=\sffamily] at (17.7,-2.89) {0.670};
+\node[anchor=west,font=\sffamily\small] at (0,-3.55) {Robometer / RBM-1M (paper v1) [P]};
+\fill[trackbg,rounded corners=2pt] (7.25,-3.75) rectangle (16.4,-3.35);
+\fill[mutedbar,rounded corners=2pt] (7.25,-3.75) rectangle (13.243250,-3.35);
+\node[anchor=east,font=\sffamily] at (17.7,-3.55) {0.655};
+\node[anchor=west,font=\sffamily\small] at (0,-4.21) {Robometer / RBM-1M (web) [W]};
+\fill[trackbg,rounded corners=2pt] (7.25,-4.41) rectangle (16.4,-4.01);
+\fill[mutedbar,rounded corners=2pt] (7.25,-4.41) rectangle (13.133450,-4.01);
+\node[anchor=east,font=\sffamily] at (17.7,-4.21) {0.643};
+\node[anchor=west,font=\sffamily\small] at (0,-4.87) {Robometer / RoboReward data [P]};
+\fill[trackbg,rounded corners=2pt] (7.25,-5.07) rectangle (16.4,-4.67);
+\fill[mutedbar,rounded corners=2pt] (7.25,-5.07) rectangle (12.300800,-4.67);
+\node[anchor=east,font=\sffamily] at (17.7,-4.87) {0.552};
+\node[anchor=west,font=\sffamily\small] at (0,-5.53) {DeepSeek-V4.1-Flash [S]};
+\fill[trackbg,rounded corners=2pt] (7.25,-5.73) rectangle (16.4,-5.33);
+\fill[studybar,rounded corners=2pt] (7.25,-5.73) rectangle (12.099500,-5.33);
+\node[anchor=east,font=\sffamily] at (17.7,-5.53) {0.530};
+\node[anchor=west,font=\sffamily\small] at (0,-6.19) {RoboReward-4B [P]};
+\fill[trackbg,rounded corners=2pt] (7.25,-6.39) rectangle (16.4,-5.99);
+\fill[mutedbar,rounded corners=2pt] (7.25,-6.39) rectangle (11.843300,-5.99);
+\node[anchor=east,font=\sffamily] at (17.7,-6.19) {0.502};
+\node[anchor=west,font=\sffamily\small] at (0,-6.85) {RoboReward-8B [P]};
+\fill[trackbg,rounded corners=2pt] (7.25,-7.05) rectangle (16.4,-6.65);
+\fill[mutedbar,rounded corners=2pt] (7.25,-7.05) rectangle (11.504750,-6.65);
+\node[anchor=east,font=\sffamily] at (17.7,-6.85) {0.465};
+\node[anchor=west,font=\sffamily\small] at (0,-7.51) {RoboDopamine-8B (web) [W]};
+\fill[trackbg,rounded corners=2pt] (7.25,-7.71) rectangle (16.4,-7.31);
+\fill[mutedbar,rounded corners=2pt] (7.25,-7.71) rectangle (11.394950,-7.31);
+\node[anchor=east,font=\sffamily] at (17.7,-7.51) {0.453};
+\node[anchor=west,font=\sffamily\small] at (0,-8.17) {GVL / GPT-5-mini [P]};
+\fill[trackbg,rounded corners=2pt] (7.25,-8.37) rectangle (16.4,-7.97);
+\fill[mutedbar,rounded corners=2pt] (7.25,-8.37) rectangle (9.070850,-7.97);
+\node[anchor=east,font=\sffamily] at (17.7,-8.17) {0.199};
+\node[anchor=west,font=\sffamily\small] at (0,-8.83) {TOPReward / Qwen3-VL-8B [W]};
+\fill[trackbg,rounded corners=2pt] (7.25,-9.03) rectangle (16.4,-8.63);
+\fill[mutedbar,rounded corners=2pt] (7.25,-9.03) rectangle (8.421200,-8.63);
+\node[anchor=east,font=\sffamily] at (17.7,-8.83) {0.128};
+\node[anchor=west,font=\sffamily\small] at (0,-9.49) {VLAC-2B [P]};
+\fill[trackbg,rounded corners=2pt] (7.25,-9.69) rectangle (16.4,-9.29);
+\fill[mutedbar,rounded corners=2pt] (7.25,-9.69) rectangle (7.954550,-9.29);
+\node[anchor=east,font=\sffamily] at (17.7,-9.49) {0.077};
+\node[anchor=west,font=\sffamily\small] at (0,-10.15) {VLAC-8B [P]};
+\fill[trackbg,rounded corners=2pt] (7.25,-10.35) rectangle (16.4,-9.95);
+\fill[mutedbar,rounded corners=2pt] (7.25,-10.35) rectangle (7.698350,-9.95);
+\node[anchor=east,font=\sffamily] at (17.7,-10.15) {0.049};
+\node[anchor=west,font=\sffamily\small] at (0,-10.81) {ReWiND / RBM-1M [P]};
+\fill[trackbg,rounded corners=2pt] (7.25,-11.01) rectangle (16.4,-10.61);
+\fill[mutedbar,rounded corners=2pt] (7.25,-11.01) rectangle (7.378100,-10.61);
+\node[anchor=east,font=\sffamily] at (17.7,-10.81) {0.014};
+\node[anchor=west,text=black!65,font=\scriptsize] at (0,-11.47) {[S] This study, rev.715; [P] Robometer paper v1; [W] benchmark website, 2026-09-23; [R] RynnValue paper v1.};
+\node[anchor=west,text=black!65,font=\scriptsize] at (0,-11.85) {RBM evaluation records only. RBM-1M / RoboReward in model names denote training data, not the test set.};
+\node[anchor=west,text=black!65,font=\scriptsize] at (0,-12.23) {Test suite: RBM-EVAL-OOD. Sampling, input interfaces and versions differ; no matched-rank or significance claim.};
+\end{tikzpicture}
+\end{document}

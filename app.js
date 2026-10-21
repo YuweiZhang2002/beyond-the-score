@@ -2,6 +2,7 @@
 const $ = (s, root = document) => root.querySelector(s);
 const $$ = (s, root = document) => [...root.querySelectorAll(s)];
 const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const modelLabel = name => name.replace(/\s+(?:low|max)\b/g, '').replace('DpskV4.1-flash', 'DeepSeek-V4.1-Flash');
 let report, cases, failureCases, visibility, selectedCase, selectedObservation = 0;
 
 function pressed(selector, value, key) {
@@ -26,7 +27,7 @@ function renderMetric(key) {
   $('#metric-description').textContent = metric.description;
   $('#metric-callout').textContent = metric.callout;
   $('#metric-note').textContent = metric.note;
-  const names=['GPT-6 Astra · zero-shot','GPT-6 Astra · ICL','GPT-5.6 Sol · low','DeepSeek V4.1 Flash · max'];
+  const names=['GPT-6 Astra · zero-shot','GPT-6 Astra · ICL','GPT-5.6-sol','DeepSeek-V4.1-Flash'];
   $('#metric-bars').innerHTML = report.table2_rbm.rows.slice(0,4).map((row,i) => row[metric.column] === null ? '' : `<div class="bar-row ${i===0?'primary':i===1?'icl':''}"><span class="bar-name">${names[i]}</span><div class="bar-track" aria-hidden="true"><div class="bar-fill" style="width:${row[metric.column]/metric.max*100}%"></div></div><span class="bar-number">${metric.format(row[metric.column])}</span></div>`).join('');
   $('#metric-axis').innerHTML = metric.ticks.map(t=>`<span>${t}</span>`).join('');
 }
@@ -35,8 +36,8 @@ function table(headers,rows) {
   return `<table><thead><tr>${headers.map(h=>`<th scope="col">${escapeHTML(h)}</th>`).join('')}</tr></thead><tbody>${rows.map(row=>`<tr class="${row.study?'study':''}">${row.values.map((cell,i)=>`<${i===0?'th scope="row"':'td'}${i>0?' class="num"':''}>${escapeHTML(cell === null?'—':cell)}</${i===0?'th':'td'}>`).join('')}</tr>`).join('')}</tbody></table>`;
 }
 function renderTables() {
-  $('#rbm-table').innerHTML=table(['Configuration','VOC ×100 ↑','τ-a ↑','Preference % ↑'],report.table2_rbm.rows.map(r=>({study:r[1]==='study',values:[r[0],r[2]?.toFixed(1)??null,r[3]?.toFixed(4)??null,r[4]?.toFixed(1)??null]})));
-  $('#robofail-table').innerHTML=table(['Configuration','Label accuracy % ↑','Composite ROUGE-L ↑'],report.table5_robofail_aha.rows.map(r=>({study:r[1]==='study',values:[r[0],r[2].toFixed(2),r[3].toFixed(3)]})));
+  $('#rbm-table').innerHTML=table(['Configuration','VOC ×100 ↑','τ-a ↑','Preference % ↑'],report.table2_rbm.rows.map(r=>({study:r[1]==='study',values:[modelLabel(r[0]),r[2]?.toFixed(1)??null,r[3]?.toFixed(4)??null,r[4]?.toFixed(1)??null]})));
+  $('#robofail-table').innerHTML=table(['Configuration','Label accuracy % ↑','Composite ROUGE-L ↑'],report.table5_robofail_aha.rows.map(r=>({study:r[1]==='study',values:[modelLabel(r[0]),r[2].toFixed(2),r[3].toFixed(3)]})));
   const adaptations=report.table6_other_adaptations;
   $('#guardian-table').innerHTML=table(['Guardian adaptation','Exec. %','Plan. %'],adaptations.guardian.rows.map(r=>({values:r})));
   $('#primo-table').innerHTML=table(['PRIMO adaptation','Accuracy %'],adaptations.primo.rows.map(r=>({values:r})));
@@ -72,7 +73,7 @@ function selectCase(id) {
   $('#case-title').textContent=c.title;
   $('#case-task').textContent=c.task;
   $('#case-summary').textContent=c.summary;
-  $('#case-provenance').textContent=`${c.relationToReport}. Requested ${c.modelRequested}, reasoning effort low. Five observed-prefix positions; initial zero is defined, not predicted. Lines connect saved estimates for readability, not continuous predictions. Public quality is a trajectory label; no human failure intervals are available.`;
+  $('#case-provenance').textContent=`${c.relationToReport}. Requested ${c.modelRequested}. Five observed-prefix positions; initial zero is defined, not predicted. Lines connect saved estimates for readability, not continuous predictions. Public quality is a trajectory label; no human failure intervals are available.`;
   $('#checkpoints').innerHTML=c.sampleIndices.map((f,i)=>`<button data-observation="${i}" aria-pressed="${i===0}">Frame ${f}</button>`).join('');
   $$('#checkpoints button').forEach(b=>b.addEventListener('click',()=>selectObservation(Number(b.dataset.observation),true)));
   selectObservation(0);
@@ -97,7 +98,7 @@ function selectFailure(id) {
   $('#failure-task').textContent=c.task;$('#failure-id').textContent=`CASE ${c.id}`;
   $('#failure-keyframes').innerHTML=c.keyframes.map(f=>`<button data-seek="${f.matched_source_time_seconds}" aria-label="Seek input frame ${f.index}, ${f.matched_source_time_seconds.toFixed(1)} seconds"><img loading="lazy" src="${f.image}" alt="Input observation ${f.index}"><span>Frame ${f.index} · ${f.matched_source_time_seconds.toFixed(1)}s</span></button>`).join('');
   $$('[data-seek]').forEach(b=>b.addEventListener('click',()=>{video.pause();video.currentTime=Number(b.dataset.seek);}));
-  $('#failure-answers').innerHTML=`<article class="answer-card reference"><div><span class="eyebrow">RELEASED REFERENCE</span><span class="tag">${escapeHTML(c.reference_label)}</span></div><p>${escapeHTML(c.ground_truth)}</p></article>`+c.responses.map(r=>{const failure=r.answer.trim().toLowerCase().startsWith('no');const correct=failure===(c.reference_label==='Failure');return `<article class="answer-card"><div><span class="eyebrow">ASTRA LOW · ${escapeHTML(r.condition)}</span><span class="answer-status ${correct?'match':''}">${correct?'Label matches':failure?'False alarm':'Missed failure'}</span></div><p>“${escapeHTML(r.answer)}”</p></article>`;}).join('')+`<p class="answer-note">${escapeHTML(c.interpretation||'Compare the quoted diagnoses with the released reference and the visible observations.')}</p>`;
+  $('#failure-answers').innerHTML=`<article class="answer-card reference"><div><span class="eyebrow">RELEASED REFERENCE</span><span class="tag">${escapeHTML(c.reference_label)}</span></div><p>${escapeHTML(c.ground_truth)}</p></article>`+c.responses.map(r=>{const failure=r.answer.trim().toLowerCase().startsWith('no');const correct=failure===(c.reference_label==='Failure');return `<article class="answer-card"><div><span class="eyebrow">ASTRA · ${escapeHTML(r.condition)}</span><span class="answer-status ${correct?'match':''}">${correct?'Label matches':failure?'False alarm':'Missed failure'}</span></div><p>“${escapeHTML(r.answer)}”</p></article>`;}).join('')+`<p class="answer-note">${escapeHTML(c.interpretation||'Compare the quoted diagnoses with the released reference and the visible observations.')}</p>`;
   $('#failure-question').textContent=c.question.replace(/^<image>\s*/, '');
   $('#failure-input').src=c.original_input_image;$('#input-link').href=c.original_input_image;
 }
