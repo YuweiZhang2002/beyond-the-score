@@ -40,7 +40,7 @@
 <p>目录</p>
 <nav>
 <a class="" href="#takeaways">Key takeaways</a>
-<a class="" href="#overview">背景：policy 与 critic</a>
+<a class="" href="#overview">Introduction</a>
 <a class="" href="#setup">1. 研究设置</a>
 <a class="subsection" href="#benchmark-choice">1.1 Benchmark 选择</a>
 <a class="subsection" href="#evaluation-questions">1.2 评估问题</a>
@@ -98,11 +98,11 @@
 </ul>
 </section>
 <section id="overview" class="" data-toc>
-<h2>背景：从 action policy 到 critic</h2>
-<p class="">近期多项工作已经测试了 GPT-6 Astra 作为机器人动作策略（action policy）的能力：<a class="inline-link" href="https://arxiv.org/abs/2609.24170" target="_blank" rel="noopener">RoboDojo 评估</a>研究直接生成机器人动作，<a class="inline-link" href="https://research.nvidia.com/labs/srl/projects/astranomy/" target="_blank" rel="noopener">Astranomy</a>考察其作为原生操作策略的表现，<a class="inline-link" href="https://arxiv.org/abs/2609.38537" target="_blank" rel="noopener">跨具身领域评估</a>则同时覆盖直接控制和与已训练策略协作。这些工作主要回答模型能否决定机器人下一步怎么做。</p>
-<p class="">机器人系统也需要评价已经发生的行为。一个 critic 可以检查任务推进了多少、比较两条执行、识别未完成的子任务，或解释哪里出了问题。这些反馈有望用于轨迹筛选、执行监测，以及后续强化学习中的奖励或偏好监督。动作生成能力并不能直接证明这些评审能力；因此，我们单独测试 Astra 作为 robot critic 的表现。</p>
-<p class="">我们研究 GPT-6 Astra 能否根据视觉观测评价机器人的执行。在 RBM 轨迹数据和 AHA 改编的 RoboFail 上，我们测试了四种判断：独立轨迹评分、两条轨迹的直接比较、任务进度估计，以及子任务成败判断与解释。模型通过提示接收任务和观测，没有针对这些评测任务进行专门微调。</p>
-<p class="">Astra 在执行质量比较上取得了较高得分。进一步分析则显示，进度相关性、排序区分度、失败召回率和解释质量并不总是一起改善。本文按评估接口介绍结果，并结合具体案例分析这些差异。实验均为离线评估，尚未检验评审反馈能否改善策略学习或闭环执行。</p>
+<h2>Introduction</h2>
+<p class="">机器人系统需要评价自身的行为：判断任务推进了多少、比较不同执行的质量，以及识别和解释失败。通用多模态模型能够联合处理视觉观测与任务描述，并通过上下文接收评价要求和示例，为这些判断提供了一种无需额外任务微调的途径。我们研究：<strong>通用多模态模型已有的视觉理解与推理能力，能在多大程度上支持对机器人行为的评价？这些能力如何随评价任务、观测信息与上下文示例而变化？</strong>
+</p>
+<p class="">本文以 GPT-6 Astra 为主要研究对象，在 RBM 和 AHA 改编的 RoboFail 上开展实证评估。我们考察轨迹质量评分、直接偏好判断、任务进度估计，以及子任务成败判断与解释，分别衡量模型比较执行、追踪任务推进和识别失败的能力。我们进一步比较零样本与上下文示例条件下的表现，并通过观测遮蔽的探索性案例，考察可见信息变化时模型回答的变化。</p>
+<p class="">结果显示，Astra 在当前评测中的轨迹质量比较上表现较强，但不同评价能力并不随上下文示例同步改善：总体成败准确率的提高伴随着更多失败漏检，综合解释分数的增长则主要来自成功子任务的正确识别。我们结合定量结果与具体执行案例，分析这些表现对应的能力及其局限。本文聚焦离线行为评价；这些反馈能否进一步改善策略学习或闭环执行，仍有待验证。</p>
 </section>
 <section id="setup" class="" data-toc>
 <h2>1. 研究设置</h2>

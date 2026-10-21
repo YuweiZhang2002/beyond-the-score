@@ -40,7 +40,7 @@
 <p>Contents</p>
 <nav>
 <a class="" href="#takeaways">Key takeaways</a>
-<a class="" href="#overview">Background: policy and critic</a>
+<a class="" href="#overview">Introduction</a>
 <a class="" href="#setup">1. Study design</a>
 <a class="subsection" href="#benchmark-choice">1.1 Benchmark choice</a>
 <a class="subsection" href="#evaluation-questions">1.2 Evaluation questions</a>
@@ -98,11 +98,11 @@
 </ul>
 </section>
 <section id="overview" class="" data-toc>
-<h2>Background: from action policy to critic</h2>
-<p class="">Several recent studies test GPT-6 Astra as an action policy. The <a class="inline-link" href="https://arxiv.org/abs/2609.24170" target="_blank" rel="noopener">RoboDojo evaluation</a> examines direct robot action generation, <a class="inline-link" href="https://research.nvidia.com/labs/srl/projects/astranomy/" target="_blank" rel="noopener">Astranomy</a> studies Astra as a native manipulation policy, and a <a class="inline-link" href="https://arxiv.org/abs/2609.38537" target="_blank" rel="noopener">cross-domain embodied evaluation</a> covers direct control and cooperation with trained policies. These studies primarily ask whether the model can decide what the robot should do next.</p>
-<p class="">Robot systems also need to evaluate behavior that has already occurred. A critic can assess progress, compare executions, recognize an unfinished subtask, or explain a problem. Such feedback could support trajectory selection, execution monitoring, and reward or preference supervision for subsequent reinforcement learning. Action generation does not establish these assessment abilities, so we evaluate Astra separately as a robot critic.</p>
-<p class="">We study whether GPT-6 Astra can assess robot execution from visual observations. On RBM trajectory data and the AHA adaptation of RoboFail, we evaluate four interfaces: independent trajectory scoring, direct comparison of two trajectories, progress estimation, and subtask success classification with explanations. Tasks and observations are supplied through prompts, without fine-tuning for these evaluations.</p>
-<p class="">Astra obtains strong execution-quality scores in this evaluation. Further analysis shows that progress correlation, ranking discrimination, failure recall, and explanation quality do not always improve together. We present the results by interface and examine these differences through individual cases. All experiments are offline; we have not tested whether critic feedback improves policy learning or closed-loop execution.</p>
+<h2>Introduction</h2>
+<p class="">Robot systems need to evaluate their own behavior: assess how far a task has progressed, compare the quality of different executions, and identify and explain failures. General-purpose multimodal models can jointly process visual observations and task descriptions, while receiving evaluation criteria and examples through context, offering a way to make these judgments without additional task-specific fine-tuning. We ask: <strong>To what extent can the existing visual understanding and reasoning capabilities of general-purpose multimodal models support the evaluation of robot behavior? How do these capabilities vary across evaluation tasks, available observations, and in-context examples?</strong>
+</p>
+<p class="">We conduct an empirical study with GPT-6 Astra as our primary subject on RBM and the AHA adaptation of RoboFail. We examine trajectory quality scoring, direct preference judgments, task progress estimation, and subtask success and failure judgments with explanations, assessing the model's ability to compare executions, track task progression, and recognize failures. We further compare zero-shot performance with conditions that provide in-context examples, and use exploratory observation-masking cases to examine how responses change with the available visual information.</p>
+<p class="">Our results show that Astra performs strongly in trajectory quality comparison within the current evaluation, but its evaluation capabilities do not improve uniformly with in-context examples: higher overall success/failure classification accuracy is accompanied by more missed failures, while gains in the composite explanation score come primarily from correctly recognizing successful subtasks. We combine quantitative results with concrete execution cases to analyze the capabilities and limitations reflected in these findings. This study focuses on offline behavior evaluation; whether such feedback can improve policy learning or closed-loop execution remains to be tested.</p>
 </section>
 <section id="setup" class="" data-toc>
 <h2>1. Study design</h2>
