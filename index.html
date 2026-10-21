@@ -108,7 +108,7 @@
 <a href="#ref-robometer" aria-label="Robometer">[2]</a>
 </sup> 和 RynnValue-8B 的 0.675<sup class="citation">
 <a href="#ref-rynnvalue" aria-label="RynnValue">[5]</a>
-</sup>；直接偏好准确率为 <strong>92.4%</strong>。这一跨研究数值比较尚未对齐全部样本与输入协议。进度 VOC 为 93.6，低于 Robometer 报告的 94.8；加入示例后，排序 τ<sub>a</sub> 反而降至 0.7953，开瓶案例的进度相关性提高却伴随更差的终点估计。在 RoboFail 上，零样本与五示例条件的准确率分别为 <strong>64.91% 和 85.96%</strong>，失败漏检却由 <strong>2 个增至 6 个</strong>；综合解释得分增量的 <strong>89.3%</strong> 来自正确成功项。因此，当前证据支持将 Astra 用于离线执行质量比较，但<strong>它仍会误判任务是否完成、漏掉真实失败；更高的解释总分也不足以证明失败原因诊断可靠</strong>。本文尚未验证这些评价能否带来策略学习或闭环执行的提升。</p>
+</sup>；直接偏好准确率为 <strong>92.4%</strong>。在 RoboFail 上，零样本与五示例条件的准确率分别为 <strong>64.91% 和 85.96%</strong>，失败漏检却由 <strong>2 个增至 6 个</strong>；综合解释得分增量的 <strong>89.3%</strong> 来自正确成功项。因此，当前证据支持将 Astra 用于离线执行质量比较，但<strong>它仍会误判任务是否完成、漏掉真实失败；更高的解释总分也不足以证明失败原因诊断可靠</strong>。本文尚未验证这些评价能否带来策略学习或闭环执行的提升。</p>
 </section>
 <section id="setup" class="" data-toc>
 <h2>1. 研究设置</h2>
