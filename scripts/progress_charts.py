@@ -44,10 +44,9 @@ def render_progress_video(case, lang):
     caption = escape(title)
     if case['id'] == 'T011':
         caption_attr = ' id="banana-retry-caption"'
-        caption = pick('MIT Franka · 香蕉转移任务 · 公开标签：成功。32 张已保存图像按每秒 4 帧回放，不是原始执行时长；模型每次只依据截至当时的观测。', 'MIT Franka · Banana transfer · Public label: successful. Replay of 32 stored frames at 4 fps, not the original execution timing; each prediction uses only observations available up to that point.')
-    footer = pick('空心起点为协议设定，非模型预测。连线仅辅助阅读，不代表中间帧有额外预测或人工标注。', 'The hollow initial point is protocol-set, not predicted. Lines guide the eye; they do not add predictions or human annotations between samples.')
-    instruction = pick('点选下方采样点可定位视频；橙色竖线随回放移动。', 'Select a sample below to seek the video; the orange cursor follows replay.')
+        caption = pick('MIT Franka · 香蕉转移任务 · 参考标签：成功。', 'MIT Franka · Banana transfer · Reference label: success.')
+    instruction = pick('点选采样点定位画面；空心点为设定起点。', 'Select a sample to seek; the hollow point is the fixed start.')
     initial_status = pick('回放帧 0 · 最近采样位置 0 · 协议起点 0.00', 'Replay frame 0 · Nearest sample 0 · Protocol initial value 0.00')
     return f'''<div class="progress-compare" data-progress-compare data-progress-indices="{','.join(map(str, indices))}" data-progress-values="{','.join(f'{v:.2f}' for v in values)}" data-progress-fps="{case['playbackFps']}" data-progress-frames="{case['storedFrameCount']}">
     <figure class="progress-video"><video controls playsinline muted preload="none" poster="{case['poster']}" src="{case['video']}" aria-label="{escape(title)}" aria-describedby="{slug}-playback-note"></video><figcaption{caption_attr}>{caption}</figcaption></figure>
-    <div class="progress-chart"><p class="progress-chart-title">{chart_title}</p>{''.join(svg)}<div class="progress-samples" role="group" aria-label="{pick('定位到对应采样画面', 'Seek to a sampled observation')}">{''.join(buttons)}</div><p class="progress-playback-status" data-progress-status>{initial_status}</p><p class="progress-chart-note" id="{slug}-playback-note">{instruction} {footer}</p></div></div>'''
+    <div class="progress-chart"><p class="progress-chart-title">{chart_title}</p>{''.join(svg)}<div class="progress-samples" role="group" aria-label="{pick('定位到对应采样画面', 'Seek to a sampled observation')}">{''.join(buttons)}</div><p class="progress-playback-status" data-progress-status>{initial_status}</p><p class="progress-chart-note" id="{slug}-playback-note">{instruction}</p></div></div>'''

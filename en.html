@@ -237,6 +237,10 @@
 <p class="">
 <strong>Case comparisons.</strong> The four positive examples are selected post hoc for illustration, not to estimate overall error rates. Astra and DeepSeek receive identical tasks, trajectories, prompts, and input images without reference quality labels; preference cases retain the actual A/B order. Reasoning settings and compute budgets are unmatched: Astra uses low effort with a 512-token output limit, while DeepSeek uses max effort with a 32768-token limit. No swapped-order repeat or matched per-example Robometer output is available.</p>
 </div>
+<p class="">
+<strong>Replays and curves.</strong> Ranking and preference cases in Section 2.1 replay eight model-input images per trajectory at one image per second, using the last image as the poster. The added positive cases sample positions 0 / 4 / 9 / 13 / 18 / 22 / 27 / 31 from 32 stored frames. Progress cases in Section 2.2 replay 32 stored frames at four frames per second, with scores at positions 0 / 7 / 15 / 23 / 31. The initial zero is protocol-set; the other four points are predictions. These replays do not preserve original timing, and sample indices are not seconds. Lines guide the eye without adding predictions or human annotations between samples.</p>
+<p class="">
+<strong>Progress cases.</strong> Positive cases are selected post hoc from existing scoring records to illustrate how predictions change with observations. Scores are not human-annotated completion percentages; the current public materials contain no matched DeepSeek or Robometer predictions for these trajectories.</p>
 <p class="fine">The progress protocol fixes the initial score at zero. Together with four model predictions, this gives five evaluation positions against the same time reference.</p>
 <p class="">
 <strong>Independent ranking: Kendall τa, higher is better.</strong> Within a source–task group, the reference quality order is success &gt; suboptimal &gt; failure. For pairs included by the scoring protocol, a correct order contributes +1, an inversion −1, and a predicted tie 0. Reference-quality ties must not be given an invented order; their inclusion follows the scorer. A group score can be written as (C − D) / N, where C and D count concordant and discordant pairs and N is the protocol’s pair count. Ties remain in the denominator, so assigning every trajectory the same score cannot yield a high τa. Aggregation must preserve the scorer’s inclusion rules and weights. We retain reported aggregates rather than interpret weighted decompositions as raw independent-pair counts.</p>
@@ -300,7 +304,7 @@
 </sup>, and DeepSeek-V4.1-Flash<sup class="citation">
 <a href="#ref-deepseek" aria-label="DeepSeek-V4.1-Flash">[7]</a>
 </sup> on independent trajectory scoring and direct preference judgments with two trajectories shown together. Aggregate results compare the three models; detailed cases use Astra as a representative to examine how scores and explanations relate to the observed executions.</p>
-<p class="fine">We first present zero-shot results and cases. Published values retain their own evaluation protocols and provide context, rather than a matched-protocol ranking. Context-example comparisons are grouped in Section 2.3.</p>
+<p class="fine">We present zero-shot results here and compare context examples in Section 2.3. Case videos replay model-input frames, not original-speed video.</p>
 <h4 id="ranking-results" data-toc>2.1.1 Trajectory quality ranking</h4>
 <p>We follow the RBM-EVAL-OOD trajectory quality ranking approach<sup class="citation">
 <a href="#ref-robometer" aria-label="Robometer">[2]</a>
@@ -312,12 +316,12 @@
 <a href="#ref-rynnvalue" aria-label="RynnValue">[5]</a>
 </sup> and Robometer (0.655)<sup class="citation">
 <a href="#ref-robometer" aria-label="Robometer">[2]</a>
-</sup>. These results demonstrate <strong>strong offline ranking performance from multimodal models without task-specific fine-tuning</strong>. The chart separates this study from literature records; cross-study values do not constitute a matched-protocol ranking.</p>
+</sup>. These results demonstrate <strong>strong offline ranking performance from multimodal models without task-specific fine-tuning</strong>.</p>
 <figure class="figure">
 <button type="button" data-zoom aria-label="Zero-shot ranking of three general-purpose multimodal models and published specialized-model references">
 <img loading="lazy" src="assets/figures/01_ranking_zero_shot.png" alt="Zero-shot ranking of three general-purpose multimodal models and published specialized-model references" width="1600" height="767">
 </button>
-<figcaption>Figure 1. Zero-shot trajectory quality ranking. Top: three general-purpose multimodal models evaluated in this study. Bottom: published reference values for two specialized models. Higher Kendall τa is better; literature samples and input protocols are not fully aligned with this study.<span class="zoom-label" aria-hidden="true">Enlarge ↗</span>
+<figcaption>Figure 1. Zero-shot trajectory quality ranking. Top: three general-purpose multimodal models evaluated in this study. Bottom: published reference values for two specialized models. Higher Kendall τa is better; literature results retain their own protocols.<span class="zoom-label" aria-hidden="true">Enlarge ↗</span>
 </figcaption>
 </figure>
 <p>The following positive examples and error analyses examine how the models judge execution quality.</p>
@@ -364,8 +368,8 @@
 <strong>B · Close the drawer</strong>Reference label: failure</figcaption>
 </figure>
 </div>
-<p class="case-replay-note" id="ranking-drawer-note">Each replay shows the same eight images actually supplied to both models, sampled at stored positions 0 / 4 / 9 / 13 / 18 / 22 / 27 / 31 from 32 saved frames, at one image per second. The poster is the last input image. This is not continuous video at its original speed; stored positions are not seconds.</p>
-<p>In the input frames, A pushes the drawer front back until its interior is no longer exposed; B ends with the drawer visibly open. Astra’s reasons identify this final-state difference. DeepSeek instead describes A as remaining in its initial open position. This is a result for this pair, not a new Kendall statistic.</p>
+<p class="case-replay-note" id="ranking-drawer-note">Replay of the eight model-input frames.</p>
+<p>In the input frames, A pushes the drawer front back until its interior is no longer exposed; B ends with the drawer visibly open. Astra’s reasons identify this final-state difference. DeepSeek instead describes A as remaining in its initial open position.</p>
 <details class="method-detail">
 <summary>Read both models’ original reasons</summary>
 <dl class="model-quotes">
@@ -432,8 +436,8 @@
 <strong>B · Banana from blue to green plate</strong>Reference label: suboptimal</figcaption>
 </figure>
 </div>
-<p class="case-replay-note" id="ranking-banana-note">Each replay shows the same eight images actually supplied to both models, sampled at stored positions 0 / 4 / 9 / 13 / 18 / 22 / 27 / 31 from 32 saved frames, at one image per second. The poster is the last input image. This is not continuous video at its original speed; stored positions are not seconds.</p>
-<p>A’s final input image shows the banana at the green plate’s rim. B transfers the orange object while the banana stays on the blue plate. Astra distinguishes the target object; DeepSeek’s original reason for B instead describes a banana transfer. Sparse final frames still limit confirmation of A’s release and stable placement, so the supported claims concern label order and object identity; 1.00 is not independent certification of physical success. B retains its reference label of suboptimal despite its 0.00 score.</p>
+<p class="case-replay-note" id="ranking-banana-note">Replay of the eight model-input frames.</p>
+<p>A’s final input image shows the banana at the green plate’s rim. B transfers the orange object while the banana stays on the blue plate. Astra distinguishes the target object; DeepSeek’s original reason for B instead describes a banana transfer. Astra recovers the reference quality order, although the sparse final frames do not fully establish stability after release in A.</p>
 <details class="method-detail">
 <summary>Read both models’ original reasons</summary>
 <dl class="model-quotes">
@@ -457,8 +461,8 @@
 </details>
 </div>
 <!-- /positive-case -->
-<h5 class="case-title">Understanding the errors</h5>
-<p>Ranking loses credit in two ways: different incomplete behaviors can be ordered opposite to the reference, and trajectories with different reference quality can receive the same high score. Astra can identify problems in an execution while still struggling to distinguish the relative quality of different incomplete behaviors.</p>
+<h5 class="case-title">Astra’s ranking errors: inversions and ties</h5>
+<p>The next two cases illustrate two forms of disagreement between Astra’s scores and the reference quality order. In the banana-transfer case, Astra’s reasons identify both executions as incomplete, yet its score for the reference failure exceeds that for the suboptimal trajectory. In the blue-bin case, it gives full scores to both the reference success and the suboptimal trajectory. These yield an inversion and a tie, respectively: in these cases, recognizing an execution outcome does not ensure discrimination between reference quality levels.</p>
 <h5 class="case-title" id="banana-case">Case Study: moving the wrong object and tilting the plate</h5>
 <p>The task is to move the banana from the blue plate to the green plate. One execution moves the carrot, leaving the banana on the blue plate and the green plate empty; Astra scores it 0.00. Another lifts and tilts the blue plate, causing the banana to slip off without reaching the green plate, yet receives 0.15. The reasons identify that neither execution completes the goal. However, the reference labels the first suboptimal and the second failed, so the predicted order is reversed.</p>
 <div class="case-video-grid case-replay-grid" role="group" aria-labelledby="banana-case" aria-describedby="banana-case-note">
@@ -477,7 +481,7 @@
 <strong>Banana slips after the plate is tilted</strong>Reference failure · Astra 0.15</figcaption>
 </figure>
 </div>
-<p class="case-replay-note" id="banana-case-note">Each replay shows the eight input images actually seen by the model, played at one frame per second. This is a sampled-frame replay, not continuous video at its original speed. The poster is the last input image.</p>
+<p class="case-replay-note" id="banana-case-note">Replay of the eight model-input frames.</p>
 <div class="table-scroll" role="region" tabindex="0">
 <table class="case-table">
 <caption>Table 5. Independent scores for executions of the same task</caption>
@@ -534,7 +538,7 @@
 <strong>Opening the blue trash bin</strong>Reference suboptimal · Astra 1.00</figcaption>
 </figure>
 </div>
-<p class="case-replay-note" id="blue-bin-case-note">Each replay shows the eight input images actually seen by the model, played at one frame per second. This is a sampled-frame replay, not continuous video at its original speed. The poster is the last input image.</p>
+<p class="case-replay-note" id="blue-bin-case-note">Replay of the eight model-input frames.</p>
 <details class="method-detail">
 <summary>Read the original model responses</summary>
 <dl class="model-quotes">
@@ -563,7 +567,7 @@
 <p>We first examine two correctly selected pairs, then analyze errors. Astra and DeepSeek receive the same tasks, images, and A/B order; the cases below show their actual choices in pairwise comparisons.</p>
 <div class="positive-case" data-positive-case="preference-button">
 <h5 class="case-title" id="preference-button-case">Case Study: button activation matters more than lingering contact</h5>
-<p>For this SO101 button-press pair, the actual input order is <strong>A: suboptimal; B: successful; reference preference: B</strong>. Astra actually chooses B and DeepSeek actually chooses A. These are the recorded choices from comparing both videos in one request.</p>
+<p>For this SO101 button-press pair, the actual input order is <strong>A: suboptimal; B: successful; reference preference: B</strong>. Astra selects B and DeepSeek selects A.</p>
 <div class="case-video-grid case-replay-grid" role="group" aria-labelledby="preference-button-case" aria-describedby="preference-button-note">
 <figure>
 <video controls playsinline preload="none" poster="assets/case-studies/preference-button-a.jpg" aria-label="A · Press the button · Reference label: suboptimal · Reference and Astra choose B; DeepSeek chooses A" aria-describedby="preference-button-a-caption">
@@ -580,8 +584,8 @@
 <strong>B · Press the button</strong>Reference label: success · Reference and Astra choose B; DeepSeek chooses A</figcaption>
 </figure>
 </div>
-<p class="case-replay-note" id="preference-button-note">Each replay shows the same eight images actually supplied to both models, sampled at stored positions 0 / 4 / 9 / 13 / 18 / 22 / 27 / 31 from 32 saved frames, at one image per second. The poster is the last input image. This is not continuous video at its original speed; stored positions are not seconds.</p>
-<p>B’s input frames show the button lighting up after the gripper presses it, followed by retraction. A stays near the button without equally clear activation evidence. Astra selects B based on that state change. DeepSeek instead emphasizes A’s contact in the final frame and B’s retraction, choosing the opposite execution. Here, evidence of the resulting state supports the correct preference; this does not establish reliability on all button-press tasks.</p>
+<p class="case-replay-note" id="preference-button-note">Replay of the eight model-input frames.</p>
+<p>B’s input frames show the button lighting up after the gripper presses it, followed by retraction. A stays near the button without equally clear activation evidence. Astra selects B based on that state change. DeepSeek instead emphasizes A’s contact in the final frame and B’s retraction, choosing the opposite execution. In this case, button activation distinguishes execution quality more effectively than whether the gripper remains near the button.</p>
 <details class="method-detail">
 <summary>Read both models’ original reasons</summary>
 <dl class="model-quotes">
@@ -616,7 +620,7 @@
 <strong>B · Open the red trash bin</strong>Reference label: success · Reference and Astra choose B; DeepSeek chooses A</figcaption>
 </figure>
 </div>
-<p class="case-replay-note" id="preference-red-bin-note">Each replay shows the same eight images actually supplied to both models, sampled at stored positions 0 / 4 / 9 / 13 / 18 / 22 / 27 / 31 from 32 saved frames, at one image per second. The poster is the last input image. This is not continuous video at its original speed; stored positions are not seconds.</p>
+<p class="case-replay-note" id="preference-red-bin-note">Replay of the eight model-input frames.</p>
 <p>Both inputs show the lid being lifted, but A changes from open in the penultimate sampled image to closed in the final image. B ends with the lid raised and the interior exposed. Astra explicitly notes A’s lid falling closed. DeepSeek instead describes A as remaining open and discounts B because its gripper remains near the opening. This correct judgment coexists with the green-bin error below: similar tasks can still yield judgments of different quality.</p>
 <details class="method-detail">
 <summary>Read both models’ original reasons</summary>
@@ -634,8 +638,8 @@
 </div>
 <!-- /positive-case -->
 <p>When Astra selects an execution with lower reference quality, its explanation helps reveal the basis for that choice.</p>
-<h5 class="case-title">Understanding the errors</h5>
-<p>These cases show a gap between local visual cues and the assessment of overall execution quality. Astra can describe actions and object states, but these observations may not support a reliable preference. Sometimes its reason emphasizes a salient cue and weighs the evidence differently from the reference quality; in other cases, its interpretation of the task state may itself be mistaken.</p>
+<h5 class="case-title">Astra’s preference errors: cue selection and state judgments</h5>
+<p>The following Astra cases show two different disagreements. In cup separation and green-bin opening, its responses mention cues such as release, tipping, or opening width, yet its choices conflict with the reference quality order. In pencil-case unzipping, its description of the zipper’s open or closed state conflicts with the reference outcome. Examining both choices and reasons distinguishes these patterns.</p>
 <h5 class="case-title" id="separate-cups-case">Case Study: release or tipping when separating cups</h5>
 <p>In the task of separating the purple and red cups, Astra describes both executions as creating a large gap. One does not show release in the final frame and is labeled successful. The other clearly releases the purple cup, but the cup tips onto its side, and is labeled failed. Astra chooses the latter and explicitly mentions both release and tipping in its reason.</p>
 <div class="case-video-grid case-replay-grid" role="group" aria-labelledby="separate-cups-case" aria-describedby="separate-cups-case-note">
@@ -654,7 +658,7 @@
 <strong>B · Separate the red and purple cups</strong>Reference failure · Astra chooses B</figcaption>
 </figure>
 </div>
-<p class="case-replay-note" id="separate-cups-case-note">Each replay shows the eight input images actually seen by the model, played at one frame per second. This is a sampled-frame replay, not continuous video at its original speed. The poster is the last input image.</p>
+<p class="case-replay-note" id="separate-cups-case-note">Replay of the eight model-input frames.</p>
 <p>The disagreement concerns how release and tipping are weighed, rather than whether tipping is observed.</p>
 <details class="method-detail">
 <summary>Read the original model responses</summary>
@@ -666,7 +670,7 @@
 </dl>
 </details>
 <h5 class="case-title" id="pencil-case-case">Case Study: choosing the reference failure when unzipping a pencil case</h5>
-<p>The task is to unzip a pencil case. Astra chooses the execution labeled failed: its reason says that the zipper slider moves toward the near end and leaves an opening behind it. For the reference success, it instead describes the slider moving toward the far end while the sides remain joined, as if closing the zipper. This interpretation of opening and closing leads to the opposite preference from the reference; a complete-sounding reason does not by itself make the judgment reliable.</p>
+<p>The task is to unzip a pencil case. Astra chooses the execution labeled failed: its reason says that the zipper slider moves toward the near end and leaves an opening behind it. For the reference success, it instead describes the slider moving toward the far end while the sides remain joined, as if closing the zipper. Astra’s interpretation of opening and closing leads to the opposite preference from the reference.</p>
 <div class="case-video-grid case-replay-grid" role="group" aria-labelledby="pencil-case-case" aria-describedby="pencil-case-case-note">
 <figure>
 <video controls playsinline preload="none" poster="assets/case-studies/unzip-pencil-case-a.jpg" aria-label="A · Unzip the pencil case, reference failure · Astra chooses A, evaluation-input frame replay" aria-describedby="unzip-pencil-case-a-caption">
@@ -683,7 +687,7 @@
 <strong>B · Unzip the pencil case</strong>Reference success · reference prefers B</figcaption>
 </figure>
 </div>
-<p class="case-replay-note" id="pencil-case-case-note">Each replay shows the eight input images actually seen by the model, played at one frame per second. This is a sampled-frame replay, not continuous video at its original speed. The poster is the last input image.</p>
+<p class="case-replay-note" id="pencil-case-case-note">Replay of the eight model-input frames.</p>
 <details class="method-detail">
 <summary>Read the original model responses</summary>
 <dl class="model-quotes">
@@ -711,7 +715,7 @@
 <strong>B · Open the green trash bin</strong>Reference success · reference prefers B</figcaption>
 </figure>
 </div>
-<p class="case-replay-note" id="green-bin-case-note">Each replay shows the eight input images actually seen by the model, played at one frame per second. This is a sampled-frame replay, not continuous video at its original speed. The poster is the last input image.</p>
+<p class="case-replay-note" id="green-bin-case-note">Replay of the eight model-input frames.</p>
 <details class="method-detail">
 <summary>Read the original model responses</summary>
 <dl class="model-quotes">
@@ -727,13 +731,18 @@
 </sup> reports ranking τa of 0.675. The Robometer paper<sup class="citation">
 <a href="#ref-robometer" aria-label="Robometer">[2]</a>
 </sup> reports τa of 0.655, preference accuracy of 82.5%, and progress VOC of 94.8. Astra’s ranking and preference values are numerically higher, while its progress VOC is lower than this Robometer record.</p>
+<p class="">Astra has the highest point estimate on all three metrics among the three zero-shot general-purpose configurations tested here. Relative to GPT-5.6-sol, the gaps are 0.0666 in ranking τa, 1.7 percentage points in preference accuracy, and 0.1 in progress VOC. The clearest numerical separation is in independent ranking.</p>
+<details class="research-detail">
+<summary>Protocols and statistical notes for literature comparisons</summary>
 <p class="">These literature values were not rerun on our samples. RynnValue describes a 976-trajectory OOD suite, whereas this study scores 567 trajectories. External preference evaluation uses 500 different-quality pairs per OOD source; our study uses 1,192 fixed pairs with incompletely documented composition. Sample, input, and aggregation differences prevent a matched-protocol superiority claim.</p>
-<p class="">Astra has the highest point estimate on all three metrics among the three zero-shot general-purpose configurations tested here. Relative to GPT-5.6-sol, the gaps are 0.0666 in ranking τa, 1.7 percentage points in preference accuracy, and 0.1 in progress VOC. The clearest numerical separation is in independent ranking. Repeat-call variance and confidence intervals are unavailable, so these differences are descriptive rather than significance claims.</p>
+<p class="">Repeat-call variance and confidence intervals are unavailable, so these differences are descriptive rather than significance claims.</p>
+</details>
 </section>
 <section id="progress-results" class="result-topic" data-toc>
 <h3 id="context">2.2 Task progress estimation</h3>
 <p>Beyond comparing whole executions, we ask whether Astra can estimate how much of a task is complete from its description and observations available up to the current moment. VOC measures correlation between predicted progress and normalized time; a high correlation does not guarantee an accurate final completion judgment. On 105 successful trajectories, Astra achieves <strong>VOC of 93.6</strong>, indicating that it can track execution progress from successive observations.</p>
 <p>Astra’s progress scores can reflect changes in task state rather than simply increase with time.</p>
+<p class="fine">The following replays show sampled frames, not original-speed video. Each prediction uses only observations available at that point; the hollow initial point is fixed at zero, and lines guide the eye.</p>
 <h4 class="case-title" id="bluecup-case">Case Study: correctly distinguishing completion, slippage, and the wrong object</h4>
 <p>
 <strong>These positive cases show Astra recognizing task-relevant differences in state.</strong> For the same instruction to put the blue cup in the sink, it distinguishes successful placement, a slipping cup, and moving the wrong object, rather than treating all arm motion as progress.</p>
@@ -817,7 +826,7 @@
 </button>
 </div>
 <p class="progress-playback-status" data-progress-status>Replay frame 0 · Nearest sample 0 · Protocol initial value 0.00</p>
-<p class="progress-chart-note" id="cup-success-playback-note">Select a sample below to seek the video; the orange cursor follows replay. The hollow initial point is protocol-set, not predicted. Lines guide the eye; they do not add predictions or human annotations between samples.</p>
+<p class="progress-chart-note" id="cup-success-playback-note">Select a sample to seek; the hollow point is the fixed start.</p>
 </div>
 </div>
 <div class="progress-compare" data-progress-compare data-progress-indices="0,7,15,23,31" data-progress-values="0.00,0.08,0.22,0.55,0.40" data-progress-fps="4" data-progress-frames="32">
@@ -900,7 +909,7 @@
 </button>
 </div>
 <p class="progress-playback-status" data-progress-status>Replay frame 0 · Nearest sample 0 · Protocol initial value 0.00</p>
-<p class="progress-chart-note" id="cup-slip-playback-note">Select a sample below to seek the video; the orange cursor follows replay. The hollow initial point is protocol-set, not predicted. Lines guide the eye; they do not add predictions or human annotations between samples.</p>
+<p class="progress-chart-note" id="cup-slip-playback-note">Select a sample to seek; the hollow point is the fixed start.</p>
 </div>
 </div>
 <div class="progress-compare" data-progress-compare data-progress-indices="0,7,15,23,31" data-progress-values="0.00,0.05,0.05,0.00,0.00" data-progress-fps="4" data-progress-frames="32">
@@ -983,10 +992,9 @@
 </button>
 </div>
 <p class="progress-playback-status" data-progress-status>Replay frame 0 · Nearest sample 0 · Protocol initial value 0.00</p>
-<p class="progress-chart-note" id="wrong-object-playback-note">Select a sample below to seek the video; the orange cursor follows replay. The hollow initial point is protocol-set, not predicted. Lines guide the eye; they do not add predictions or human annotations between samples.</p>
+<p class="progress-chart-note" id="wrong-object-playback-note">Select a sample to seek; the hollow point is the fixed start.</p>
 </div>
 </div>
-<p class="fine">These videos replay sampled frames, not continuous video at its original speed. During evaluation, the model sees only sampled observations available up to each moment.</p>
 <p>In the successful execution, Astra gives 0.60 while the blue cup is still suspended outside the sink, then raises it to 1.00 after placement and release. In the slipping execution, the score is 0.55 near the sink and falls to 0.40 after the cup slips outside. When the wrong object is moved, the blue cup never moves and the final progress returns to 0.00. These rises and falls correspond to progress toward or setbacks from the task goal, rather than time passing alone.</p>
 <details class="method-detail">
 <summary>Read the three original final-step responses</summary>
@@ -1012,7 +1020,7 @@
     <figure class="progress-video">
 <video controls playsinline muted preload="none" poster="assets/rbm/t011-poster.jpg" src="assets/rbm/t011-replay.mp4" aria-label="Successful retry after a setback" aria-describedby="banana-retry-playback-note">
 </video>
-<figcaption id="banana-retry-caption">MIT Franka · Banana transfer · Public label: successful. Replay of 32 stored frames at 4 fps, not the original execution timing; each prediction uses only observations available up to that point.</figcaption>
+<figcaption id="banana-retry-caption">MIT Franka · Banana transfer · Reference label: success.</figcaption>
 </figure>
     <div class="progress-chart">
 <p class="progress-chart-title">Astra predicted progress</p>
@@ -1088,11 +1096,10 @@
 </button>
 </div>
 <p class="progress-playback-status" data-progress-status>Replay frame 0 · Nearest sample 0 · Protocol initial value 0.00</p>
-<p class="progress-chart-note" id="banana-retry-playback-note">Select a sample below to seek the video; the orange cursor follows replay. The hollow initial point is protocol-set, not predicted. Lines guide the eye; they do not add predictions or human annotations between samples.</p>
+<p class="progress-chart-note" id="banana-retry-playback-note">Select a sample to seek; the hollow point is the fixed start.</p>
 </div>
 </div>
-<p class="method-note">
-<strong>Stored sample indices 0 / 7 / 15 / 23 / 31:</strong> 0.00 → 0.15 → 0.00 → 0.15 → 1.00. The initial 0.00 is fixed by the protocol; the remaining four values are model predictions. Sample indices are not timestamps.</p>
+
 <details class="method-detail">
 <summary>Read the four original prediction rationales</summary>
 <dl class="model-quotes">
@@ -1114,7 +1121,7 @@
 </div>
 </dl>
 </details>
-<p class="fine">These positive cases are selected post hoc from saved evaluation records, with no new inference. Progress scores are neither human-annotated completion percentages nor independent-ranking or direct-preference results. No matched DeepSeek or Robometer predictions are available for these trajectories in the public materials, so the cases do not establish wins over those models.</p>
+<p>These cases show Astra’s progress scores responding to target identity, execution setbacks, and state changes after a retry.</p>
 <a class="inline-link" href="evidence.html#trajectories">Explore per-step predictions and original responses ↗</a>
 </section>
 <section id="progress-icl" class="result-topic" data-toc>
@@ -2145,15 +2152,15 @@
 </section>
 <section id="explanations" class="result-topic" data-toc>
 <h3>2.5 Failure explanations and scores</h3>
-<p class="">Composite ROUGE-L rises from 0.185 to 0.499 in the five-example condition. This metric does not measure failure explanations alone. Under the AHA rules<sup class="citation">
+<p class="">Composite ROUGE-L rises from 0.185 to 0.499 with five examples, but about <strong>89.3% of the gain comes from correctly recognizing successful subtasks</strong>. Most of the gain reflects better success recognition, rather than an equivalent improvement in explanations of failure causes.</p>
+<p class="">AHA’s composite scoring rule<sup class="citation">
 <a href="#ref-aha" aria-label="AHA">[8]</a>
-</sup>, a correct success answer receives 1; a correct failure receives stemmed ROUGE-L F1 against the reference explanation; and a label disagreement receives 0. Scores are summed and divided by 57. Evaluation uses the original English answers, not the Chinese paraphrases in this article.</p>
-<div class="formula" role="math" aria-label="Composite score equals correct successes plus summed explanation scores for correctly detected failures, divided by 57">R = (correct successes + summed explanation scores for correct failures) / 57</div>
+</sup> combines correct success judgments with textual overlap for failure explanations, so the two contributions need to be examined separately.</p>
 <figure class="figure">
 <button type="button" data-zoom aria-label="Enlarge: Composite ROUGE-L including AHA and other baselines">
 <img loading="lazy" src="assets/figures/05_robofail_icl.png" alt="Composite ROUGE-L including AHA and other baselines" width="1180" height="875">
 </button>
-<figcaption>Figure 23. Full composite ROUGE-L chart retaining the original literature baselines. The score includes both success recognition and failure explanations; it is not explanation accuracy.<span class="zoom-label" aria-hidden="true">Enlarge ↗</span>
+<figcaption>Figure 23. Composite ROUGE-L comparison; literature results retain their own protocols.<span class="zoom-label" aria-hidden="true">Enlarge ↗</span>
 </figcaption>
 </figure>
 <figure class="study-figure">
@@ -2185,9 +2192,17 @@
 <span>0</span>
 <span>0.55</span>
 </div>
-<figcaption>Figure 24. Components of composite ROUGE-L, both divided by 57. Both bars use a 0–0.55 scale. Components and totals are rounded separately and may differ in the last decimal.</figcaption>
+<figcaption>Figure 24. Components of composite ROUGE-L: correct success judgments account for most of the gain.</figcaption>
 </figure>
+<details class="research-detail">
+<summary>Composite scoring rule and component calculations</summary>
+<p class="">Composite ROUGE-L rises from 0.185 to 0.499 in the five-example condition. This metric does not measure failure explanations alone. Under the AHA rules<sup class="citation">
+<a href="#ref-aha" aria-label="AHA">[8]</a>
+</sup>, a correct success answer receives 1; a correct failure receives stemmed ROUGE-L F1 against the reference explanation; and a label disagreement receives 0. Scores are summed and divided by 57. Evaluation uses the original English answers, not the Chinese paraphrases in this article.</p>
+<div class="formula" role="math" aria-label="Composite score equals correct successes plus summed explanation scores for correctly detected failures, divided by 57">R = (correct successes + summed explanation scores for correct failures) / 57</div>
 <p class="">The correct-success term rises from 0.0877 to 0.3684. Its increase, 16 / 57 ≈ 0.2807, accounts for about 89.3% of the reported total gain of 0.3144. The failure-explanation term rises from 0.0969 to 0.1305, accounting for the remaining 10.7%. A score of 0.499 therefore does not mean that 49.9% of failure explanations are correct. Most of the gain comes from recognizing success.</p>
+<p class="">Both bars in the decomposition chart use the same 0–0.55 scale, with each component divided by 57. Components and totals are rounded separately and may differ in the last decimal.</p>
+</details>
 <p class="">The explanation term also depends on which failures are detected and on lexical overlap with reference text. It does not independently distinguish a correct paraphrase from a similarly worded but incorrect diagnosis. Assessing the stated cause requires additional semantic review and physical evidence.</p>
 <p class="">The earlier <a class="inline-link" href="#robofail-cases">knob and slicing cases</a> show why labels and explanations need separate review. Neither lexical overlap nor aggregate score changes replace checking the evidence cited for an individual judgment.</p>
 </section>
