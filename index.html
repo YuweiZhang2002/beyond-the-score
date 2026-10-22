@@ -565,7 +565,7 @@
 <span class="zoom-label" aria-hidden="true">放大 ↗</span>
 </figcaption>
 </figure>
-<p>下面先看两组选择正确的配对，再分析错误案例。Astra 与 DeepSeek 接收相同的任务、图像和 A/B 顺序；下文展示模型在成对比较中的实际选择。</p>
+<p>下面先看两组与参考一致的配对，再分析与参考不一致的案例。Astra 与 DeepSeek 接收相同的任务、图像和 A/B 顺序；下文展示模型在成对比较中的实际选择。</p>
 <div class="positive-case" data-positive-case="preference-button">
 <h5 class="case-title" id="preference-button-case">Case Study：按键亮起，比末帧停留更有说服力</h5>
 <p>SO101 的按按钮配对中，实际输入 <strong>A 为次优，B 为成功，参考偏好为 B</strong>。Astra 选择 B，DeepSeek 选择 A。</p>
@@ -638,9 +638,9 @@
 </details>
 </div>
 <!-- /positive-case -->
-<p>当 Astra 选中参考质量较差的执行时，它的理由能帮助我们看清这次选择依据了什么。</p>
-<h5 class="case-title">Astra 的偏好错误：线索取舍与状态判断</h5>
-<p>以下 Astra 案例呈现了两种不同的判断分歧：分杯与开绿桶案例中，回答提到了释放、侧倒或开盖幅度等线索，但选择与参考质量顺序不符；拉笔袋案例中，回答对拉链开合状态的描述与参考结果相反。分析同时检查选择和理由，以区分这些表现。</p>
+<p>下面三组选择按参考标签均计为错误，但模型理由与参考标签的分歧不一定都来自视觉误判。</p>
+<h5 class="case-title">Astra 与参考偏好的分歧：可见证据与标注判据</h5>
+<p>分杯与开绿桶案例提示，任务描述、模型可见的采样帧与参考标注采用的质量判据可能并未完全对齐：释放是否必要、侧倒如何影响成功、开盖到何种程度才算完成，都可能影响偏好。拉笔袋案例则涉及对开合状态的不同解释。这里应区分模型误判与标注判据不明确，不能把所有参考不一致都归因于 Astra 的感知能力；仅凭这些案例也不能认定真值标错或 A/B 映射出错。</p>
 <h5 class="case-title" id="separate-cups-case">Case Study：分杯时，更看重释放还是侧倒</h5>
 <p>例如，在“分开紫杯与红杯”的任务中，Astra 认为两次执行都已把两杯拉开距离。一条在末帧仍未显示释放，参考标为成功；另一条明确释放紫杯、但杯子侧倒，参考标为失败。Astra 选择了后者，并在理由中同时写出了“已释放”和“侧倒”。</p>
 <div class="case-video-grid case-replay-grid" role="group" aria-labelledby="separate-cups-case" aria-describedby="separate-cups-case-note">
@@ -660,7 +660,7 @@
 </figure>
 </div>
 <p class="case-replay-note" id="separate-cups-case-note">模型输入的 8 帧回放。</p>
-<p>这里与参考不一致的，是对“释放”和“侧倒”的取舍，而非是否观察到侧倒。</p>
+<p>Astra 明确提到了侧倒，因此这个案例不能简单解释为“没有看到失败”。如果完成判据要求杯子保持直立，释放并不能弥补侧倒；但若任务只要求两杯分开，模型的选择又有可解释的依据。需要原始标注准则才能判断这一分歧属于质量判断错误，还是任务描述与标注判据未充分对齐。</p>
 <details class="method-detail">
 <summary>查看模型原文</summary>
 <dl class="model-quotes">
@@ -671,7 +671,7 @@
 </dl>
 </details>
 <h5 class="case-title" id="pencil-case-case">Case Study：拉开笔袋，却选中了参考失败的执行</h5>
-<p>任务要求拉开笔袋拉链。Astra 选择了参考标为失败的一次：它的理由是拉链滑块向近端移动，后方留下开口；对参考成功的一次，它却认为滑块向远端移动后两侧仍合拢，像是在拉上拉链。Astra 对拉链开合状态的解释导向了与参考相反的偏好。</p>
+<p>任务要求拉开笔袋拉链。Astra 选择了参考标为失败的一次：它的理由是拉链滑块向近端移动，后方留下开口；对参考成功的一次，它却认为滑块向远端移动后两侧仍合拢，像是在拉上拉链。这表明 Astra 对开合状态的解释与参考标签不一致；要判定是模型看反、采样画面不足，还是标注或轨迹对应问题，需要结合完整视频与原始标注复核。</p>
 <div class="case-video-grid case-replay-grid" role="group" aria-labelledby="pencil-case-case" aria-describedby="pencil-case-case-note">
 <figure>
 <video controls playsinline preload="none" poster="assets/case-studies/unzip-pencil-case-a.jpg" aria-label="A · 拉开笔袋拉链，参考失败 · Astra 选择 A，评测输入帧回放" aria-describedby="unzip-pencil-case-a-caption">
@@ -698,8 +698,8 @@
 </div>
 </dl>
 </details>
-<h5 class="case-title" id="green-bin-case">Case Study：开口更大，未必对应更高质量</h5>
-<p>在打开绿色垃圾桶的比较中，Astra 认为两次执行都找对了桶并抬起桶盖，但其中一次抬得更高、内部露出更多，因此选择了它。参考却把这次标为次优，把另一次标为成功。模型在这里把它观察到的开盖幅度作为择优依据，但这一依据没有恢复参考的成功与次优划分。</p>
+<h5 class="case-title" id="green-bin-case">Case Study：开口更大，为什么参考质量反而更低</h5>
+<p>在打开绿色垃圾桶的比较中，Astra 认为两次执行都找对了桶并抬起桶盖，但其中一次抬得更高、内部露出更多，因此选择了它。参考却把这次标为次优，把另一次标为成功。展示的末帧中，A 的开口确实更大，而参考标签为 A 次优、B 成功。仅凭当前任务描述与采样帧，无法清楚解释这一质量划分；这更直接暴露了可见证据与标注判据可能不一致的问题，不能仅据参考偏好相反就断言 Astra 看错了开盖状态。</p>
 <div class="case-video-grid case-replay-grid" role="group" aria-labelledby="green-bin-case" aria-describedby="green-bin-case-note">
 <figure>
 <video controls playsinline preload="none" poster="assets/case-studies/green-bin-a.jpg" aria-label="A · 打开绿色垃圾桶，参考次优 · Astra 选择 A，评测输入帧回放" aria-describedby="green-bin-a-caption">
@@ -729,13 +729,13 @@
 <h4 id="literature" data-toc>2.1.3 与已有工作的比较</h4>
 <p class="">RynnValue-8B<sup class="citation">
 <a href="#ref-rynnvalue" aria-label="RynnValue">[5]</a>
-</sup> 报告排序 τa 为 0.675；Robometer 论文版<sup class="citation">
+</sup> 报告排序 τa 为 0.675；Robometer<sup class="citation">
 <a href="#ref-robometer" aria-label="Robometer">[2]</a>
-</sup>报告 τa 为 0.655、偏好准确率为 82.5%、进度 VOC 为 94.8。Astra 的排序与偏好数值较高，但进度 VOC 低于这一 Robometer 记录。</p>
+</sup> 报告 τa 为 0.655、偏好准确率为 82.5%、进度 VOC 为 94.8。Astra 的排序与偏好数值较高，但进度 VOC 低于这一 Robometer 记录。</p>
 <p class="">在本研究的三个零样本通用模型配置中，Astra 的三项指标点估计均最高。相对 GPT-5.6-sol，排序 τa 高 0.0666，偏好准确率高 1.7 个百分点，进度 VOC 高 0.1。数值差距最明显的是独立质量排序。</p>
 <details class="research-detail">
 <summary>文献比较的协议与统计说明</summary>
-<p class="">这些文献值没有在本研究的样本上复测。RynnValue 描述了 976 条 OOD 轨迹，而这里评分的是 567 条；外部偏好评测在每个 OOD 来源使用 500 组不同质量轨迹对，本研究则使用组成未完全记录的 1,192 组固定对。样本、输入与聚合方式未对齐，不能据此得出统一协议下的领先结论。</p>
+<p class="">这些文献值没有在本研究的样本上复测。本研究的独立排序运行包含 567 条轨迹、41 个来源–任务组，双方的逐条样本尚未完成对齐；外部偏好评测在每个 OOD 来源使用 500 组不同质量轨迹对，本研究则使用组成未完全记录的 1,192 组固定对。样本、输入与聚合方式未对齐，不能据此得出统一协议下的领先结论。</p>
 <p class="">当前没有重复调用方差或置信区间，因此上述差异为描述性比较，不作统计显著性解释。</p>
 </details>
 </section>
