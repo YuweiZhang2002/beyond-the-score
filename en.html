@@ -82,13 +82,13 @@
 <h2>Key takeaways</h2>
 <ul>
 <li>
-<strong>General-purpose multimodal models achieve competitive zero-shot results in trajectory quality ranking.</strong> gpt-6-astra reaches Kendall τ<sub>a</sub> of 0.8166 for trajectory ranking and 92.4% accuracy for direct preference judgments, the highest scores among the three general-purpose models evaluated.</li>
+<strong>Without additional evaluation-task fine-tuning, gpt-6-astra is competitive with specialized reward models at comparing trajectory quality.</strong> Its zero-shot ranking Kendall τ<sub>a</sub> is <strong>0.8166</strong>, above the reported values of <strong>0.655 for Robometer and 0.675 for RynnValue-8B</strong>; direct preference accuracy reaches <strong>92.4%</strong>.</li>
 <li>
-<strong>Progress scores can reflect task advancement, mistakes, and recovery.</strong> gpt-6-astra achieves a zero-shot progress VOC of 93.6, and its scores can respond to task-relevant state changes.</li>
+<strong>In-context examples improve gpt-6-astra’s outcome judgments, but not every evaluation task benefits.</strong> Adding five examples raises RoboFail outcome accuracy from <strong>64.91% to 85.96%</strong>; adding three reference trajectories for ranking lowers τ<sub>a</sub> from <strong>0.8166 to 0.7953</strong>.</li>
 <li>
-<strong>The model can detect failures in robot execution and generate explanations.</strong> On RoboFail, outcome accuracy reaches a maximum of 85.96%, with failure recall of 82.35% in the same setting.</li>
+<strong>gpt-6-astra’s progress scores can reflect task advancement and execution errors, but its judgments of task success still contain mistakes.</strong> Zero-shot progress estimation reaches a VOC of <strong>93.6</strong>. In the cases examined, scores fall after an object slips and rise after a successful retry, yet the model can also judge a successful endpoint as incomplete.</li>
 <li>
-<strong>Error analysis identifies three types of judgment error.</strong> These are misreading key states, inaccurately identifying failure causes, and assigning the same score to executions of different quality.</li>
+<strong>gpt-6-astra’s judgments of key states and failure causes remain imperfect.</strong> It can misread object states that determine success, miss the specific reason for failure, or assign equal scores to executions of different quality. These errors affect completion judgments, corrective feedback, and trajectory selection, respectively.</li>
 </ul>
 </section>
 <section id="overview" class="" data-toc>

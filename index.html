@@ -82,13 +82,13 @@
 <h2>Key takeaways · 主要发现</h2>
 <ul>
 <li>
-<strong>通用多模态模型具备有竞争力的零样本轨迹质量排序能力。</strong>gpt-6-astra 的轨迹排序 Kendall τ<sub>a</sub> 达到 0.8166，直接偏好准确率达到 92.4%，在所评估的三种通用模型中均最高。</li>
+<strong>gpt-6-astra 无需针对评价任务额外微调，轨迹质量比较已可与专用奖励模型竞争。</strong>零样本排序 Kendall τ<sub>a</sub> 为 <strong>0.8166</strong>，高于 Robometer 和 RynnValue-8B 的已报告值 <strong>0.655、0.675</strong>；直接偏好准确率达到 <strong>92.4%</strong>。</li>
 <li>
-<strong>任务进度评分能够反映执行中的推进、失误与恢复。</strong>gpt-6-astra 的零样本进度估计 VOC 达到 93.6，评分能够响应任务相关的状态变化。</li>
+<strong>gpt-6-astra 能通过上下文示例改善成败判断，但并非所有评价任务都受益。</strong>加入五个示例后，RoboFail 成败准确率从 <strong>64.91% 提高至 85.96%</strong>；轨迹排序加入三条参考轨迹后，τ<sub>a</sub> 则从 <strong>0.8166 降至 0.7953</strong>。</li>
 <li>
-<strong>模型能够检测机器人执行失败并生成原因解释。</strong>在 RoboFail 上，成败判断准确率最高达到 85.96%，对应的失败召回率为 82.35%。</li>
+<strong>gpt-6-astra 的进度评分能够反映任务推进与执行失误，但对任务是否成功的判断仍存在误差。</strong>零样本进度估计 VOC 达到 <strong>93.6</strong>；案例中，评分会随物体滑落而下降、随重试成功而回升，但也出现了将成功终点判为未完成的情况。</li>
 <li>
-<strong>错误分析揭示了三类典型判断问题。</strong>包括关键状态识别错误、失败原因定位不准确，以及对不同质量的执行给出相同评分。</li>
+<strong>gpt-6-astra 对关键状态和失败原因的判断仍不完美。</strong>模型仍会看错决定成败的物体状态、未能准确指出失败原因，或给不同质量的执行相同分数。这些错误分别影响完成判断、行为纠正和轨迹筛选。</li>
 </ul>
 </section>
 <section id="overview" class="" data-toc>
