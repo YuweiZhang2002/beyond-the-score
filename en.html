@@ -535,7 +535,7 @@
 </div>
 <!-- /positive-case -->
 
-<h5 class="case-title">Astra–reference preference disagreements: multidimensional evaluation and criterion alignment</h5>
+<h4 id="preference-criteria" data-toc>2.1.3 Astra–reference preference disagreements: multidimensional criteria and alignment</h4>
 <p>The cup-separation and green-bin disagreements concern release, upright orientation, and stability—requirements whose priority the task descriptions do not specify.</p>
 <p>These requirements can form separate rubric items, such as “separated,” “released,” and “upright,” before an overall judgment is made. Flora-Rewarder offers stepwise rubric scoring<sup class="citation">
 <a href="#ref-flora" aria-label="NVIDIA Flora-Rewarder">[14]</a>
@@ -630,8 +630,10 @@
 <p class="">Ranking and different-quality preference evaluation reuse Robometer’s official sampling and metric rules with seed=44. Of 571 cached trajectories, four belong to tasks with only successful examples and are excluded by the official rule, leaving 567. Preference sampling uses up to 500 pairs per source, yielding 1,192 pairs. Both metrics use equal weighting across the six sources.</p>
 <p class="">This study uses seed=44; the current official default is 42. Both sample eight frames uniformly. Astra produces prompted scores or A/B choices, while Robometer uses trained progress/preference heads. We cite Robometer v1’s τa=0.655; the corresponding v2 value is approximately 0.643.</p>
 </details>
+<h4 id="quality-results-summary" data-toc>2.1.4 Summary</h4>
 <div class="section-summary" id="literature">
-<p>Summary. <strong>Astra’s ranking and preference results are competitive with specialized reward models, but reference disagreements do not all indicate an inability to compare execution quality.</strong>
+<p>
+<strong>Astra’s ranking and preference results are competitive with specialized reward models, but reference disagreements do not all indicate an inability to compare execution quality.</strong>
 </p>
 <p>Inversions and ties account for some lost points; the cup and green-bin cases involve different quality requirements. Explicit release, uprightness, and stability criteria would help distinguish state-recognition errors from disagreements over standards.</p>
 </div>
@@ -1291,8 +1293,10 @@
 </sup> give VOC of 94.8 / 94.0 and τa of 0.655 / 0.643, respectively. RBM-1M and RoboReward data identify training data; blank entries indicate unreported values.</p>
 </details>
 </div>
+<h4 id="progress-results-summary" data-toc>2.2.3 Summary</h4>
 <div class="section-summary">
-<p>Summary. <strong>Astra can track task-relevant progress and setbacks, but higher temporal correlation does not guarantee more accurate completion judgments.</strong>
+<p>
+<strong>Astra can track task-relevant progress and setbacks, but higher temporal correlation does not guarantee more accurate completion judgments.</strong>
 </p>
 <p>VOC measures correlation with normalized time. The bottle case combines higher VOC with a worse endpoint estimate, motivating separate checks of completion states and score error.</p>
 </div>
@@ -1938,8 +1942,10 @@
 <a href="data/robofail-visibility.json" download>Complete observation-comparison records ↓</a>
 </p>
 </div>
+<h4 id="failure-summary" data-toc>2.3.4 Summary</h4>
 <div class="section-summary">
-<p>Summary. <strong>The five-example condition recognizes successful subtasks more accurately, but improved success recognition does not eliminate missed failures.</strong>
+<p>
+<strong>The five-example condition recognizes successful subtasks more accurately, but improved success recognition does not eliminate missed failures.</strong>
 </p>
 <p>Disagreements persist at full visibility in the knob and slicing cases, while the bowl question leaves the target object unspecified. Outcome recognition depends on both visual evidence and explicit task requirements.</p>
 </div>
@@ -1997,9 +2003,9 @@
 <div class="formula" role="math" aria-label="Composite score equals correct successes plus summed explanation scores for correctly detected failures, divided by 57">R = (correct successes + summed explanation scores for correct failures) / 57</div>
 <p class="">The correct-success term rises from 0.0877 to 0.3684. Its increase, 16 / 57 ≈ 0.2807, accounts for about 89.3% of the reported total gain of 0.3144. The failure-explanation term rises from 0.0969 to 0.1305, accounting for the remaining 10.7%. A score of 0.499 therefore does not mean that 49.9% of failure explanations are correct. Most of the gain comes from recognizing success.</p>
 </details>
-<h4 id="explanation-cases" data-toc>2.4.2 Failure-cause identification</h4>
+<h4 id="explanation-cases" data-toc>2.4.2 Failure-explanation quality</h4>
 <p class="">
-<strong>In the knife case, the five-example response identifies the specific wrong-object error.</strong> Zero-shot detects failure but does not identify the spoon.</p>
+<strong>The failure-explanation term rises from 0.0969 to 0.1305 (+0.0336) with five examples.</strong> This term sums explanation ROUGE-L for correctly detected failures and divides by all 57 questions. Meanwhile, correct detections among the 34 failure questions fall from 32 to 28: the higher explanation term does not come from detecting more failures.</p>
 <div class="robofail-extra">
 <article class="robo-expanded-case" id="robo-case-33">
 <h5 class="case-title">Case Study: Picking up a knife: identifying the wrong object</h5>
@@ -2039,8 +2045,10 @@
 </article>
 </div>
 <p class="">In the <a href="#robo-case-55">knob case</a>, zero-shot also detects failure, but emphasizes grasp location while the reference identifies an unclosed gripper.</p>
+<h4 id="explanations-summary" data-toc>2.4.3 Summary</h4>
 <div class="section-summary">
-<p>Summary. <strong>Both success-recognition and failure-explanation terms improve with five examples, with most of the gain in success recognition.</strong>
+<p>
+<strong>Both success-recognition and failure-explanation terms improve with five examples, with most of the gain in success recognition.</strong>
 </p>
 <p>Both knife-case responses detect failure, but only the five-example answer identifies the wrong object. Outcome labels and specific causes should be evaluated separately.</p>
 </div>

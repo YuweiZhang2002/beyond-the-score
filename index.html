@@ -535,7 +535,7 @@
 </div>
 <!-- /positive-case -->
 
-<h5 class="case-title">Astra 与参考偏好的分歧：多维评价与判据对齐</h5>
+<h4 id="preference-criteria" data-toc>2.1.3 Astra 与参考偏好的分歧：多维评价与判据对齐</h4>
 <p>分杯与开绿桶的分歧涉及释放、直立和稳定保持等要求，而任务描述没有规定这些要求的优先级。</p>
 <p>这些要求可以分别列为 rubric，例如分杯中的“已分离”“已释放”“保持直立”，再按任务要求形成总体评价。Flora-Rewarder 提供了按 rubric 步骤评分的接口<sup class="citation">
 <a href="#ref-flora" aria-label="NVIDIA Flora-Rewarder">[14]</a>
@@ -630,8 +630,10 @@
 <p class="">排序与“不同质量”偏好评测复用 Robometer 官方采样和指标规则，使用 seed=44。571 条缓存轨迹中，4 条属于仅含成功样本的任务，按官方规则排除后得到 567 条；偏好配对按每来源最多 500 对采样，共 1,192 对。两项指标均按六来源等权汇总。</p>
 <p class="">本研究 seed=44，当前官方默认值为 42。双方均匀取 8 帧；Astra 通过提示输出评分或 A/B，Robometer 使用训练后的 progress/preference head。正文引用 Robometer v1 的 τa=0.655；v2 对应值约为 0.643。</p>
 </details>
+<h4 id="quality-results-summary" data-toc>2.1.4 小结</h4>
 <div class="section-summary" id="literature">
-<p>小结。<strong>Astra 的排序与偏好结果可与专用奖励模型竞争，但参考分歧不都等于质量比较能力不足。</strong>
+<p>
+<strong>Astra 的排序与偏好结果可与专用奖励模型竞争，但参考分歧不都等于质量比较能力不足。</strong>
 </p>
 <p>逆序和平分造成了部分失分；分杯和绿桶则涉及不同的质量要求。明确释放、直立和稳定性等判据，有助于区分状态识别错误与评价标准分歧。</p>
 </div>
@@ -1291,8 +1293,10 @@
 </sup>分别给出 VOC 94.8 / 94.0、τa 0.655 / 0.643。RBM-1M 和 RoboReward data 指训练数据，空项表示未报告的数值。</p>
 </details>
 </div>
+<h4 id="progress-results-summary" data-toc>2.2.3 小结</h4>
 <div class="section-summary">
-<p>小结。<strong>Astra 能追踪与任务相关的推进和受挫，但更高的时间相关性不保证更准确的完成判断。</strong>
+<p>
+<strong>Astra 能追踪与任务相关的推进和受挫，但更高的时间相关性不保证更准确的完成判断。</strong>
 </p>
 <p>VOC 衡量预测与归一化时间的相关性。开瓶案例中，较高的 VOC 与较差的终点估计同时出现，说明还需检查完成状态和评分误差。</p>
 </div>
@@ -1939,8 +1943,10 @@
 <a href="data/robofail-visibility.json" download>完整观测对照记录 ↓</a>
 </p>
 </div>
+<h4 id="failure-summary" data-toc>2.3.4 小结</h4>
 <div class="section-summary">
-<p>小结。<strong>五示例条件更善于识别成功子任务，但成功识别的改善没有同时消除失败漏检。</strong>
+<p>
+<strong>五示例条件更善于识别成功子任务，但成功识别的改善没有同时消除失败漏检。</strong>
 </p>
 <p>旋钮与切片两例在补齐观测后仍有判断分歧；放碗问题又没有明确操作对象。成败识别既依赖画面，也依赖任务要求是否写清。</p>
 </div>
@@ -1998,9 +2004,9 @@
 <div class="formula" role="math" aria-label="综合得分等于正确成功数加上正确失败的解释分数总和，再除以57">R = (正确成功数 + 正确失败的解释分数之和) / 57</div>
 <p class="">正确成功项从 0.0877 增至 0.3684，增量约为 16 / 57 = 0.2807，占报告总增量 0.3144 的约 89.3%。失败解释项从 0.0969 增至 0.1305，占剩余约 10.7%。因此，0.499 不能读作“49.9% 的失败解释正确”；大部分增量来自识别成功，而非失败解释项。</p>
 </details>
-<h4 id="explanation-cases" data-toc>2.4.2 失败原因识别</h4>
+<h4 id="explanation-cases" data-toc>2.4.2 失败解释质量</h4>
 <p class="">
-<strong>五示例回答在拿刀案例中识别出了具体的对象错误。</strong>零样本虽然判对失败，却没有指出拿到的是勺子。</p>
+<strong>五示例条件的失败解释项由 0.0969 增至 0.1305（+0.0336）。</strong>该分项将正确检出失败的解释 ROUGE-L 求和后除以全部 57 个问题。与此同时，34 个失败问题中的正确检出数从 32 个降至 28 个：解释项得分提高，并非因为识别出了更多失败。</p>
 <div class="robofail-extra">
 <article class="robo-expanded-case" id="robo-case-33">
 <h5 class="case-title">Case Study：拿刀时的对象错误</h5>
@@ -2041,8 +2047,10 @@
 </div>
 <p class="">
 <a href="#robo-case-55">旋钮案例</a>中，零样本同样判对失败，但强调抓取位置，参考答案则强调夹爪未闭合。</p>
+<h4 id="explanations-summary" data-toc>2.4.3 小结</h4>
 <div class="section-summary">
-<p>小结。<strong>五示例条件的成功识别项与失败解释项均提高，前者贡献了主要增量。</strong>
+<p>
+<strong>五示例条件的成功识别项与失败解释项均提高，前者贡献了主要增量。</strong>
 </p>
 <p>拿刀案例的两种回答都判对失败，但只有五示例回答指出操作对象错误。成败标签和具体原因应分开评价。</p>
 </div>

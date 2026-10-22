@@ -192,6 +192,9 @@ for name,text in pages.items():
     assert text.count('class="section-summary"') == 4
     for ident in ['quality-results', 'progress-results', 'failure', 'explanations']:
         topic = re.search(r'<section id="' + ident + r'".*?</section>', text, re.S).group()
+        numbers = re.findall(r'<h4\b[^>]*>(2\.\d+)\.(\d+) ', topic)
+        assert [int(n) for _, n in numbers] == list(range(1, len(numbers) + 1)), (name, ident, numbers)
+        assert f'id="{ident}-summary" data-toc' in topic, (name, ident)
         summary = re.search(r'<div class="section-summary"[^>]*>(.*?)</div>\s*</section>$', topic, re.S)
         assert summary and summary.group(1).count('<p>') == 2, (name, ident)
         assert re.search(r'<p>.*?<strong>.+?</strong>\s*</p>', summary.group(1), re.S), (name, ident)

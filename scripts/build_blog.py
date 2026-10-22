@@ -56,7 +56,9 @@ def result_section(id, zh, en, body, heading_id=''):
     body = re.sub(r'<(/?)h3\b', r'<\1h4', body)
     alias = f' id="{heading_id}"' if heading_id else ''
     summary_alias = ' id="literature"' if id == 'quality-results' else ''
-    summary = (f'<div class="section-summary"{summary_alias}><p>{CONFIRMED["summary_" + id][LANG]}</p>'
+    summary_number = {'quality-results': '2.1.4', 'progress-results': '2.2.3', 'failure': '2.3.4', 'explanations': '2.4.3'}[id]
+    summary = (f'<h4 id="{id}-summary" data-toc>{summary_number} {t("小结", "Summary")}</h4>'
+               f'<div class="section-summary"{summary_alias}><p>{CONFIRMED["summary_" + id][LANG]}</p>'
                f'<p>{CONFIRMED["analysis_" + id][LANG]}</p></div>')
     return f'<section id="{id}" class="result-topic" data-toc><h3{alias}>{t(zh, en)}</h3>{body}{summary}</section>'
 
@@ -276,8 +278,8 @@ def article():
     body += rouge_chart()
     scoring_details += p('正确成功项从 0.0877 增至 0.3684，增量约为 16 / 57 = 0.2807，占报告总增量 0.3144 的约 89.3%。失败解释项从 0.0969 增至 0.1305，占剩余约 10.7%。因此，0.499 不能读作“49.9% 的失败解释正确”；大部分增量来自识别成功，而非失败解释项。', 'The correct-success term rises from 0.0877 to 0.3684. Its increase, 16 / 57 ≈ 0.2807, accounts for about 89.3% of the reported total gain of 0.3144. The failure-explanation term rises from 0.0969 to 0.1305, accounting for the remaining 10.7%. A score of 0.499 therefore does not mean that 49.9% of failure explanations are correct. Most of the gain comes from recognizing success.')
     body += detail('综合评分规则与分项计算', 'Composite scoring rule and component calculations', scoring_details)
-    body += h3('explanation-cases', '2.4.2 失败原因识别', '2.4.2 Failure-cause identification')
-    body += p('<strong>五示例回答在拿刀案例中识别出了具体的对象错误。</strong>零样本虽然判对失败，却没有指出拿到的是勺子。', '<strong>In the knife case, the five-example response identifies the specific wrong-object error.</strong> Zero-shot detects failure but does not identify the spoon.')
+    body += h3('explanation-cases', '2.4.2 失败解释质量', '2.4.2 Failure-explanation quality')
+    body += p('<strong>五示例条件的失败解释项由 0.0969 增至 0.1305（+0.0336）。</strong>该分项将正确检出失败的解释 ROUGE-L 求和后除以全部 57 个问题。与此同时，34 个失败问题中的正确检出数从 32 个降至 28 个：解释项得分提高，并非因为识别出了更多失败。', '<strong>The failure-explanation term rises from 0.0969 to 0.1305 (+0.0336) with five examples.</strong> This term sums explanation ROUGE-L for correctly detected failures and divides by all 57 questions. Meanwhile, correct detections among the 34 failure questions fall from 32 to 28: the higher explanation term does not come from detecting more failures.')
     body += expanded_cases(ROBOFAIL_CASES, t, ids=(33,))
     body += p('<a href="#robo-case-55">旋钮案例</a>中，零样本同样判对失败，但强调抓取位置，参考答案则强调夹爪未闭合。', 'In the <a href="#robo-case-55">knob case</a>, zero-shot also detects failure, but emphasizes grasp location while the reference identifies an unclosed gripper.')
     result_topics += result_section('explanations', '2.4 失败解释与得分', '2.4 Failure explanations and scores', re.sub(r'<(/?)h4\b', r'<\1h5', body))
