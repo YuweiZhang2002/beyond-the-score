@@ -1711,6 +1711,7 @@
 </span>
 <div class="visibility-study">
 <h4 id="robofail-visibility" data-toc>2.3.3 In-context learning (ICL)</h4>
+<p>We provide five fixed external demonstrations before the test subtask, each consisting of an image, a subtask question, and a reference answer. The model then judges the test subtask’s success or failure and provides a textual explanation; the zero-shot condition omits these demonstrations.</p>
 <p>
 <strong>The five-example condition produces fewer false alarms but still misses failures.</strong>False alarms fall from 18 to 2, while missed failures rise from 2 to 6. The knob and slicing cases also compare the first frame, first two frames, and all observations, with one request per condition.</p>
 <article class="visibility-case">

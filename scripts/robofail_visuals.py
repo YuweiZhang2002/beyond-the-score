@@ -56,6 +56,7 @@ def visibility_experiment(data, cases, t):
     if not data or data['completed'] != data['planned']:
         return ''
     out = '<div class="visibility-study"><h3 id="robofail-visibility" data-toc>' + t('2.3.3 上下文学习（ICL）', '2.3.3 In-context learning (ICL)') + '</h3>'
+    out += '<p>' + t('我们在待评子任务之前提供五个固定的外部示例，每个示例包含图像、子任务问题和参考答案，再让模型对待评子任务输出成败判断及文字解释。零样本条件不提供这些示例。', 'We provide five fixed external demonstrations before the test subtask, each consisting of an image, a subtask question, and a reference answer. The model then judges the test subtask’s success or failure and provides a textual explanation; the zero-shot condition omits these demonstrations.') + '</p>'
     out += '<p><strong>' + t('五示例条件减少了成功误报，但仍会漏掉失败。', 'The five-example condition produces fewer false alarms but still misses failures.') + '</strong>' + t('成功误报由 18 个降至 2 个，失败漏检由 2 个增至 6 个。旋钮和切片两例还比较了前 1 帧、前 2 帧与全部观测，每个条件请求一次。', 'False alarms fall from 18 to 2, while missed failures rise from 2 to 6. The knob and slicing cases also compare the first frame, first two frames, and all observations, with one request per condition.') + '</p>'
     for idx in data['protocol']['case_ids']:
         case = next(c for c in cases if c['id'] == idx)

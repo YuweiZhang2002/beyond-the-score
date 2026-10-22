@@ -1712,6 +1712,7 @@
 </span>
 <div class="visibility-study">
 <h4 id="robofail-visibility" data-toc>2.3.3 上下文学习（ICL）</h4>
+<p>我们在待评子任务之前提供五个固定的外部示例，每个示例包含图像、子任务问题和参考答案，再让模型对待评子任务输出成败判断及文字解释。零样本条件不提供这些示例。</p>
 <p>
 <strong>五示例条件减少了成功误报，但仍会漏掉失败。</strong>成功误报由 18 个降至 2 个，失败漏检由 2 个增至 6 个。旋钮和切片两例还比较了前 1 帧、前 2 帧与全部观测，每个条件请求一次。</p>
 <article class="visibility-case">
