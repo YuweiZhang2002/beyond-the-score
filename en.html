@@ -205,6 +205,10 @@
 </div>
 </div>
 <p class="">
+<strong>RBM ranking protocol.</strong> We use RBM’s quality-label order and Kendall τa metric<sup class="citation">
+<a href="#ref-robometer" aria-label="Robometer">[2]</a>
+</sup>, with 567 trajectories across 41 source–task groups in this run. The <a href="https://github.com/robometer/robometer/blob/main/robometer/data/samplers/eval/progress_policy_ranking.py" target="_blank" rel="noopener">official sampler</a> selects trajectories by task and quality label with configurable counts; 567 is this run’s sample count, not a fixed benchmark size.</p>
+<p class="">
 <strong>RoboFail protocol.</strong> RoboFail was introduced by REFLECT<sup class="citation">
 <a href="#ref-reflect" aria-label="REFLECT / RoboFail">[4]</a>
 </sup>. We use the question–answer evaluation format provided by AHA<sup class="citation">
@@ -229,6 +233,10 @@
 <strong>Observation masking.</strong> On two existing RoboFail cases, we separately explore three visibility levels and two prompting conditions, making 12 new requests with one response per condition. We retain the original question and mask later observations. Partial inputs have no corresponding temporal ground truth and receive no accuracy score. This supplement is separate from the original 57-question evaluation and examines response sensitivity to visible information.</p>
 <p class="">
 <strong>Comparison scope.</strong> We distinguish directly evaluated configurations from published results. Literature values from Robometer, RynnValue, AHA, and other methods were not rerun on our samples and inputs; training, prompts, and aggregation may also differ. They provide context rather than a matched-protocol ranking. Chart tags [S], [P], [W], [R], and [A] denote this study, the Robometer paper, its website, RynnValue, and AHA, respectively. Versions and missing results are retained as recorded.</p>
+<div id="positive-case-protocol">
+<p class="">
+<strong>Case comparisons.</strong> The four positive examples are selected post hoc for illustration, not to estimate overall error rates. Astra and DeepSeek receive identical tasks, trajectories, prompts, and input images without reference quality labels; preference cases retain the actual A/B order. Reasoning settings and compute budgets are unmatched: Astra uses low effort with a 512-token output limit, while DeepSeek uses max effort with a 32768-token limit. No swapped-order repeat or matched per-example Robometer output is available.</p>
+</div>
 <p class="fine">The progress protocol fixes the initial score at zero. Together with four model predictions, this gives five evaluation positions against the same time reference.</p>
 <p class="">
 <strong>Independent ranking: Kendall τa, higher is better.</strong> Within a source–task group, the reference quality order is success &gt; suboptimal &gt; failure. For pairs included by the scoring protocol, a correct order contributes +1, an inversion −1, and a predicted tie 0. Reference-quality ties must not be given an invented order; their inclusion follows the scorer. A group score can be written as (C − D) / N, where C and D count concordant and discordant pairs and N is the protocol’s pair count. Ties remain in the denominator, so assigning every trajectory the same score cannot yield a high τa. Aggregation must preserve the scorer’s inclusion rules and weights. We retain reported aggregates rather than interpret weighted decompositions as raw independent-pair counts.</p>
@@ -294,7 +302,12 @@
 </sup> on independent trajectory scoring and direct preference judgments with two trajectories shown together. Aggregate results compare the three models; detailed cases use Astra as a representative to examine how scores and explanations relate to the observed executions.</p>
 <p class="fine">We first present zero-shot results and cases. Published values retain their own evaluation protocols and provide context, rather than a matched-protocol ranking. Context-example comparisons are grouped in Section 2.3.</p>
 <h4 id="ranking-results" data-toc>2.1.1 Trajectory quality ranking</h4>
-<p>In zero-shot independent scoring of 567 trajectories, GPT-6 Astra, GPT-5.6-sol, and DeepSeek-V4.1-Flash reach Kendall τ<sub>a</sub> values of <strong>0.8166, 0.7500, and 0.5300</strong>, respectively. This metric measures agreement between the ordering induced by model scores and the reference quality order; values closer to 1 are better. All three general-purpose multimodal models distinguish execution quality, with substantial numerical differences in agreement. Astra scores highest in this evaluation.</p>
+<p>We follow the RBM-EVAL-OOD trajectory quality ranking approach<sup class="citation">
+<a href="#ref-robometer" aria-label="Robometer">[2]</a>
+</sup>
+<sup class="citation">
+<a href="#ref-rbm" aria-label="RBM-EVAL-OOD">[3]</a>
+</sup>: score trajectories independently and use Kendall τ<sub>a</sub> to measure agreement with the reference order of success &gt; suboptimal &gt; failure within the same task. In the zero-shot setting, GPT-6 Astra, GPT-5.6-sol, and DeepSeek-V4.1-Flash reach <strong>0.8166, 0.7500, and 0.5300</strong>, respectively. All three general-purpose multimodal models distinguish execution quality, with substantial numerical differences in agreement. Astra scores highest in this evaluation.</p>
 <p>Astra and GPT-5.6-sol also score numerically above the published results of specialized models RynnValue-8B (0.675)<sup class="citation">
 <a href="#ref-rynnvalue" aria-label="RynnValue">[5]</a>
 </sup> and Robometer (0.655)<sup class="citation">
@@ -308,14 +321,6 @@
 </figcaption>
 </figure>
 <p>The following positive examples and error analyses examine how the models judge execution quality.</p>
-<details class="method-detail" id="positive-case-protocol">
-<summary>Scope and limits of the matched-case comparisons</summary>
-<p>The comparison uses identical tasks, trajectories, and offline reference labels. Astra and DeepSeek receive the same verbatim prompts and encoded input images, without quality labels. Preference pairs also use the same verified A/B order. All 12 request hashes for these four cases were reconstructed from source frames and checked against raw responses. Independent trajectory scores and actual pairwise choices are presented separately.</p>
-<p>Astra requests gpt-6-astra-ca and returns gpt-6-astra, with low effort and a 512-token output limit. DeepSeek requests and these receipts return deepseek-v4.1-flash, with max effort and a 32768-token limit. The interfaces are Responses and Chat Completions, respectively; compute budgets are not matched. Returned names are provider-reported, not independently authenticated. No swapped-order preference repeat or matched per-example Robometer output is available, so these cases do not establish Robometer’s individual performance.</p>
-<p>
-<a href="data/rbm-positive-cases.json" download>Download positive-case evidence (source files, record locations, original outputs, and input hashes)</a>
-</p>
-</details>
 <div class="positive-case" data-positive-case="ranking-drawer">
 <h5 class="case-title" id="ranking-drawer-case">Case Study: distinguishing a closed drawer from one left open</h5>
 <p>In this xArm drawer-closing task, A is labeled successful and B failed. Astra assigns <strong>1.00 and 0.00</strong>, respectively, correctly ordering the trajectories. DeepSeek assigns <strong>0.20 and 0.30</strong>, reversing the reference order.</p>
@@ -555,7 +560,7 @@
 <span class="zoom-label" aria-hidden="true">Enlarge ↗</span>
 </figcaption>
 </figure>
-<p>Two correctly selected pairs precede the existing error analyses. Inputs and display order were checked record by record; see the <a href="#positive-case-protocol">comparison scope</a> for configuration differences and selection limits. A/B below retain the actual evaluation order; preferences are not inferred from independent scores.</p>
+<p>We first examine two correctly selected pairs, then analyze errors. Astra and DeepSeek receive the same tasks, images, and A/B order; the cases below show their actual choices in pairwise comparisons.</p>
 <div class="positive-case" data-positive-case="preference-button">
 <h5 class="case-title" id="preference-button-case">Case Study: button activation matters more than lingering contact</h5>
 <p>For this SO101 button-press pair, the actual input order is <strong>A: suboptimal; B: successful; reference preference: B</strong>. Astra actually chooses B and DeepSeek actually chooses A. These are the recorded choices from comparing both videos in one request.</p>

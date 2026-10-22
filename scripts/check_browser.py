@@ -84,10 +84,11 @@ def main():
                     page.wait_for_function('(p) => p.querySelector("[data-progress-seek=\\"31\\"]").getAttribute("aria-pressed")==="true"', arg=panel.element_handle())
                     assert float(panel.locator('[data-progress-cursor]').get_attribute('x1')) == 396
                 page.locator('[data-progress-compare]').first.screenshot(path=str(args.output / f'{language}-{device}-progress.png'))
-                # Protocol expansion and language navigation preserve the Results location.
-                page.locator('#positive-case-protocol summary').click()
+                # Case-method details live in the study protocol; language navigation preserves Results.
+                page.locator('#metrics > summary').click()
+                assert page.locator('#positive-case-protocol').is_visible()
                 assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')
-                page.locator('#positive-case-protocol summary').click()
+                page.locator('#metrics > summary').click()
                 page.locator('#quality-results').scroll_into_view_if_needed()
                 page.evaluate("document.getElementById('quality-results').scrollIntoView()")
                 page.wait_for_function("document.querySelector('[data-language-link]').hash === '#quality-results'")

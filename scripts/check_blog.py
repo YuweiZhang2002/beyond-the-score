@@ -133,7 +133,9 @@ for name,text in pages.items():
             for t in case['trajectories']:
                 assert ('参考标签：' if lang=='zh' else 'Reference label: ')+labels[lang][t['quality_label']] in block
         assert '0 / 4 / 9 / 13 / 18 / 22 / 27 / 31' in block
-    assert all(x in text for x in ['positive-case-protocol','data/rbm-positive-cases.json','32768','512'])
+    assert all(x in text for x in ['positive-case-protocol','32768','512'])
+    assert 'data/rbm-positive-cases.json' not in text
+    assert 'positive-case-protocol' not in text.split('<section id="quality-results"', 1)[1].split('<section id="progress-results"', 1)[0]
     for block in confirmed.values():
         originals=re.findall(r'<dd lang="en">(.*?)</dd>',block['zh'],re.S)
         for answer in originals:assert unescape(answer) in unescape(text),(name,answer)
