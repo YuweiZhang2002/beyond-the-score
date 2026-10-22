@@ -82,13 +82,13 @@
 <h2>Key takeaways · 主要发现</h2>
 <ul>
 <li>
-<strong>零样本执行质量比较具有竞争力。</strong>gpt-6-astra 在本研究的三个通用模型中排序与偏好得分最高，可与专用模型的报告结果竞争。</li>
+<strong>通用多模态模型具备有竞争力的零样本执行质量评价能力。</strong>gpt-6-astra 的轨迹排序 Kendall τ<sub>a</sub> 达到 0.8166，直接偏好准确率达到 92.4%，在所评估的三种通用模型中均最高。</li>
 <li>
-<strong>上下文示例对不同任务的影响不同。</strong>进度 VOC 提高，轨迹排序 τa 却下降。</li>
+<strong>任务进度评分能够反映执行中的推进、失误与恢复。</strong>gpt-6-astra 的零样本进度估计 VOC 达到 93.6，评分能够响应任务相关的状态变化。</li>
 <li>
-<strong>总体成败准确率提高，但失败漏检增加。</strong>RoboFail 中，ICL 更准确地识别了成功执行，却将更多失败判为成功。</li>
+<strong>模型能够检测机器人执行失败并生成原因解释。</strong>在 RoboFail 上，成败判断准确率最高达到 85.96%，对应的失败召回率为 82.35%。</li>
 <li>
-<strong>综合 ROUGE-L 的增量主要来自成功识别。</strong>失败解释项的提高较小，需要结合具体原因分析。</li>
+<strong>错误分析揭示了三类典型判断问题。</strong>包括关键状态识别错误、失败原因定位不准确，以及对不同质量的执行给出相同评分。</li>
 </ul>
 </section>
 <section id="overview" class="" data-toc>

@@ -204,10 +204,10 @@ def study_design():
 
 def article():
     takeaways = [
-        t('<strong>零样本执行质量比较具有竞争力。</strong>gpt-6-astra 在本研究的三个通用模型中排序与偏好得分最高，可与专用模型的报告结果竞争。', '<strong>Zero-shot execution-quality comparison is competitive.</strong> gpt-6-astra has the highest ranking and preference scores among the three general-purpose models tested and is competitive with published specialized-model results.'),
-        t('<strong>上下文示例对不同任务的影响不同。</strong>进度 VOC 提高，轨迹排序 τa 却下降。', '<strong>In-context examples affect tasks differently.</strong> Progress VOC improves, while trajectory-ranking τa declines.'),
-        t('<strong>总体成败准确率提高，但失败漏检增加。</strong>RoboFail 中，ICL 更准确地识别了成功执行，却将更多失败判为成功。', '<strong>Overall outcome accuracy improves, but more failures are missed.</strong> On RoboFail, ICL recognizes successful executions more accurately while also labeling more failures as successes.'),
-        t('<strong>综合 ROUGE-L 的增量主要来自成功识别。</strong>失败解释项的提高较小，需要结合具体原因分析。', '<strong>Most of the composite ROUGE-L gain comes from success recognition.</strong> The failure-explanation term improves less and needs to be examined alongside the specific reasons given.'),
+        t('<strong>通用多模态模型具备有竞争力的零样本执行质量评价能力。</strong>gpt-6-astra 的轨迹排序 Kendall τ<sub>a</sub> 达到 0.8166，直接偏好准确率达到 92.4%，在所评估的三种通用模型中均最高。', '<strong>General-purpose multimodal models achieve competitive zero-shot results in execution quality evaluation.</strong> gpt-6-astra reaches Kendall τ<sub>a</sub> of 0.8166 for trajectory ranking and 92.4% accuracy for direct preference judgments, the highest scores among the three general-purpose models evaluated.'),
+        t('<strong>任务进度评分能够反映执行中的推进、失误与恢复。</strong>gpt-6-astra 的零样本进度估计 VOC 达到 93.6，评分能够响应任务相关的状态变化。', '<strong>Progress scores can reflect task advancement, mistakes, and recovery.</strong> gpt-6-astra achieves a zero-shot progress VOC of 93.6, and its scores can respond to task-relevant state changes.'),
+        t('<strong>模型能够检测机器人执行失败并生成原因解释。</strong>在 RoboFail 上，成败判断准确率最高达到 85.96%，对应的失败召回率为 82.35%。', '<strong>The model can detect failures in robot execution and generate explanations.</strong> On RoboFail, outcome accuracy reaches a maximum of 85.96%, with failure recall of 82.35% in the same setting.'),
+        t('<strong>错误分析揭示了三类典型判断问题。</strong>包括关键状态识别错误、失败原因定位不准确，以及对不同质量的执行给出相同评分。', '<strong>Error analysis identifies three types of judgment error.</strong> These are misreading key states, inaccurately identifying failure causes, and assigning the same score to executions of different quality.'),
     ]
     out = section('takeaways', 'Key takeaways · 主要发现', 'Key takeaways', '<ul>' + ''.join(f'<li>{x}</li>' for x in takeaways) + '</ul>', 'key-takeaways')
 
