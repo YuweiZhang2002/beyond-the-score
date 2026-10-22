@@ -93,7 +93,7 @@
 </section>
 <section id="overview" class="" data-toc>
 <h2>Introduction</h2>
-<p class="">Robot systems need to evaluate their own behavior: assess how far a task has progressed, compare the quality of different executions, and identify and explain failures. General-purpose multimodal models can jointly process visual observations and task descriptions, while receiving evaluation criteria and examples through context, offering a way to make these judgments without additional task-specific fine-tuning. We ask: <strong>To what extent can the existing visual understanding and reasoning capabilities of general-purpose multimodal models support the evaluation of robot behavior? How do these capabilities vary across evaluation tasks, available observations, and in-context examples?</strong>
+<p class="">Robot systems need to evaluate their own behavior: assess how far a task has progressed, compare the quality of different executions, and identify and explain failures. General-purpose multimodal models can process visual observations alongside task descriptions, evaluation criteria, and examples. This offers a way to evaluate robot behavior without additional task-specific fine-tuning. We ask: <strong>To what extent can the existing visual understanding and reasoning capabilities of general-purpose multimodal models support the evaluation of robot behavior? How do these capabilities vary across evaluation tasks, available observations, and in-context examples?</strong>
 </p>
 <p class="">We conduct an empirical study with gpt-6-astra<sup class="citation">
 <a href="#ref-astra" aria-label="OpenAI: gpt-6-astra">[1]</a>
@@ -109,7 +109,7 @@
 <a href="#ref-robometer" aria-label="Robometer">[2]</a>
 </sup> and 0.675 for RynnValue-8B<sup class="citation">
 <a href="#ref-rynnvalue" aria-label="RynnValue">[5]</a>
-</sup>; direct preference accuracy is <strong>92.4%</strong>. Adding five examples raises RoboFail outcome accuracy from <strong>64.91% to 85.96%</strong>, while also increasing missed failures. We examine the state judgments, quality requirements, and error types behind these scores. Their benefit to policy learning remains untested.</p>
+</sup>; direct preference accuracy is <strong>92.4%</strong>. Adding five examples raises RoboFail outcome accuracy from <strong>64.91% to 85.96%</strong>, while also increasing missed failures. We examine the state judgments, quality requirements, and error types behind these scores. Whether these evaluations can improve policy learning remains untested.</p>
 </section>
 <section id="setup" class="" data-toc>
 <h2>1. Study design</h2>
@@ -1019,7 +1019,7 @@
 
 <div id="progress-icl">
 <h4 id="progress-icl-title" data-toc>2.2.2 Context examples and completion judgments</h4>
-<p>With one same- or similar-task trajectory annotated with stage scores, VOC rises from <strong>93.6 to 94.2</strong>, a small increase in overall time correlation.</p>
+<p>With one reference trajectory from the same or a similar task, annotated with stage scores, VOC rises from <strong>93.6 to 94.2</strong>, a small increase in overall time correlation.</p>
 <figure class="figure">
 <button type="button" data-zoom aria-label="Enlarge the zero-shot and ICL progress comparison">
 <img loading="lazy" src="assets/figures/03_progress.png?v=voc" alt="Progress estimation: gpt-6-astra has VOC of 93.6 zero-shot and 94.2 with single-trajectory ICL; external reports use different protocols." width="1600" height="1109">
@@ -1983,9 +1983,9 @@
 <h4 id="failure-summary" data-toc>2.3.4 Summary</h4>
 <div class="section-summary">
 <p>
-<strong>ICL improves recognition of successful subtasks, but does not reduce both outcome-error types.</strong>
+<strong>With examples, fewer successful subtasks are labeled failures, but more failures are missed.</strong>
 </p>
-<p>Disagreements persist with all supplied frames in the knob and slicing cases, while the bowl question leaves the target object unspecified. Outcome recognition depends on both visual evidence and explicit task requirements.</p>
+<p>The gain in overall accuracy comes mainly from recognizing successful subtasks. If the evaluator is used to detect execution failures, failure detection must be assessed separately; overall accuracy alone does not establish how well it does this.</p>
 </div>
 </section>
 <section id="explanations" class="result-topic" data-toc>
@@ -2101,22 +2101,22 @@
 <h2>3. Discussion and outlook</h2>
 <h3 id="conclusions" data-toc>3.1 Main findings</h3>
 <p class="">
-<strong>General-purpose models can competitively compare robot execution quality without additional evaluation-task fine-tuning.</strong> gpt-6-astra’s zero-shot ranking and preference results are competitive with the cited specialized reward models, and GPT-5.6-sol’s ranking also exceeds both reported specialized-model values. Some execution-evaluation capabilities can therefore be elicited directly through task descriptions and visual observations, although performance varies across general-purpose models.</p>
+<strong>General-purpose models can competitively compare robot execution quality without additional evaluation-task fine-tuning.</strong> gpt-6-astra’s zero-shot ranking and preference results are competitive with the cited specialized reward models, and GPT-5.6-sol’s ranking also exceeds both reported specialized-model values. Task descriptions and visual observations are enough to obtain competitive results on some execution-evaluation tasks, although results vary across general-purpose models.</p>
 <p class="">
-<strong>The model can connect task goals to object states when assessing progress, mistakes, and recovery.</strong> Judgments in the drawer, button, and red-bin cases respond to closure, activation, and a lid falling shut. Progress scores in the blue-cup and banana cases fall after slipping or an ineffective attempt and recover after a successful retry. These cases show scores responding to task-relevant events rather than merely arm motion or elapsed time.</p>
+<strong>In the cases examined, scores reflect task-relevant state changes, including mistakes and retries.</strong> Judgments in the drawer, button, and red-bin cases correspond to closure, activation, and a lid falling shut. Progress scores fall after the blue cup slips and rise after the banana transfer succeeds on a retry. These scores change with task events instead of simply increasing over time.</p>
 <p class="">
-<strong>A small set of in-context examples substantially improves recognition of successful executions.</strong> Adding five examples raises correct judgments on the 23 successful subtasks from 5 to 21, without updating model parameters. This provides empirical support for adapting evaluation through input examples. Whether they help the model determine what evidence is sufficient to judge success remains a question for further study.</p>
+<strong>In the RoboFail experiment, five in-context examples substantially improve recognition of successful subtasks.</strong> Correct judgments on the 23 successful subtasks rise from 5 to 21. This improvement comes from adding examples to the input, without updating model parameters.</p>
 <h3 id="failure-modes" data-toc>3.2 How and when gpt-6-astra fails</h3>
 <p class="">
-<strong>Misreading a key state leads to an incorrect completion judgment.</strong> In the <a href="#progress-icl">bottle-opening case</a>, after receiving a reference trajectory, gpt-6-astra describes the cap as still seated at the successful endpoint and assigns progress of only 0.35. In the <a href="#pencil-case-case">pencil-case example</a>, its descriptions of the zipper’s open or closed state conflict with the reference labels. The <a href="#robo-case-55">knob case</a> is labeled failed because the gripper does not close, yet the ICL response calls the grasp successful. These judgments depend on specific states: cap separation, zipper opening, and gripper closure. The model may describe the operation while misjudging the state that determines completion; examples do not eliminate these errors.</p>
+<strong>The model can misread a key state and misjudge task completion.</strong> In the <a href="#progress-icl">bottle-opening case</a>, after receiving a reference trajectory, gpt-6-astra describes the separated cap as still seated. The <a href="#pencil-case-case">pencil-case</a> and <a href="#robo-case-55">knob</a> cases also show errors about whether the zipper is open or the gripper has closed. The model can describe the operation yet misread the state that determines completion; examples do not eliminate these errors.</p>
 <p class="">
-<strong>Recognizing failure does not mean identifying what went wrong.</strong> In the <a href="#robo-case-33">knife case</a>, zero-shot correctly predicts failure but describes an unsuccessful knife grasp without identifying that a spoon was picked up; the ICL response identifies the wrong object. Zero-shot also detects failure in the <a href="#robo-case-55">knob case</a> but emphasizes grasp location, while the reference points to the gripper not closing. An unsuccessful grasp and grasping the wrong object call for different corrections, so a correct failure label is insufficient. These explanation errors limit how directly the feedback can guide the next action.</p>
+<strong>The model can detect failure without identifying what went wrong.</strong> Zero-shot responses in the <a href="#robo-case-33">knife</a> and <a href="#robo-case-55">knob</a> cases correctly predict failure but miss the wrong object or unclosed gripper identified in the references. An unsuccessful grasp and grasping the wrong object call for different corrections. A correct outcome label alone is therefore insufficient for corrective feedback; the explanation must also identify the specific error.</p>
 <p class="">
-<strong>Recognizing a shared outcome does not ensure discrimination between execution qualities.</strong> In the <a href="#blue-bin-case">blue-bin case</a>, gpt-6-astra recognizes that both trajectories open the lid but gives the successful and suboptimal executions the same full score, failing to distinguish their reference quality levels. Limited score discrimination also appears in the aggregate results after adding three reference trajectories: weighted inversions fall from 4.78% to 3.68%, but ties rise from 8.78% to 13.11%, and τa falls from 0.8166 to 0.7953. The model reverses fewer orders but more often assigns equal scores to executions of different quality. For a critic used to select trajectories or provide preference feedback, recognizing a shared task outcome is not enough to reliably identify the better execution.</p>
+<strong>The model can recognize the same outcome but miss differences in execution quality.</strong> In the <a href="#blue-bin-case">blue-bin case</a>, both trajectories open the lid, and gpt-6-astra gives the successful and suboptimal executions the same full score. With three reference trajectories, the weighted tie rate rises from 8.78% to 13.11%, while τa falls from 0.8166 to 0.7953. Assigning equal scores to executions of different quality leaves no basis for choosing between those trajectories using the scores.</p>
 <h3 id="limitations" data-toc>3.3 Limitations and future work</h3>
 <p class="">This study evaluates models on only two benchmarks, RBM and RoboFail, with limited data and task coverage. The specialized baselines are typically designed specifically for the evaluation tasks covered by these benchmarks. Broad validation across datasets, tasks, and robot platforms is still lacking.</p>
 <p class="">
-<strong id="next-steps">Reinforcement-learning validation.</strong> We will compare calibrated progress or outcome rewards with reward models trained from trajectory preferences. With policy initialization, algorithms, and interaction budgets fixed, we will compare against sparse environment rewards and specialized critics, reporting success, sample efficiency, and query costs across seeds. Independent environment criteria or human review will determine success, while checks for reward exploitation will examine apparent completion and other critic errors. These closed-loop experiments have not yet been conducted; this article reports no policy gains.</p>
+<strong id="next-steps">Reinforcement-learning validation.</strong> We will compare calibrated progress or outcome rewards with reward models trained from trajectory preferences. With policy initialization, algorithms, and interaction budgets fixed, we will compare against sparse environment rewards and specialized critics, reporting success rates, sample efficiency, and query costs across seeds. Independent environment criteria or human review will determine success, while checks for reward exploitation will examine apparent completion and other critic errors. These closed-loop experiments have not yet been conducted; this article reports no policy gains.</p>
 </section>
 <section id="resources" class="" data-toc>
 <h2>References</h2>
