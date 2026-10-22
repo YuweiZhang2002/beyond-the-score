@@ -37,6 +37,15 @@ def expanded_cases(cases, t, ids, fold=True):
         out += f'<article class="robo-expanded-case" id="robo-case-{ident}"><h4 class="case-title">' + t('Case Study：', 'Case Study: ') + escape(t(zh, en)) + '</h4><p>' + t(zh_note, en_note) + '</p>'
         out += f'<div class="case-video-grid"><figure><video controls playsinline muted preload="none" src="{c["video"]}" poster="{c["poster"]}" aria-label="{escape(c["task"])}"></video><figcaption>' + t('原始轨迹', 'Original trajectory') + '</figcaption></figure>'
         out += f'<figure><button type="button" data-zoom aria-label="{t("放大观测帧", "Enlarge observations")}"><img loading="lazy" src="{c["observation_contact_sheet"]}" alt="{t("按时间排列的模型输入观测", "Model observations in temporal order")}"></button><figcaption>' + t('模型输入的关键帧', 'Keyframes supplied to the model') + '</figcaption></figure></div>'
+        if ident == 33:
+            times = ' / '.join(f'{frame["matched_source_time_seconds"]:.2f}' for frame in c['keyframes'])
+            out += '<p id="robofail-knife-keyframe-provenance" class="fine"><strong>' + t('关键帧来源与展示方式。', 'Keyframe provenance and presentation.') + '</strong> ' + t(
+                '这两张观测帧来自 AHA 公开 RoboFail 测试样本中已有的输入拼图。网页将拼图中的观测区域裁剪并按时间顺序重新排版，省略白色未来占位区域；我们没有从原始视频重新等间隔切帧，也没有让模型重新选择关键帧。模型实际接收的是原始拼图与子任务问题，旁边的连续视频仅供读者回看。',
+                'These two observations come from the existing input montage in the public AHA RoboFail test sample. For display, we crop the observation regions and arrange them chronologically, omitting white future placeholders. We neither resample the source video at uniform intervals nor ask a model to select new keyframes. The model receives the original montage and subtask question; the adjacent continuous video is provided for readers to review.'
+            ) + '</p><p class="fine">' + t(
+                f'通过像素相似度与人工画面核查，两帧对应原始视频约 {times} 秒。这些时间仅标记观测帧在视频中的位置，并非人工失败区间或模型报警时刻。现有公开材料尚不足以确认原作者是否按固定间隔、动作边界或其他规则选帧，因此不能将这两帧描述为已确认的固定切分结果。',
+                f'Pixel similarity and visual inspection match the two frames to approximately {times} seconds in the source video. These times locate the observations; they are not annotated failure intervals or model alarm times. The available public evidence does not establish whether the authors selected frames at fixed intervals, action boundaries, or by another rule, so fixed-interval sampling cannot be confirmed.'
+            ) + '</p>'
         if fold:
             out += '<details class="method-detail"><summary>' + t('查看输入与模型回答', 'View input and model responses') + '</summary>'
         out += '<p><strong>' + t('参考答案', 'Reference answer') + ' · ' + (t('失败', 'Failure') if c['reference_label']=='Failure' else t('成功', 'Success')) + f'</strong></p><blockquote lang="en">{escape(c["ground_truth"])}</blockquote>'
