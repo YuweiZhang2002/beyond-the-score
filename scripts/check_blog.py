@@ -188,7 +188,14 @@ for name,text in pages.items():
     failure=text.split('id="failure"', 1)[1].split('id="explanations"', 1)[0]
     assert 'id="outcome-counts"' in failure and 'data-condition=' not in failure
     assert all(value in failure for value in ['64.91%', '85.96%', '66.1%', '19.9'])
-    assert text.index('id="conclusions"') < text.index('id="limitations"') < text.index('id="next-steps"')
+    assert text.index('id="conclusions"') < text.index('id="failure-modes"') < text.index('id="limitations"') < text.index('id="next-steps"')
+    assert text.count('class="section-summary"') == 5
+    for ident in ['quality-results', 'progress-results', 'progress-icl', 'failure', 'explanations']:
+        topic = re.search(r'<section id="' + ident + r'".*?</section>', text, re.S).group()
+        assert re.search(r'<p class="section-summary"[^>]*>.*?</p>\s*</section>$', topic, re.S), (name, ident)
+    citation = re.search(r'<pre class="citation-block"[^>]*>\s*<code>(.*?)</code>\s*</pre>', text, re.S).group(1)
+    assert unescape(citation).strip() == (ROOT / 'CITATION.bib').read_text().strip()
+    assert 'and others' in citation and 'xxx' not in citation
     assert not any(x in text for x in ['AHA 改编', 'AHA adaptation', '[[cite:'])
     for key in ['astra','sol','deepseek','robometer','rbm','reflect','rynnvalue','aha','guardian','primo']:
         assert f'href="#ref-{key}"' in text,(name,key,'missing inline citation')

@@ -51,9 +51,11 @@
 <a class="subsection" href="#failure">2.4 Subtask classification</a>
 <a class="subsection" href="#explanations">2.5 Explanations and scores</a>
 <a class="" href="#outlook">3. Discussion and outlook</a>
-<a class="subsection" href="#conclusions">3.1 Findings</a>
-<a class="subsection" href="#limitations">3.2 Limitations and future work</a>
-<a class="" href="#resources">Data and references</a>
+<a class="subsection" href="#conclusions">3.1 What the study establishes</a>
+<a class="subsection" href="#failure-modes">3.2 How and when Astra fails</a>
+<a class="subsection" href="#limitations">3.3 Limitations and future work</a>
+<a class="" href="#resources">References</a>
+<a class="" href="#citation">Citation</a>
 </nav>
 </aside>
 <article class="article">
@@ -316,7 +318,7 @@
 <a href="#ref-rynnvalue" aria-label="RynnValue">[5]</a>
 </sup> and Robometer (0.655)<sup class="citation">
 <a href="#ref-robometer" aria-label="Robometer">[2]</a>
-</sup>. These results demonstrate <strong>strong offline ranking performance from multimodal models without task-specific fine-tuning</strong>.</p>
+</sup>.</p>
 <figure class="figure">
 <button type="button" data-zoom aria-label="Zero-shot ranking of three general-purpose multimodal models and published specialized-model references">
 <img loading="lazy" src="assets/figures/01_ranking_zero_shot.png" alt="Zero-shot ranking of three general-purpose multimodal models and published specialized-model references" width="1600" height="767">
@@ -728,20 +730,13 @@
 </div>
 </dl>
 </details>
-<h4 id="literature" data-toc>2.1.3 Comparison with prior work</h4>
-<p class="">
-<strong>General-purpose multimodal models show competitive offline evaluation capability relative to specialized models.</strong> Under Robometer’s official sampling and metric rules, Astra achieves zero-shot ranking τa of 0.8166 and preference accuracy of 92.4%, above Robometer’s reported 0.655 and 82.5%<sup class="citation">
-<a href="#ref-robometer" aria-label="Robometer">[2]</a>
-</sup>; its ranking also exceeds RynnValue-8B’s reported 0.675<sup class="citation">
-<a href="#ref-rynnvalue" aria-label="RynnValue">[5]</a>
-</sup>. These results show that general-purpose models can effectively compare robot execution quality without additional task-specific training for this evaluation. This conclusion concerns offline evaluation, not the effectiveness of their scores as training rewards.</p>
-<p class="">
-<strong>Ambiguity in evaluation criteria remains a problem for both model classes.</strong> Overall scores and preference labels do not fully distinguish goal attainment, execution constraints, and final-state quality. The preceding cases show that, when these criteria are unspecified, reference disagreement may include differences in evaluative standards rather than model limitations alone. Comparing general-purpose and specialized models therefore requires a more comprehensive evaluation framework: explicit task-relevant rubrics, assessment of each requirement, and a common aggregation rule. This would help distinguish perceptual errors, differences in execution quality, and trade-offs among criteria instead of attributing them from a single score.</p>
 <details class="research-detail">
 <summary>Sampling, metrics, and cited versions</summary>
 <p class="">Ranking and different-quality preference evaluation reuse Robometer’s official sampling and metric rules with seed=44. Of 571 cached trajectories, four belong to tasks with only successful examples and are excluded by the official rule, leaving 567. Preference sampling uses up to 500 pairs per source, yielding 1,192 pairs. Both metrics use equal weighting across the six sources.</p>
 <p class="">The current official default seed is 42; the original paper’s historical manifests are unavailable, so this is not a sample-by-sample reproduction. Both sample eight frames uniformly. Astra returns prompted scores or A/B choices, whereas Robometer uses trained progress/preference heads, with different image encoding and internal processing. We cite Robometer v1’s τa=0.655; the corresponding v2 value is approximately 0.643.</p>
 </details>
+<p class="section-summary" id="literature">
+<strong>Summary.</strong> General-purpose multimodal models can effectively compare robot execution quality, with Astra’s ranking and preference results competitive with specialized models. Some reference disagreements involve different priorities among goal attainment, execution constraints, and final-state quality. These require explicit criteria rather than being attributed entirely to deficient ranking ability.</p>
 </section>
 <section id="progress-results" class="result-topic" data-toc>
 <h3 id="context">2.2 Task progress estimation</h3>
@@ -753,9 +748,9 @@
 <figcaption>Figure 3. <span>Zero-shot progress estimation across models (VOC, higher is better). Study results and literature references are shown separately, sorted within each group.</span>
 </figcaption>
 </figure>
-<p>Astra and GPT-5.6-sol have similar temporal correlations, both above DeepSeek; Astra remains numerically below Robometer’s reported 94.8<sup class="citation">
+<p>Astra and GPT-5.6-sol have similar temporal correlations, both above DeepSeek; Astra is below Robometer’s reported 94.8<sup class="citation">
 <a href="#ref-robometer" aria-label="Robometer">[2]</a>
-</sup>. Strong independent quality ranking does not imply leading progress-estimation performance. VOC measures correlation with normalized time, so it cannot by itself establish correct recognition of completion, stagnation, or regression. The following cases examine these state changes directly.</p>
+</sup>. The following cases examine how scores respond to completion, setbacks, and retries.</p>
 
 <p class="fine">The following replays show sampled frames, not original-speed video. Each prediction uses only observations available at that point; the hollow initial point is fixed at zero, and lines guide the eye.</p>
 <h4 class="case-title" id="bluecup-case">Case Study: correctly distinguishing completion, slippage, and the wrong object</h4>
@@ -1136,11 +1131,13 @@
 </div>
 </dl>
 </details>
-<p>These cases show Astra’s progress scores responding to target identity, execution setbacks, and state changes after a retry.</p>
+
+<p class="section-summary">
+<strong>Summary.</strong> Astra tracks target identity and state changes following setbacks and retries. High temporal correlation, however, is not equivalent to accurate semantic completion; progress estimates also need assessment against specific states and endpoint judgments.</p>
 </section>
 <section id="progress-icl" class="result-topic" data-toc>
 <h3 id="progress-icl-title">2.3 Effects of in-context examples (ICL)</h3>
-<p>We next ask whether reference examples can improve Astra’s assessments. With examples, progress VOC increases slightly, while trajectory-ranking agreement decreases.</p>
+<p>We next ask whether reference examples improve Astra’s progress estimation and trajectory ranking.</p>
 <p>
 <strong>Progress estimation. </strong>With one same- or similar-task trajectory annotated with stage scores, VOC rises from <strong>93.6 to 94.2</strong>, a small increase in overall time correlation.</p>
 <figure class="figure">
@@ -1197,7 +1194,7 @@
 </tbody>
 </table>
 </div>
-<p>VOC rises from 90.51 to 95.36, while MSE also rises from 0.0407 to 0.1312. In this example, the cap-separation interpretation under the single-example condition conflicts with the reference success label, and final progress is underestimated. Higher VOC alone therefore does not establish that ICL improves progress assessment.</p>
+<p>With one reference trajectory, the cap-separation judgment conflicts with the reference success label: temporal correlation improves, but endpoint progress is underestimated and MSE is higher.</p>
 <details class="method-detail">
 <summary>Read the two original endpoint judgments</summary>
 <dl class="model-quotes">
@@ -1448,6 +1445,8 @@
 <a href="#ref-rbm" aria-label="RBM-EVAL-OOD">[3]</a>
 </sup> report VOC of 94.8 / 94.0 and τa of 0.655 / 0.643, respectively; both versions are retained. RBM-1M and RoboReward data refer to training data. Missing values are not imputed. ICL is neither an additional model nor selectively combined with zero-shot results. Literature values were not rerun on this study’s samples and protocol.</p>
 </details>
+<p class="section-summary">
+<strong>Summary.</strong> The benefits of examples depend on the evaluation task: progress correlation improves, while ranking declines as ties increase. The bottle-opening case also shows that higher correlation can accompany a worse endpoint judgment.</p>
 </section>
 <section id="failure" class="result-topic" data-toc>
 <h3>2.4 Subtask success and failure</h3>
@@ -1456,7 +1455,7 @@
 </sup> questions, using subtask descriptions and keyframes as input.</p>
 <p>Zero-shot accuracy is <strong>64.91%</strong>, comparable to the reported results of the specialized AHA models. With five external examples, accuracy reaches <strong>85.96%</strong>, about <strong>19.9 percentage points</strong> above the <strong>66.1%</strong> reported for AHA-13B Vicuna<sup class="citation">
 <a href="#ref-aha" aria-label="AHA">[8]</a>
-</sup>. Success recognition improves substantially, although more failures are missed; the table below gives the counts.</p>
+</sup>. The table below gives the classification counts for both conditions.</p>
 <figure class="figure">
 <button type="button" data-zoom aria-label="Enlarge: RoboFail outcome accuracy: this study and AHA-reported results">
 <img loading="lazy" src="assets/figures/04_robofail_icl.png" alt="RoboFail outcome accuracy: this study and AHA-reported results" width="1600" height="1118">
@@ -2162,10 +2161,12 @@
 </p>
 </details>
 </div>
+<p class="section-summary">
+<strong>Summary.</strong> The five-example condition substantially reduces false alarms on successful subtasks but misses more failures. Cases and observation masking point to the importance of checking the visible evidence behind each judgment. The current comparison does not isolate example effects from backend differences.</p>
 </section>
 <section id="explanations" class="result-topic" data-toc>
 <h3>2.5 Failure explanations and scores</h3>
-<p class="">Composite ROUGE-L rises from 0.185 to 0.499 with five examples, but about <strong>89.3% of the gain comes from correctly recognizing successful subtasks</strong>. Most of the gain reflects better success recognition, rather than an equivalent improvement in explanations of failure causes.</p>
+<p class="">Composite ROUGE-L rises from 0.185 to 0.499 with five examples, but about <strong>89.3% of the gain comes from correctly recognizing successful subtasks</strong>.</p>
 <p class="">AHA’s composite scoring rule<sup class="citation">
 <a href="#ref-aha" aria-label="AHA">[8]</a>
 </sup> combines correct success judgments with textual overlap for failure explanations, so the two contributions need to be examined separately.</p>
@@ -2216,79 +2217,66 @@
 <p class="">The correct-success term rises from 0.0877 to 0.3684. Its increase, 16 / 57 ≈ 0.2807, accounts for about 89.3% of the reported total gain of 0.3144. The failure-explanation term rises from 0.0969 to 0.1305, accounting for the remaining 10.7%. A score of 0.499 therefore does not mean that 49.9% of failure explanations are correct. Most of the gain comes from recognizing success.</p>
 <p class="">Both bars in the decomposition chart use the same 0–0.55 scale, with each component divided by 57. Components and totals are rounded separately and may differ in the last decimal.</p>
 </details>
-<p class="">The explanation term also depends on which failures are detected and on lexical overlap with reference text. It does not independently distinguish a correct paraphrase from a similarly worded but incorrect diagnosis. Assessing the stated cause requires additional semantic review and physical evidence.</p>
-<p class="">The earlier <a class="inline-link" href="#robofail-cases">knob and slicing cases</a> show why labels and explanations need separate review. Neither lexical overlap nor aggregate score changes replace checking the evidence cited for an individual judgment.</p>
+<p class="section-summary">
+<strong>Summary.</strong> Most of the composite ROUGE-L gain comes from success recognition, not an equivalent improvement in failure explanations. The <a class="inline-link" href="#robofail-cases">knob and slicing cases</a> show why labels and reasons need separate checks; credible causal explanations require semantic and physical evidence.</p>
 </section>
 </section>
 <section id="outlook" class="" data-toc>
 <h2>3. Discussion and outlook</h2>
-<h3 id="conclusions" data-toc>3.1 Findings</h3>
+<h3 id="conclusions" data-toc>3.1 What the study establishes</h3>
+<p class="">General-purpose multimodal models’ existing visual understanding and reasoning can support robot execution-quality comparisons, progress estimation, and outcome judgments. In this evaluation, Astra’s ranking and preference results are competitive with specialized models. Cases also show recognition of target objects, setbacks, and completion after retries, without additional fine-tuning for these tasks.</p>
+<p class="">These capabilities respond differently to the evaluation interface and context. Examples can improve some judgments while changing score scales, increasing ties, or disrupting endpoint judgments. Comparison, progress, outcome classification, and explanation should therefore be evaluated separately; a single aggregate score does not establish a generally reliable robot critic.</p>
+<h3 id="failure-modes" data-toc>3.2 How and when Astra fails</h3>
 <p class="">
-<strong>General-purpose multimodal models can provide competitive evaluations of robot behavior.</strong> On RBM, using the official sampling and metric rules, Astra achieves a ranking τa of 0.8166 and preference accuracy of 92.4%, both above the cited Robometer results. On RoboFail, five-example outcome accuracy reaches 85.96%. These findings show that a general-purpose model’s existing visual understanding and reasoning capabilities can support strong offline behavior evaluation without additional fine-tuning for these tasks.</p>
+<strong>Similar outcomes can obscure quality differences.</strong> In the <a href="#blue-bin-case">blue-bin case</a>, Astra gives full scores to executions labeled successful and suboptimal. It recognizes the shared outcome of opening the lid but does not distinguish the reference quality levels.</p>
 <p class="">
-<strong>Examples and higher aggregate scores do not improve every aspect of evaluation.</strong> With examples, progress VOC rises from 93.6 to 94.2 while ranking τa falls from 0.8166 to 0.7953. The five-example RoboFail condition reduces false alarms on successful subtasks but misses more failures. High progress correlation can coexist with inaccurate endpoint estimates, and most of the composite ROUGE-L gain comes from success recognition. The results support comparing offline behavior with these models, but do not establish their scores as reliable completion checks, failure explanations, or policy-optimization rewards.</p>
+<strong>A plausible overall trend can coexist with an incorrect endpoint.</strong> In the <a href="#progress-icl">bottle-opening case</a>, the example condition improves temporal correlation but reduces endpoint progress for a successful trajectory from 1.00 to 0.35. A smooth trend cannot substitute for identifying the decisive state.</p>
 <p class="">
-<strong>Some evaluation disagreements require more explicit criteria.</strong> Task descriptions may leave final-state requirements such as release and stability unspecified, as well as priorities among quality dimensions. A single score or preference label compresses these distinctions, making criterion mismatch difficult to separate from model error. Future evaluations should use explicit multidimensional rubrics for task goals, execution constraints, and final-state quality, and compare criterion-level judgments against independent annotations.</p>
-<h3 id="limitations" data-toc>3.2 Limitations and future work</h3>
-<p class="">This study evaluates fixed offline trajectories with limited model coverage and sample sizes. The 57 RoboFail questions come from 15 trajectory groups, and trajectory pairs share tasks and samples. Repeat-call variation and sampling uncertainty remain unquantified. Future work should fix model backends, control demonstration selection, and assess stability across more tasks and independent samples.</p>
-<p class="">Qualitative cases examine the evidence behind judgments rather than estimate how often each problem occurs. The results do not fully separate limited observations, ambiguous criteria, and model errors. Disputed cases call for independent review by multiple annotators and clearer criterion-level standards. Contact, stability, and other states that images alone cannot resolve may require additional viewpoints or sensor evidence.</p>
-<h4 id="next-steps">Reinforcement learning: can evaluation capability improve a policy?</h4>
-<p class="">We will test two pathways: using calibrated progress or outcome judgments as rewards, and training a reward model from trajectory preferences before policy optimization. Experiments will fix policy initialization, training algorithms, and environment-interaction budgets, compare against sparse environment rewards and specialized critics, and report success rates, sample efficiency, and model-query costs across random seeds. Final success will be judged by environment criteria or human review independent of the evaluation model.</p>
-<p class="">Closed-loop validation must also examine distribution shifts and reward exploitation: whether apparent completion or ineffective behavior receives high scores, and whether policies learn to exploit these errors. The value of failure explanations for recovery or data selection requires separate ablations. These reinforcement-learning experiments have not yet been conducted, so this article reports no policy gains or sample-efficiency improvements.</p>
+<strong>A correct outcome label does not guarantee a credible explanation.</strong> For the <a href="#robofail-cases">knob grasp</a>, the zero-shot response matches the failure label but gives a different cause from the reference; the five-example condition predicts success instead. By contrast, the cup and bin preference disagreements involve unspecified criteria such as release and stability, and should be analyzed separately from state-assessment errors.</p>
+<h3 id="limitations" data-toc>3.3 Limitations and future work</h3>
+<p class="">This study is limited to fixed offline trajectories and a restricted set of models and tasks. The 57 RoboFail questions share 15 trajectory groups, and trajectory pairs share tasks and samples. Repeat-call and sampling uncertainty remain unquantified, and some example comparisons have backend differences. Future evaluations should fix model snapshots and demonstration-selection rules and test stability on independent tasks.</p>
+<p class="">Cases were selected post hoc and do not estimate error frequencies. Ambiguous samples need explicit rubrics for goals, execution constraints, and final-state quality, with independent review by multiple annotators. Contact and stability states that images alone cannot resolve require additional viewpoints or sensor evidence to distinguish criterion disagreement, limited observation, and model error.</p>
+<p class="">
+<strong id="next-steps">Reinforcement-learning validation.</strong> We will compare calibrated progress or outcome rewards with reward models trained from trajectory preferences. With policy initialization, algorithms, and interaction budgets fixed, we will compare against sparse environment rewards and specialized critics, reporting success, sample efficiency, and query costs across seeds. Independent environment criteria or human review will determine success, while checks for reward exploitation will examine apparent completion and other critic errors. These closed-loop experiments have not yet been conducted; this article reports no policy gains.</p>
 </section>
 <section id="resources" class="" data-toc>
-<h2>Data and references</h2>
-<ul class="resource-links">
-<li>
-<a href="data/report.json" download>Result tables and metric definitions ↓</a>
-</li>
-<li>
-<a href="assets/Beyond-the-Score.pdf" >Technical report ↗</a>
-</li>
-<li>
-<a href="assets/Beyond-the-Score-blog.md" download>Original blog manuscript ↓</a>
-</li>
-<li>
-<a href="evidence.html" >Interactive evidence and per-step predictions ↗</a>
-</li>
-<li>
-<a href="data/rbm-cases.json" download>Trajectory case data ↓</a>
-</li>
-<li>
-<a href="data/robofail-cases.json" download>RoboFail case data ↓</a>
-</li>
-</ul>
+<h2>References</h2>
+<details class="research-detail">
+<summary>Supplementary materials</summary>
+<p class="">
+<a href="assets/Beyond-the-Score.pdf">Technical report ↗</a> · <a href="evidence.html">Cases and step-by-step predictions ↗</a>
+</p>
+</details>
 <ol class="references">
 <li id="ref-astra">
-<a href="https://developers.openai.com/api/docs/models/gpt-6-astra" target="_blank" rel="noopener">OpenAI. GPT-6 Astra</a>. Official model documentation; model identity reference.</li>
+<a href="https://developers.openai.com/api/docs/models/gpt-6-astra" target="_blank" rel="noopener">OpenAI. GPT-6 Astra</a>. Model documentation.</li>
 <li id="ref-robometer">
-<a href="https://arxiv.org/abs/2603.02115v1" target="_blank" rel="noopener">Robometer: Scaling General-Purpose Robotic Reward Models via Trajectory Comparisons</a>. 2026. v1, Tables XIII, XVI, XVII.</li>
+<a href="https://arxiv.org/abs/2603.02115v1" target="_blank" rel="noopener">Robometer: Scaling General-Purpose Robotic Reward Models via Trajectory Comparisons</a>. arXiv:2603.02115v1, 2026.</li>
 <li id="ref-rbm">
-<a href="https://robometer.github.io/" target="_blank" rel="noopener">RBM-EVAL-OOD / Robometer</a>. Evaluation-data release and detailed website OOD tables; website and paper values are recorded separately.</li>
+<a href="https://robometer.github.io/" target="_blank" rel="noopener">RBM-EVAL-OOD / Robometer</a>. Project and evaluation data.</li>
 <li id="ref-reflect">
-<a href="https://arxiv.org/abs/2306.15724" target="_blank" rel="noopener">Liu, Bahety, and Song. REFLECT: Summarizing Robot Experiences for Failure Explanation and Correction</a>. CoRL 2023. Original source of RoboFail.</li>
+<a href="https://arxiv.org/abs/2306.15724" target="_blank" rel="noopener">Liu, Bahety, and Song. REFLECT: Summarizing Robot Experiences for Failure Explanation and Correction</a>. CoRL, 2023.</li>
 <li id="ref-rynnvalue">
-<a href="https://arxiv.org/abs/2608.09853v1" target="_blank" rel="noopener">RynnValue: Scaling Robotic Value Foundation Models with Temporal Distance</a>. 2026. Table 2, §4.2.</li>
+<a href="https://arxiv.org/abs/2608.09853v1" target="_blank" rel="noopener">RynnValue: Scaling Robotic Value Foundation Models with Temporal Distance</a>. arXiv:2608.09853v1, 2026.</li>
 <li id="ref-sol">
-<a href="https://developers.openai.com/api/docs/models/gpt-5.6-sol" target="_blank" rel="noopener">OpenAI. GPT-5.6 Sol</a>. Official model documentation; model identity reference.</li>
+<a href="https://developers.openai.com/api/docs/models/gpt-5.6-sol" target="_blank" rel="noopener">OpenAI. GPT-5.6 Sol</a>. Model documentation.</li>
 <li id="ref-deepseek">
-<a href="https://www.deepseek.com/en/news/deepseek-v4-1-flash/" target="_blank" rel="noopener">DeepSeek. Introducing DeepSeek-V4.1-Flash</a>. Official release, September 10, 2026.</li>
+<a href="https://www.deepseek.com/en/news/deepseek-v4-1-flash/" target="_blank" rel="noopener">DeepSeek. Introducing DeepSeek-V4.1-Flash</a>. 2026.</li>
 <li id="ref-aha">
-<a href="https://aha-vlm.github.io/" target="_blank" rel="noopener">AHA: A Vision-Language-Model for Detecting and Reasoning over Failures in Robotic Manipulation</a>. ICLR 2025. Tables 3/4; <a href="https://github.com/NVlabs/AHA" target="_blank" rel="noopener">Evaluation code</a>; recorded scoring-code revision: <code>0d39c0591566ddaf997be5822f3dead8e08501aa</code>.</li>
+<a href="https://aha-vlm.github.io/" target="_blank" rel="noopener">AHA: A Vision-Language-Model for Detecting and Reasoning over Failures in Robotic Manipulation</a>. ICLR, 2025.</li>
 <li id="ref-guardian">
-<a href="https://arxiv.org/html/2512.01946v4" target="_blank" rel="noopener">Guardian</a>. v4, Tables 1/2.</li>
+<a href="https://arxiv.org/html/2512.01946v4" target="_blank" rel="noopener">Guardian</a>. arXiv:2512.01946v4.</li>
 <li id="ref-primo">
-<a href="https://arxiv.org/html/2603.15600" target="_blank" rel="noopener">PRIMO</a>. Table 3, Appendix A.3.</li>
+<a href="https://arxiv.org/html/2603.15600" target="_blank" rel="noopener">PRIMO</a>. arXiv:2603.15600, 2026.</li>
 <li id="ref-unexpected">
-<a href="https://arxiv.org/abs/2609.24170" target="_blank" rel="noopener">An Unexpected Robot Policy</a>. RoboDojo evaluation of GPT-6 Astra as an action policy.</li>
+<a href="https://arxiv.org/abs/2609.24170" target="_blank" rel="noopener">An Unexpected Robot Policy</a>. arXiv:2609.24170, 2026.</li>
 <li id="ref-astranomy">
-<a href="https://research.nvidia.com/labs/srl/projects/astranomy/" target="_blank" rel="noopener">Astranomy</a>. Empirical study of GPT-6 Astra as a native robot policy.</li>
+<a href="https://research.nvidia.com/labs/srl/projects/astranomy/" target="_blank" rel="noopener">Yang et al. Astranomy: An Empirical Study of GPT-6 Astra as a Native Robot Policy</a>. NVIDIA Seattle Robotics Lab, 2026.</li>
 <li id="ref-embodied">
-<a href="https://arxiv.org/abs/2609.38537" target="_blank" rel="noopener">Systematically Exploring the Capabilities of GPT-6 Astra as Embodied Policies</a>. Cross-domain evaluation of direct control, policy cooperation, and feedback adaptation.</li>
+<a href="https://arxiv.org/abs/2609.38537" target="_blank" rel="noopener">Systematically Exploring the Capabilities of GPT-6 Astra as Embodied Policies</a>. arXiv:2609.38537, 2026.</li>
 <li id="ref-flora">
-<a href="https://huggingface.co/nvidia/Flora-Rewarder" target="_blank" rel="noopener">NVIDIA. Flora-Rewarder</a>. Official model card; rubric scoring interface.</li>
+<a href="https://huggingface.co/nvidia/Flora-Rewarder" target="_blank" rel="noopener">NVIDIA. Flora-Rewarder</a>. Model card.</li>
 </ol>
-<p class="fine">The full RBM table also includes GVL, VLAC, RoboReward, ReWiND, RL-VLM-F, TOPReward, and Robo-Dopamine. Their numbers come from the identified Robometer paper or website records; this does not imply that each method’s original paper evaluated RBM.</p>
 <details class="research-detail">
 <summary>Additional method references</summary>
 <ul class="references">
@@ -2313,7 +2301,21 @@
 <li>GVL: Vision Language Models Are In-Context Value Learners. ICLR, 2025.</li>
 </ul>
 </details>
-<p class="fine">Experimental and literature values follow the verified September 23, 2026 record, incorporating the October 14 Chinese draft and existing cases. This webpage revision adds no new aggregate experiments. Literature values are a dated snapshot, not a live leaderboard. The background adds action-policy work checked through October 15, 2026; its policy success rates are not mixed into our evaluations.</p>
+</section>
+<section id="citation" class="" data-toc>
+<h2>Citation</h2>
+<p class="">To cite this article:</p>
+<pre class="citation-block" tabindex="0" aria-label="BibTeX">
+<code>@misc{zhang2026beyondthescore,
+  title        = {Beyond the Score: Early Evaluations of {GPT-6 Astra} as a Robot Critic},
+  author       = {Zhang, Jinhao and Zhang, Yuwei and Zhou, Weitao and others},
+  year         = {2026},
+  month        = oct,
+  organization = {Simple AI},
+  howpublished = {\url{https://yuweizhang2002.github.io/beyond-the-score/}},
+  note         = {Research blog}
+}</code>
+</pre>
 </section>
 </article>
 </div>

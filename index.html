@@ -51,9 +51,11 @@
 <a class="subsection" href="#failure">2.4 子任务成败判断</a>
 <a class="subsection" href="#explanations">2.5 失败解释与得分</a>
 <a class="" href="#outlook">3. 讨论与展望</a>
-<a class="subsection" href="#conclusions">3.1 研究结论</a>
-<a class="subsection" href="#limitations">3.2 研究局限与未来工作</a>
-<a class="" href="#resources">数据与参考文献</a>
+<a class="subsection" href="#conclusions">3.1 已展现的评价能力</a>
+<a class="subsection" href="#failure-modes">3.2 Astra 何时仍会判断失误</a>
+<a class="subsection" href="#limitations">3.3 局限与未来工作</a>
+<a class="" href="#resources">参考文献</a>
+<a class="" href="#citation">引用本文</a>
 </nav>
 </aside>
 <article class="article">
@@ -317,7 +319,7 @@
 <a href="#ref-rynnvalue" aria-label="RynnValue">[5]</a>
 </sup>和 Robometer（0.655）<sup class="citation">
 <a href="#ref-robometer" aria-label="Robometer">[2]</a>
-</sup>的已报告结果。这说明<strong>无需任务专用微调的多模态模型已能获得较强的离线排序表现</strong>。</p>
+</sup>的已报告结果。</p>
 <figure class="figure">
 <button type="button" data-zoom aria-label="三种通用多模态模型的零样本排序结果与专用模型文献参照">
 <img loading="lazy" src="assets/figures/01_ranking_zero_shot.png" alt="三种通用多模态模型的零样本排序结果与专用模型文献参照" width="1600" height="767">
@@ -729,20 +731,13 @@
 </div>
 </dl>
 </details>
-<h4 id="literature" data-toc>2.1.3 与已有工作的比较</h4>
-<p class="">
-<strong>通用多模态模型已表现出可与专用模型竞争的离线评价能力。</strong>在沿用 Robometer 官方采样与指标规则的评测中，Astra 的零样本排序 τa 为 0.8166、偏好准确率为 92.4%，高于 Robometer 报告的 0.655 和 82.5%<sup class="citation">
-<a href="#ref-robometer" aria-label="Robometer">[2]</a>
-</sup>；排序结果也高于 RynnValue-8B 的 0.675<sup class="citation">
-<a href="#ref-rynnvalue" aria-label="RynnValue">[5]</a>
-</sup>。这些结果说明，通用模型在不追加本次任务专项训练的条件下，已能有效比较机器人执行质量。这里的结论针对离线评价，不等同于训练奖励的有效性。</p>
-<p class="">
-<strong>评价标准的模糊性仍是两类模型都需要面对的问题。</strong>总体分数或偏好标签不能完整表达目标完成、操作约束与末态质量之间的区别。前述案例表明，当这些判据未被明确给出时，与参考不一致可能包含标准上的分歧，不能全部解释为模型能力不足。因此，对通用模型和专用模型的比较都需要更全面的评价体系：显式定义任务相关的 rubric，分别检查各项要求，再按统一规则汇总。这样的分析有助于区分感知错误、执行质量差异和判据权衡，而不是仅凭一个总分归因。</p>
 <details class="research-detail">
 <summary>采样、指标与引用版本</summary>
 <p class="">排序与“不同质量”偏好评测复用 Robometer 官方采样和指标规则，使用 seed=44。571 条缓存轨迹中，4 条属于仅含成功样本的任务，按官方规则排除后得到 567 条；偏好配对按每来源最多 500 对采样，共 1,192 对。两项指标均按六来源等权汇总。</p>
 <p class="">当前官方默认 seed 为 42，原论文历史清单不可得，故不称为逐条样本复现。双方均匀取 8 帧；Astra 通过提示词输出评分或 A/B，Robometer 使用训练后的 progress/preference head，图像编码与内部处理不同。正文引用 Robometer v1 的 τa=0.655；v2 对应值约为 0.643。</p>
 </details>
+<p class="section-summary" id="literature">
+<strong>小结。</strong>通用多模态模型已能有效比较机器人执行质量，Astra 的排序与偏好结果可与专用模型竞争。部分参考分歧涉及目标完成、操作约束与终态质量的不同权衡，需要明确分项判据，不能全部归为排序能力不足。</p>
 </section>
 <section id="progress-results" class="result-topic" data-toc>
 <h3 id="context">2.2 任务进度估计</h3>
@@ -754,9 +749,9 @@
 <figcaption>图 3. <span>零样本进度估计的模型对比（VOC，越高越好）。本研究与文献参照分组展示，各组内按报告值排序。</span>
 </figcaption>
 </figure>
-<p>Astra 与 GPT-5.6-sol 的时间相关性接近，两者均高于 DeepSeek；Astra 的数值仍低于 Robometer 报告的 94.8<sup class="citation">
+<p>Astra 与 GPT-5.6-sol 的时间相关性接近，两者均高于 DeepSeek；Astra 低于 Robometer 报告的 94.8<sup class="citation">
 <a href="#ref-robometer" aria-label="Robometer">[2]</a>
-</sup>。独立质量排序中的较高表现，并不意味着进度估计也领先。VOC 衡量与归一化时间的相关性，不能单独说明模型是否正确识别了完成、停滞或回退；下面通过案例进一步检查这些状态变化。</p>
+</sup>。下面通过案例检查评分如何响应完成、受挫与重试。</p>
 
 <p class="fine">以下为采样帧回放，非原速视频。每次评分仅使用截至当时的观测；空心起点由协议设为 0，连线仅辅助阅读。</p>
 <h4 class="case-title" id="bluecup-case">Case Study：正向案例，分清完成、滑落与搬错物体</h4>
@@ -1137,11 +1132,13 @@
 </div>
 </dl>
 </details>
-<p>这些案例显示，Astra 的进度评分能够响应目标物体、执行受挫和重试后的状态变化。</p>
+
+<p class="section-summary">
+<strong>小结。</strong>Astra 能追踪目标物体、受挫与重试后的状态变化。但较高的时间相关性不等于准确的语义完成度，仍需结合具体状态与终点判断评价其进度估计。</p>
 </section>
 <section id="progress-icl" class="result-topic" data-toc>
 <h3 id="progress-icl-title">2.3 上下文示例的影响（ICL）</h3>
-<p>我们进一步考察，提供参考示例能否改善 Astra 的评估表现。结果显示，加入示例后，进度估计的 VOC 略有提高，但轨迹排序的一致性有所下降。</p>
+<p>我们进一步考察，提供参考示例能否改善 Astra 的进度估计与轨迹排序。</p>
 <p>
 <strong>进度估计。</strong>加入一条相同或相近任务的带阶段评分轨迹后，VOC 从 <strong>93.6 升至 94.2</strong>，整体时间相关性略有提高。</p>
 <figure class="figure">
@@ -1198,7 +1195,7 @@
 </tbody>
 </table>
 </div>
-<p>两种条件对比可见，VOC 从 90.51 升至 95.36，MSE 却从 0.0407 增至 0.1312。这个案例中，单条示例条件下对瓶盖分离状态的解释与参考成功标签不符，最终进度也被低估；因此，不能仅凭 VOC 的提高认定 ICL 改善了进度判断。</p>
+<p>单轨迹示例条件下，瓶盖分离状态的判断与参考成功标签不符：时间相关性提高，终点进度却被低估，MSE 也更高。</p>
 <details class="method-detail">
 <summary>查看两次终点判断的模型原文</summary>
 <dl class="model-quotes">
@@ -1449,6 +1446,8 @@
 <a href="#ref-rbm" aria-label="RBM-EVAL-OOD">[3]</a>
 </sup>分别报告 VOC 94.8 / 94.0、τa 0.655 / 0.643，分别保留，不合并。名称中的 RBM-1M 和 RoboReward data 指训练数据。空项表示没有核实的数值；ICL 不作为额外模型，也不与零样本结果择优拼接。各文献数值未在本研究的样本和协议上复测。</p>
 </details>
+<p class="section-summary">
+<strong>小结。</strong>示例的收益因评价任务而异：进度相关性提高，排序却因平分增多而下降；开瓶案例还显示，相关性提高可以伴随更差的终点判断。</p>
 </section>
 <section id="failure" class="result-topic" data-toc>
 <h3>2.4 子任务成败判断</h3>
@@ -1458,7 +1457,7 @@
 <p>零样本准确率为 <strong>64.91%</strong>，与专用模型 AHA 的报告结果接近；五个外部示例条件下达到 <strong>85.96%</strong>，比 AHA-13B Vicuna 报告的 <strong>66.1%</strong> 高约 <strong>19.9 个百分点</strong>
 <sup class="citation">
 <a href="#ref-aha" aria-label="AHA">[8]</a>
-</sup>。成功识别明显改善，但漏检的失败也有所增加，具体计数见下表。</p>
+</sup>。两种条件的分类计数见下表。</p>
 <figure class="figure">
 <button type="button" data-zoom aria-label="放大: RoboFail 成败分类准确率：本研究与 AHA 报告结果">
 <img loading="lazy" src="assets/figures/04_robofail_icl.png" alt="RoboFail 成败分类准确率：本研究与 AHA 报告结果" width="1600" height="1118">
@@ -2164,10 +2163,12 @@
 </p>
 </details>
 </div>
+<p class="section-summary">
+<strong>小结。</strong>五示例条件大幅减少了成功子任务的误报，但增加了失败漏检。案例与观测遮蔽结果提示，成败判断还需核对可见证据；当前比较尚不能分离示例与后端差异的影响。</p>
 </section>
 <section id="explanations" class="result-topic" data-toc>
 <h3>2.5 失败解释与得分</h3>
-<p class="">五示例条件的综合 ROUGE-L 从 0.185 升至 0.499，但约 <strong>89.3% 的增量来自成功子任务被正确识别</strong>。总分的增长主要反映成功识别的改善，不能等同于失败原因解释的同等进步。</p>
+<p class="">五示例条件的综合 ROUGE-L 从 0.185 升至 0.499，但约 <strong>89.3% 的增量来自成功子任务被正确识别</strong>。</p>
 <p class="">AHA 的综合评分规则<sup class="citation">
 <a href="#ref-aha" aria-label="AHA">[8]</a>
 </sup>同时计入正确成功判断与失败解释的文本重合度，因此需要分开查看两项贡献。</p>
@@ -2218,79 +2219,68 @@
 <p class="">正确成功项从 0.0877 增至 0.3684，增量约为 16 / 57 = 0.2807，占报告总增量 0.3144 的约 89.3%。失败解释项从 0.0969 增至 0.1305，占剩余约 10.7%。因此，0.499 不能读作“49.9% 的失败解释正确”；大部分增量来自识别成功，而非失败解释项。</p>
 <p class="">组成图的两条形使用相同的 0–0.55 刻度，两项均以 57 为分母。分项与总分分别取整，末位可能有舍入差异。</p>
 </details>
-<p class="">解释项还取决于哪些失败被检测到，以及回答与参考文本的词汇重合度。它无法独立区分语义正确的改写和措辞相似但原因错误的回答。要评价失败原因是否可信，需要额外的语义核验与物理证据。</p>
-<p class="">前面的<a class="inline-link" href="#robofail-cases">抓旋钮与切片案例</a>具体展示了标签与解释需要分别检验。词汇重合度和总体分数的变化，都不能替代对单次判断所引证据的核查。</p>
+<p class="section-summary">
+<strong>小结。</strong>综合 ROUGE-L 的增长主要来自成功识别，不能等同于失败解释的同等改善。<a class="inline-link" href="#robofail-cases">旋钮与切片案例</a>表明，标签与理由需分别核验；可信的原因解释还需要语义与物理证据。</p>
 </section>
 </section>
 <section id="outlook" class="" data-toc>
 <h2>3. 讨论与展望</h2>
-<h3 id="conclusions" data-toc>3.1 研究结论</h3>
+<h3 id="conclusions" data-toc>3.1 已展现的评价能力</h3>
+<p class="">通用多模态模型已有的视觉理解与推理能力，能够支持机器人执行质量比较、进度估计与成败判断。在本次评测中，Astra 的排序与偏好结果可与专用模型竞争；案例还显示，它能够识别目标物体、执行受挫与重试后的完成，无需针对这些任务额外微调。</p>
+<p class="">这些能力对评价接口与上下文的响应并不一致。示例可以改善部分判断，也可能改变评分尺度、增加平分或干扰终态判断。因此，比较、进度、成败与解释应作为不同能力分别评价，不能由单一总分推断模型已具备通用、可靠的机器人 critic 能力。</p>
+<h3 id="failure-modes" data-toc>3.2 Astra 何时仍会判断失误</h3>
 <p class="">
-<strong>通用多模态模型能够提供有竞争力的机器人行为评价。</strong>在沿用官方采样与指标规则的 RBM 评测中，Astra 的排序 τa 为 0.8166、偏好准确率为 92.4%，均高于所引用的 Robometer 报告值；RoboFail 五示例条件的成败准确率达到 85.96%。这些结果表明，即使不针对本次任务进行额外微调，通用模型已有的视觉理解与推理能力也能支持较强的离线行为评价。</p>
+<strong>相似结果可能掩盖质量差异。</strong>在<a href="#blue-bin-case">蓝桶案例</a>中，Astra 将参考为成功和次优的两条轨迹都评为满分。模型识别了共同的开盖结果，却没有区分参考质量等级。</p>
 <p class="">
-<strong>评价能力并不随示例或总体分数一致提高。</strong>加入示例后，进度 VOC 从 93.6 升至 94.2，排序 τa 却从 0.8166 降至 0.7953；RoboFail 五示例条件减少了成功误报，却增加了失败漏检。进度相关性较高仍可能伴随错误的终点估计，综合 ROUGE-L 的提高也主要来自成功识别。因而，当前结果支持使用这些模型比较离线行为，却不足以支持直接将其分数作为可靠的完成判定、失败解释或策略优化奖励。</p>
+<strong>总体趋势正确，终态判断仍可能出错。</strong>
+<a href="#progress-icl">开瓶案例</a>中，示例条件提高了时间相关性，却将成功轨迹的终点进度从 1.00 降至 0.35。轨迹上的平滑变化不能替代对关键状态的识别。</p>
 <p class="">
-<strong>部分评价分歧需要通过明确判据来解决。</strong>任务描述未必规定释放、稳定性等终态要求，也未必规定多个质量维度的优先级。单一分数或偏好标签会压缩这些差异，使标准不一致与模型判断错误难以区分。后续评价应采用明确的多维 rubric，分别核对任务目标、过程约束与终态质量，并检验分项判断与独立标注的一致性。</p>
-<h3 id="limitations" data-toc>3.2 研究局限与未来工作</h3>
-<p class="">本研究评价的是固定离线轨迹，模型覆盖与样本规模有限。57 个 RoboFail 问题来自 15 组轨迹，轨迹对也共享任务与样本；重复调用波动和抽样不确定性尚未量化。后续需要固定模型后端、控制示例选择，并在更多任务与独立样本上检验结果的稳定性。</p>
-<p class="">定性案例用于分析判断依据，不代表各类问题的发生频率。现有结果尚不能完全区分观测不足、评价标准歧义与模型错误。对有争议的案例，应通过多位标注者的独立复核和更明确的分项标准检验分歧；对接触、稳定性等仅靠图像难以确认的状态，则需结合额外视角或传感器证据。</p>
-<h4 id="next-steps">强化学习验证：评价能力能否转化为策略提升？</h4>
-<p class="">下一步将检验两条路径：将经校准的进度或成败判断作为奖励，以及用轨迹偏好训练奖励模型后再优化策略。实验将固定策略初始化、训练算法与环境交互预算，与稀疏环境奖励和专用 critic 对照，报告多随机种子下的成功率、样本效率及模型调用成本。最终成功由独立于评价模型的环境标准或人工复核判定。</p>
-<p class="">闭环验证还需检查策略分布变化与奖励利用：模型是否会给伪完成状态或无效行为高分，策略是否会主动利用这些错误。失败解释对恢复行为或数据选择的价值也需单独消融。本文尚未开展上述强化学习实验，因此不报告策略提升或样本效率收益。</p>
+<strong>判对成败不保证解释可信。</strong>
+<a href="#robofail-cases">抓旋钮案例</a>的零样本回答与失败标签一致，所述原因却不同于参考；五示例条件又将同一子任务判断为成功。另一方面，杯子与垃圾桶的偏好分歧涉及释放、稳定性等未明确的评价标准，应与这类状态误判分开分析。</p>
+<h3 id="limitations" data-toc>3.3 局限与未来工作</h3>
+<p class="">本研究限于固定离线轨迹，模型与任务覆盖有限。RoboFail 的 57 个问题共享 15 组轨迹，轨迹对也共享任务与样本；重复调用与抽样不确定性尚未量化，部分示例对照还存在后端差异。后续需固定模型快照与示例选择规则，在独立任务上检验稳定性。</p>
+<p class="">案例为事后选取，不代表错误频率。对标准含糊的样本，需要明确任务目标、过程约束与终态质量等 rubric，并由多位标注者独立复核；对仅靠图像难以判断的接触与稳定状态，则需补充视角或传感器证据，以区分标准分歧、观测不足与模型错误。</p>
+<p class="">
+<strong id="next-steps">强化学习验证。</strong>下一步将比较直接使用校准后的进度或成败奖励，以及用轨迹偏好训练奖励模型两条路径。固定策略初始化、训练算法与交互预算，与稀疏环境奖励及专用 critic 对照，报告多随机种子下的成功率、样本效率和调用成本；由独立环境标准或人工复核判定成功，并检查新策略是否利用伪完成状态等评价漏洞。本文尚未开展这些闭环实验，不报告策略提升。</p>
 </section>
 <section id="resources" class="" data-toc>
-<h2>数据与参考文献</h2>
-<ul class="resource-links">
-<li>
-<a href="data/report.json" download>完整结果与指标定义 ↓</a>
-</li>
-<li>
-<a href="assets/Beyond-the-Score.pdf" >技术报告 ↗</a>
-</li>
-<li>
-<a href="assets/Beyond-the-Score-blog.md" download>原始博客稿 ↓</a>
-</li>
-<li>
-<a href="evidence.html" >交互证据与逐步预测 ↗</a>
-</li>
-<li>
-<a href="data/rbm-cases.json" download>轨迹案例数据 ↓</a>
-</li>
-<li>
-<a href="data/robofail-cases.json" download>RoboFail 案例数据 ↓</a>
-</li>
-</ul>
+<h2>参考文献</h2>
+<details class="research-detail">
+<summary>补充材料</summary>
+<p class="">
+<a href="assets/Beyond-the-Score.pdf">技术报告 ↗</a> · <a href="evidence.html">案例与逐步预测 ↗</a>
+</p>
+</details>
 <ol class="references">
 <li id="ref-astra">
-<a href="https://developers.openai.com/api/docs/models/gpt-6-astra" target="_blank" rel="noopener">OpenAI. GPT-6 Astra</a>. 官方模型文档；用于模型身份引用。</li>
+<a href="https://developers.openai.com/api/docs/models/gpt-6-astra" target="_blank" rel="noopener">OpenAI. GPT-6 Astra</a>. 模型文档。</li>
 <li id="ref-robometer">
-<a href="https://arxiv.org/abs/2603.02115v1" target="_blank" rel="noopener">Robometer: Scaling General-Purpose Robotic Reward Models via Trajectory Comparisons</a>. 2026. v1, Tables XIII, XVI, XVII.</li>
+<a href="https://arxiv.org/abs/2603.02115v1" target="_blank" rel="noopener">Robometer: Scaling General-Purpose Robotic Reward Models via Trajectory Comparisons</a>. arXiv:2603.02115v1, 2026.</li>
 <li id="ref-rbm">
-<a href="https://robometer.github.io/" target="_blank" rel="noopener">RBM-EVAL-OOD / Robometer</a>. 评测数据入口与网站详细 OOD 表；网站值与论文值分别记录。</li>
+<a href="https://robometer.github.io/" target="_blank" rel="noopener">RBM-EVAL-OOD / Robometer</a>. 项目与评测数据。</li>
 <li id="ref-reflect">
-<a href="https://arxiv.org/abs/2306.15724" target="_blank" rel="noopener">Liu, Bahety, and Song. REFLECT: Summarizing Robot Experiences for Failure Explanation and Correction</a>. CoRL 2023. RoboFail 原始来源。</li>
+<a href="https://arxiv.org/abs/2306.15724" target="_blank" rel="noopener">Liu, Bahety, and Song. REFLECT: Summarizing Robot Experiences for Failure Explanation and Correction</a>. CoRL, 2023.</li>
 <li id="ref-rynnvalue">
-<a href="https://arxiv.org/abs/2608.09853v1" target="_blank" rel="noopener">RynnValue: Scaling Robotic Value Foundation Models with Temporal Distance</a>. 2026. Table 2, §4.2.</li>
+<a href="https://arxiv.org/abs/2608.09853v1" target="_blank" rel="noopener">RynnValue: Scaling Robotic Value Foundation Models with Temporal Distance</a>. arXiv:2608.09853v1, 2026.</li>
 <li id="ref-sol">
-<a href="https://developers.openai.com/api/docs/models/gpt-5.6-sol" target="_blank" rel="noopener">OpenAI. GPT-5.6 Sol</a>. 官方模型文档；用于模型身份引用。</li>
+<a href="https://developers.openai.com/api/docs/models/gpt-5.6-sol" target="_blank" rel="noopener">OpenAI. GPT-5.6 Sol</a>. 模型文档。</li>
 <li id="ref-deepseek">
-<a href="https://www.deepseek.com/en/news/deepseek-v4-1-flash/" target="_blank" rel="noopener">DeepSeek. Introducing DeepSeek-V4.1-Flash</a>. 2026 年 9 月 10 日官方发布。</li>
+<a href="https://www.deepseek.com/en/news/deepseek-v4-1-flash/" target="_blank" rel="noopener">DeepSeek. Introducing DeepSeek-V4.1-Flash</a>. 2026.</li>
 <li id="ref-aha">
-<a href="https://aha-vlm.github.io/" target="_blank" rel="noopener">AHA: A Vision-Language-Model for Detecting and Reasoning over Failures in Robotic Manipulation</a>. ICLR 2025. Tables 3/4；<a href="https://github.com/NVlabs/AHA" target="_blank" rel="noopener">评测代码</a>; 评分实现记录版本：<code>0d39c0591566ddaf997be5822f3dead8e08501aa</code>.</li>
+<a href="https://aha-vlm.github.io/" target="_blank" rel="noopener">AHA: A Vision-Language-Model for Detecting and Reasoning over Failures in Robotic Manipulation</a>. ICLR, 2025.</li>
 <li id="ref-guardian">
-<a href="https://arxiv.org/html/2512.01946v4" target="_blank" rel="noopener">Guardian</a>. v4, Tables 1/2.</li>
+<a href="https://arxiv.org/html/2512.01946v4" target="_blank" rel="noopener">Guardian</a>. arXiv:2512.01946v4.</li>
 <li id="ref-primo">
-<a href="https://arxiv.org/html/2603.15600" target="_blank" rel="noopener">PRIMO</a>. Table 3, Appendix A.3.</li>
+<a href="https://arxiv.org/html/2603.15600" target="_blank" rel="noopener">PRIMO</a>. arXiv:2603.15600, 2026.</li>
 <li id="ref-unexpected">
-<a href="https://arxiv.org/abs/2609.24170" target="_blank" rel="noopener">An Unexpected Robot Policy</a>. GPT-6 Astra 的 RoboDojo action-policy 评估。</li>
+<a href="https://arxiv.org/abs/2609.24170" target="_blank" rel="noopener">An Unexpected Robot Policy</a>. arXiv:2609.24170, 2026.</li>
 <li id="ref-astranomy">
-<a href="https://research.nvidia.com/labs/srl/projects/astranomy/" target="_blank" rel="noopener">Astranomy</a>. GPT-6 Astra 作为原生机器人策略的实证研究。</li>
+<a href="https://research.nvidia.com/labs/srl/projects/astranomy/" target="_blank" rel="noopener">Yang et al. Astranomy: An Empirical Study of GPT-6 Astra as a Native Robot Policy</a>. NVIDIA Seattle Robotics Lab，2026。</li>
 <li id="ref-embodied">
-<a href="https://arxiv.org/abs/2609.38537" target="_blank" rel="noopener">Systematically Exploring the Capabilities of GPT-6 Astra as Embodied Policies</a>. 直接控制、策略协作和反馈适应的跨领域评估。</li>
+<a href="https://arxiv.org/abs/2609.38537" target="_blank" rel="noopener">Systematically Exploring the Capabilities of GPT-6 Astra as Embodied Policies</a>. arXiv:2609.38537, 2026.</li>
 <li id="ref-flora">
-<a href="https://huggingface.co/nvidia/Flora-Rewarder" target="_blank" rel="noopener">NVIDIA. Flora-Rewarder</a>. 官方模型说明，rubric 分项评分接口。</li>
+<a href="https://huggingface.co/nvidia/Flora-Rewarder" target="_blank" rel="noopener">NVIDIA. Flora-Rewarder</a>. 模型说明。</li>
 </ol>
-<p class="fine">完整 RBM 表还列出 GVL、VLAC、RoboReward、ReWiND、RL-VLM-F、TOPReward 与 Robo-Dopamine。其数值来自表内注明的 Robometer 论文或网站记录，不表示这些方法的原论文均评估了 RBM。</p>
 <details class="research-detail">
 <summary>其他方法文献</summary>
 <ul class="references">
@@ -2315,7 +2305,21 @@
 <li>GVL: Vision Language Models Are In-Context Value Learners. ICLR, 2025.</li>
 </ul>
 </details>
-<p class="fine">实验与文献数值沿用已核验的 2026 年 9 月 23 日记录，结合 10 月 14 日中文稿和已有案例整理。网页更新不增加新的聚合实验结果，文献值不代表实时榜单。背景补充了截至 2026 年 10 月 15 日核对的 action-policy 工作，不将其策略成功率混入本文评测。</p>
+</section>
+<section id="citation" class="" data-toc>
+<h2>引用本文</h2>
+<p class="">引用本文：</p>
+<pre class="citation-block" tabindex="0" aria-label="BibTeX">
+<code>@misc{zhang2026beyondthescore,
+  title        = {Beyond the Score: Early Evaluations of {GPT-6 Astra} as a Robot Critic},
+  author       = {Zhang, Jinhao and Zhang, Yuwei and Zhou, Weitao and others},
+  year         = {2026},
+  month        = oct,
+  organization = {Simple AI},
+  howpublished = {\url{https://yuweizhang2002.github.io/beyond-the-score/}},
+  note         = {Research blog}
+}</code>
+</pre>
 </section>
 </article>
 </div>
