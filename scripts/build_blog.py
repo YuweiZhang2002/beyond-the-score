@@ -15,6 +15,7 @@ VISIBILITY_PATH = ROOT / 'data/robofail-visibility.json'
 VISIBILITY = json.loads(VISIBILITY_PATH.read_text()) if VISIBILITY_PATH.exists() else None
 CONFIRMED = json.loads((ROOT / 'data/confirmed-blog.json').read_text())
 IMAGE_SIZES = json.loads((ROOT / 'data/media-dimensions.json').read_text())
+REFERENCES = json.loads((ROOT / 'data/references.json').read_text())
 LANG = 'zh'
 REFERENCE_LABELS = {
     'astra': (1, 'OpenAI: GPT-6 Astra'),
@@ -293,25 +294,17 @@ def article():
 
 def resources():
     body = detail('补充材料', 'Supplementary materials', p('<a href="assets/Beyond-the-Score.pdf">技术报告 ↗</a> · <a href="evidence.html">案例与逐步预测 ↗</a>', '<a href="assets/Beyond-the-Score.pdf">Technical report ↗</a> · <a href="evidence.html">Cases and step-by-step predictions ↗</a>'))
-    refs = [
-        ('astra', 'https://developers.openai.com/api/docs/models/gpt-6-astra', 'OpenAI. GPT-6 Astra', t('模型文档。', 'Model documentation.')),
-        ('robometer', 'https://arxiv.org/abs/2603.02115v1', 'Robometer: Scaling General-Purpose Robotic Reward Models via Trajectory Comparisons', 'arXiv:2603.02115v1, 2026.'),
-        ('rbm', 'https://robometer.github.io/', 'RBM-EVAL-OOD / Robometer', t('项目与评测数据。', 'Project and evaluation data.')),
-        ('reflect', 'https://arxiv.org/abs/2306.15724', 'Liu, Bahety, and Song. REFLECT: Summarizing Robot Experiences for Failure Explanation and Correction', 'CoRL, 2023.'),
-        ('rynnvalue', 'https://arxiv.org/abs/2608.09853v1', 'RynnValue: Scaling Robotic Value Foundation Models with Temporal Distance', 'arXiv:2608.09853v1, 2026.'),
-        ('sol', 'https://developers.openai.com/api/docs/models/gpt-5.6-sol', 'OpenAI. GPT-5.6 Sol', t('模型文档。', 'Model documentation.')),
-        ('deepseek', 'https://www.deepseek.com/en/news/deepseek-v4-1-flash/', 'DeepSeek. Introducing DeepSeek-V4.1-Flash', '2026.'),
-        ('aha', 'https://aha-vlm.github.io/', 'AHA: A Vision-Language-Model for Detecting and Reasoning over Failures in Robotic Manipulation', 'ICLR, 2025.'),
-        ('guardian', 'https://arxiv.org/html/2512.01946v4', 'Guardian', 'arXiv:2512.01946v4.'),
-        ('primo', 'https://arxiv.org/html/2603.15600', 'PRIMO', 'arXiv:2603.15600, 2026.'),
-        ('unexpected', 'https://arxiv.org/abs/2609.24170', 'An Unexpected Robot Policy', 'arXiv:2609.24170, 2026.'),
-        ('astranomy', 'https://research.nvidia.com/labs/srl/projects/astranomy/', 'Yang et al. Astranomy: An Empirical Study of GPT-6 Astra as a Native Robot Policy', t('NVIDIA Seattle Robotics Lab，2026。', 'NVIDIA Seattle Robotics Lab, 2026.')),
-        ('embodied', 'https://arxiv.org/abs/2609.38537', 'Systematically Exploring the Capabilities of GPT-6 Astra as Embodied Policies', 'arXiv:2609.38537, 2026.'),
-        ('flora', 'https://huggingface.co/nvidia/Flora-Rewarder', 'NVIDIA. Flora-Rewarder', t('模型说明。', 'Model card.')),
-    ]
-    body += '<ol class="references">' + ''.join(f'<li id="ref-{key}"><a href="{url}" target="_blank" rel="noopener">{name}</a>. {note}</li>' for key, url, name, note in refs) + '</ol>'
-    body += detail('其他方法文献', 'Additional method references', '<ul class="references">' + ''.join(f'<li><a href="{url}" target="_blank" rel="noopener">{name}</a></li>' for url, name in [
-        ('https://arxiv.org/abs/2509.15937','VLAC'), ('https://arxiv.org/abs/2601.00675','RoboReward'), ('https://arxiv.org/abs/2505.10911','ReWiND'), ('https://arxiv.org/abs/2402.03681','RL-VLM-F'), ('https://arxiv.org/abs/2602.19313','TOPReward'), ('https://arxiv.org/abs/2512.23703','Robo-Dopamine')]) + '<li>GVL: Vision Language Models Are In-Context Value Learners. ICLR, 2025.</li></ul>')
+    def reference_item(ref):
+        note = ref['publication']
+        if note == 'accessed':
+            note = t('访问于 2026 年 10 月 22 日。', 'Accessed October 22, 2026.')
+        return (f'<li id="ref-{ref["key"]}">{escape(ref["authors"].rstrip("."))}. '
+                f'<a href="{escape(ref["url"], quote=True)}" target="_blank" rel="noopener">'
+                f'{escape(ref["title"])}.</a> {escape(note)}</li>')
+    body += '<ol class="references">' + ''.join(
+        reference_item(ref) for ref in REFERENCES['references'] if ref['group'] == 'main') + '</ol>'
+    body += detail('其他方法文献', 'Additional method references', '<ul class="references">' + ''.join(
+        reference_item(ref) for ref in REFERENCES['references'] if ref['group'] == 'additional') + '</ul>')
     references = section('resources', '参考文献', 'References', body)
     bibtex = (ROOT / 'CITATION.bib').read_text().strip()
     citation = p('引用本文：', 'To cite this article:')

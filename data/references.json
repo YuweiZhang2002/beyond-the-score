@@ -1,0 +1,252 @@
+{
+  "checked_on": "2026-10-22",
+  "references": [
+    {
+      "key": "astra",
+      "authors": "OpenAI",
+      "title": "GPT-6 Astra",
+      "url": "https://developers.openai.com/api/docs/models/gpt-6-astra",
+      "publication": "accessed",
+      "group": "main",
+      "verification_sources": [
+        "https://developers.openai.com/api/docs/models/gpt-6-astra"
+      ],
+      "verification_note": "Undated live API documentation; use access date, not an inferred publication year."
+    },
+    {
+      "key": "robometer",
+      "authors": "Liang et al.",
+      "title": "Robometer: Scaling General-Purpose Robotic Reward Models via Trajectory Comparisons",
+      "url": "https://arxiv.org/abs/2603.02115v1",
+      "publication": "RSS, 2026.",
+      "group": "main",
+      "verification_sources": [
+        "https://arxiv.org/abs/2603.02115v1",
+        "https://robometer.github.io/"
+      ],
+      "verification_note": "Venue verified on the official project page. Keep the v1 link because the numerical comparison cites v1; do not silently replace it with the later version."
+    },
+    {
+      "key": "rbm",
+      "authors": "Liang et al.",
+      "title": "RBM-EVAL-OOD",
+      "url": "https://robometer.github.io/",
+      "publication": "2026.",
+      "group": "main",
+      "verification_sources": [
+        "https://robometer.github.io/"
+      ],
+      "verification_note": "Evaluation dataset/project resource, not a separate conference paper."
+    },
+    {
+      "key": "reflect",
+      "authors": "Liu, Bahety, and Song",
+      "title": "REFLECT: Summarizing Robot Experiences for Failure Explanation and Correction",
+      "url": "https://arxiv.org/abs/2306.15724",
+      "publication": "CoRL, 2023.",
+      "group": "main",
+      "verification_sources": [
+        "https://arxiv.org/abs/2306.15724"
+      ]
+    },
+    {
+      "key": "rynnvalue",
+      "authors": "Huang et al.",
+      "title": "RynnValue: Scaling Robotic Value Foundation Models with Temporal Distance",
+      "url": "https://arxiv.org/abs/2608.09853v1",
+      "publication": "2026.",
+      "group": "main",
+      "verification_sources": [
+        "https://arxiv.org/abs/2608.09853v1",
+        "https://alibaba-damo-academy.github.io/RynnValue.github.io/"
+      ]
+    },
+    {
+      "key": "sol",
+      "authors": "OpenAI",
+      "title": "GPT-5.6 Sol",
+      "url": "https://developers.openai.com/api/docs/models/gpt-5.6-sol",
+      "publication": "accessed",
+      "group": "main",
+      "verification_sources": [
+        "https://developers.openai.com/api/docs/models/gpt-5.6-sol"
+      ],
+      "verification_note": "Undated live API documentation; use access date, not an inferred publication year."
+    },
+    {
+      "key": "deepseek",
+      "authors": "DeepSeek",
+      "title": "Introducing DeepSeek-V4.1-Flash: smarter, faster, more efficient",
+      "url": "https://www.deepseek.com/en/news/deepseek-v4-1-flash/",
+      "publication": "2026.",
+      "group": "main",
+      "verification_sources": [
+        "https://www.deepseek.com/en/news/deepseek-v4-1-flash/"
+      ]
+    },
+    {
+      "key": "aha",
+      "authors": "Duan et al.",
+      "title": "AHA: A Vision-Language-Model for Detecting and Reasoning over Failures in Robotic Manipulation",
+      "url": "https://aha-vlm.github.io/",
+      "publication": "ICLR, 2025.",
+      "group": "main",
+      "verification_sources": [
+        "https://aha-vlm.github.io/"
+      ]
+    },
+    {
+      "key": "guardian",
+      "authors": "Pacaud et al.",
+      "title": "Guardian: Detecting Robotic Planning and Execution Errors with Vision-Language Models",
+      "url": "https://arxiv.org/abs/2512.01946v4",
+      "publication": "2025.",
+      "group": "main",
+      "verification_sources": [
+        "https://arxiv.org/abs/2512.01946v4",
+        "https://www.di.ens.fr/willow/research/guardian/"
+      ],
+      "verification_note": "The cited arXiv record was first submitted in 2025 and revised as v4 in 2026. The project page now uses a different title, Detecting Robotic Manipulation Failures with Vision-Language Models, and announces WACV 2027 acceptance. Preserve the cited preprint title and year instead of combining metadata from different versions."
+    },
+    {
+      "key": "primo",
+      "authors": "Liu et al.",
+      "title": "From Passive Observer to Active Critic: Reinforcement Learning Elicits Process Reasoning for Robotic Manipulation",
+      "url": "https://arxiv.org/abs/2603.15600",
+      "publication": "ECCV, 2026.",
+      "group": "main",
+      "verification_sources": [
+        "https://arxiv.org/abs/2603.15600"
+      ]
+    },
+    {
+      "key": "unexpected",
+      "authors": "Zhang et al.",
+      "title": "An Unexpected Robot Policy: Early Evaluations of GPT-6 Astra on RoboDojo and Beyond",
+      "url": "https://arxiv.org/abs/2609.24170",
+      "publication": "2026.",
+      "group": "main",
+      "verification_sources": [
+        "https://arxiv.org/abs/2609.24170"
+      ]
+    },
+    {
+      "key": "astranomy",
+      "authors": "Yang, Khetan, and Zhang",
+      "title": "Astranomy: An Empirical Study of GPT-6 Astra as a Native Robot Policy",
+      "url": "https://research.nvidia.com/labs/srl/projects/astranomy/",
+      "publication": "2026.",
+      "group": "main",
+      "verification_sources": [
+        "https://research.nvidia.com/labs/srl/projects/astranomy/"
+      ]
+    },
+    {
+      "key": "embodied",
+      "authors": "Galbot Team",
+      "title": "Systematically Exploring the Capabilities of GPT-6 Astra as Embodied Policies",
+      "url": "https://arxiv.org/abs/2609.38537",
+      "publication": "2026.",
+      "group": "main",
+      "verification_sources": [
+        "https://arxiv.org/abs/2609.38537"
+      ]
+    },
+    {
+      "key": "flora",
+      "authors": "NVIDIA",
+      "title": "Flora-Rewarder",
+      "url": "https://huggingface.co/nvidia/Flora-Rewarder",
+      "publication": "2026.",
+      "group": "main",
+      "verification_sources": [
+        "https://huggingface.co/nvidia/Flora-Rewarder"
+      ],
+      "verification_note": "Official NVIDIA model card gives release date October 15, 2026; do not treat unrelated model-card bibliography entries as the Flora paper."
+    },
+    {
+      "key": "vlac",
+      "authors": "Zhai et al.",
+      "title": "A Vision-Language-Action-Critic Model for Robotic Real-World Reinforcement Learning",
+      "url": "https://arxiv.org/abs/2509.15937",
+      "publication": "2025.",
+      "group": "additional",
+      "verification_sources": [
+        "https://arxiv.org/abs/2509.15937",
+        "https://github.com/InternRobotics/VLAC"
+      ],
+      "verification_note": "The official repository supplies two distinct citations: this Zhai-led 2025 preprint and a Zhang-led ICML 2026 paper titled A Generalist Pair-wise Progress Critic Model for Vision-Language-Action Robots. Do not attach the latter venue to this preprint title."
+    },
+    {
+      "key": "roboreward",
+      "authors": "Lee et al.",
+      "title": "RoboReward: General-Purpose Vision-Language Reward Models for Robotics",
+      "url": "https://arxiv.org/abs/2601.00675",
+      "publication": "2026.",
+      "group": "additional",
+      "verification_sources": [
+        "https://arxiv.org/abs/2601.00675"
+      ]
+    },
+    {
+      "key": "rewind",
+      "authors": "Zhang et al.",
+      "title": "ReWiND: Language-Guided Rewards Teach Robot Policies without New Demonstrations",
+      "url": "https://arxiv.org/abs/2505.10911",
+      "publication": "CoRL, 2025.",
+      "group": "additional",
+      "verification_sources": [
+        "https://arxiv.org/abs/2505.10911"
+      ]
+    },
+    {
+      "key": "rlvlmf",
+      "authors": "Wang et al.",
+      "title": "RL-VLM-F: Reinforcement Learning from Vision Language Foundation Model Feedback",
+      "url": "https://arxiv.org/abs/2402.03681",
+      "publication": "ICML, 2024.",
+      "group": "additional",
+      "verification_sources": [
+        "https://arxiv.org/abs/2402.03681"
+      ]
+    },
+    {
+      "key": "topreward",
+      "authors": "Chen et al.",
+      "title": "TOPReward: Token Probabilities as Hidden Zero-Shot Rewards for Robotics",
+      "url": "https://arxiv.org/abs/2602.19313",
+      "publication": "2026.",
+      "group": "additional",
+      "verification_sources": [
+        "https://arxiv.org/abs/2602.19313",
+        "https://github.com/TOPReward/TOPReward"
+      ]
+    },
+    {
+      "key": "robodopamine",
+      "authors": "Tan et al.",
+      "title": "Robo-Dopamine: General Process Reward Modeling for High-Precision Robotic Manipulation",
+      "url": "https://arxiv.org/abs/2512.23703",
+      "publication": "CVPR, 2026.",
+      "group": "additional",
+      "verification_sources": [
+        "https://arxiv.org/abs/2512.23703",
+        "https://robo-dopamine.github.io/"
+      ]
+    },
+    {
+      "key": "gvl",
+      "authors": "Ma et al.",
+      "title": "Vision Language Models are In-Context Value Learners",
+      "url": "https://arxiv.org/abs/2411.04549",
+      "publication": "ICLR, 2025.",
+      "group": "additional",
+      "verification_sources": [
+        "https://arxiv.org/abs/2411.04549",
+        "https://generative-value-learning.github.io/",
+        "https://openreview.net/pdf/20db6b8c79e29a38bf57ab8d7f3d84edc62a9ff5.pdf"
+      ],
+      "verification_note": "Title and authors verified on arXiv and the official project. ICLR 2025 verified in indexed OpenReview paper text; direct OpenReview retrieval returned a browser challenge."
+    }
+  ]
+}
