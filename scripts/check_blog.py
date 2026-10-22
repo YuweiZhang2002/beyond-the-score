@@ -122,7 +122,7 @@ for name,text in pages.items():
             for i,j in enumerate(case['judgments'][model]):
                 answer=j['prediction']['model_answer']
                 assert answer['reason'] in unescape(block),(name,slug,'missing original reason')
-                model_name='Astra' if model=='astra' else 'DeepSeek-V4.1-Flash'
+                model_name='gpt-6-astra' if model=='astra' else 'DeepSeek-V4.1-Flash'
                 result=(f'{case["trajectories"][i]["display"]} · {answer["score"]:.2f}' if case['stage']=='policy_ranking' else ('实际选择 ' if lang=='zh' else 'Actual choice ')+answer['winner'])
                 assert f'<dt>{model_name} · {result}</dt>' in block
         if case['stage']=='policy_ranking':

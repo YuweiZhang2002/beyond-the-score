@@ -4,7 +4,7 @@ import json, os, shutil, struct, subprocess, tempfile
 ROOT = Path(__file__).resolve().parents[1]
 rows = json.loads((ROOT / 'data/report.json').read_text())['table5_robofail_aha']['rows']
 names = {r[0]: r[0] for r in rows}
-names.update({'Astra / zero-shot': 'GPT-6 Astra / Zero-shot', 'Astra / 5 examples': 'GPT-6 Astra / Five-example ICL'})
+names.update({'Astra / zero-shot': 'gpt-6-astra / Zero-shot', 'Astra / 5 examples': 'gpt-6-astra / ICL (5 examples)'})
 study = sorted([r for r in rows if r[1]=='study'], key=lambda r:-r[2])
 external = sorted([r for r in rows if r[1]!='study'], key=lambda r:-r[2])
 s = (ROOT/'assets/figures/source/03_progress.tex').read_text().split('\\fill[cardbg')[0]

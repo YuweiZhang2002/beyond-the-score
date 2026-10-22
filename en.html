@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Beyond the Score: Early Evaluations of GPT-6 Astra as a Robot Critic · Simple AI</title>
-<meta name="description" content="Offline evaluations of GPT-6 Astra as a robot critic: trajectory quality, progress estimation, failure diagnosis, context examples, and limitations.">
+<title>Beyond the Score: Early Evaluations of gpt-6-astra as a Robot Critic · Simple AI</title>
+<meta name="description" content="Offline evaluations of gpt-6-astra as a robot critic: trajectory quality, progress estimation, failure diagnosis, context examples, and limitations.">
 <meta name="theme-color" content="#f8f7f3">
 <meta name="citation_author" content="Jinhao Zhang">
 <meta name="citation_author" content="Yuwei Zhang">
 <meta name="citation_author" content="Weitao Zhou">
-<meta property="og:title" content="Beyond the Score: Early Evaluations of GPT-6 Astra as a Robot Critic">
-<meta property="og:description" content="Offline evaluations of GPT-6 Astra as a robot critic: trajectory quality, progress estimation, failure diagnosis, context examples, and limitations.">
+<meta property="og:title" content="Beyond the Score: Early Evaluations of gpt-6-astra as a Robot Critic">
+<meta property="og:description" content="Offline evaluations of gpt-6-astra as a robot critic: trajectory quality, progress estimation, failure diagnosis, context examples, and limitations.">
 <meta property="og:type" content="article">
 <link rel="alternate" hreflang="zh-CN" href="index.html">
 <link rel="alternate" hreflang="en" href="en.html">
@@ -51,7 +51,7 @@
 <a class="subsection" href="#explanations">2.4 Explanations and scores</a>
 <a class="" href="#outlook">3. Discussion and outlook</a>
 <a class="subsection" href="#conclusions">3.1 Main findings</a>
-<a class="subsection" href="#failure-modes">3.2 How and when Astra fails</a>
+<a class="subsection" href="#failure-modes">3.2 How and when gpt-6-astra fails</a>
 <a class="subsection" href="#limitations">3.3 Limitations and future work</a>
 <a class="" href="#resources">References</a>
 <a class="" href="#citation">Citation</a>
@@ -63,7 +63,7 @@
 </p>
 <h1>
 <span class="title-name">Beyond the Score</span>
-<span class="title-description">Early Evaluations of GPT-6 Astra as a Robot Critic</span>
+<span class="title-description">Early Evaluations of gpt-6-astra as a Robot Critic</span>
 </h1>
 <div class="author-block">
 <p class="authors">
@@ -82,11 +82,11 @@
 <h2>Key takeaways</h2>
 <ul>
 <li>
-<strong>Astra distinguishes execution quality without task-specific fine-tuning.</strong> Zero-shot ranking τa is 0.8166 and direct preference accuracy is 92.4%, the highest point estimates among the three general-purpose configurations tested here.</li>
+<strong>gpt-6-astra distinguishes execution quality without task-specific fine-tuning.</strong> Zero-shot ranking τa is 0.8166 and direct preference accuracy is 92.4%, the highest point estimates among the three general-purpose configurations tested here.</li>
 <li>
 <strong>Context examples have mixed effects.</strong> Progress VOC rises from 93.6 to 94.2, while ranking τa falls from 0.8166 to 0.7953. In a bottle-opening example, higher progress correlation also accompanies a worse endpoint estimate.</li>
 <li>
-<strong>Higher RoboFail accuracy comes with lower failure recall.</strong> Accuracy is 85.96% with five examples versus 64.91% zero-shot. False alarms fall from 18 to 2, but misses rise from 2 to 6.</li>
+<strong>Higher RoboFail accuracy comes with lower failure recall.</strong> Accuracy is 85.96% with five-example ICL versus 64.91% zero-shot. False alarms fall from 18 to 2, but misses rise from 2 to 6.</li>
 <li>
 <strong>Most of the composite explanation-score gain comes from success recognition.</strong> ROUGE-L rises from 0.185 to 0.499; about 89.3% of the gain comes from the correct-success term, rather than the failure-explanation term.</li>
 </ul>
@@ -95,8 +95,8 @@
 <h2>Introduction</h2>
 <p class="">Robot systems need to evaluate their own behavior: assess how far a task has progressed, compare the quality of different executions, and identify and explain failures. General-purpose multimodal models can jointly process visual observations and task descriptions, while receiving evaluation criteria and examples through context, offering a way to make these judgments without additional task-specific fine-tuning. We ask: <strong>To what extent can the existing visual understanding and reasoning capabilities of general-purpose multimodal models support the evaluation of robot behavior? How do these capabilities vary across evaluation tasks, available observations, and in-context examples?</strong>
 </p>
-<p class="">We conduct an empirical study with GPT-6 Astra<sup class="citation">
-<a href="#ref-astra" aria-label="OpenAI: GPT-6 Astra">[1]</a>
+<p class="">We conduct an empirical study with gpt-6-astra<sup class="citation">
+<a href="#ref-astra" aria-label="OpenAI: gpt-6-astra">[1]</a>
 </sup> as our primary subject on RBM<sup class="citation">
 <a href="#ref-robometer" aria-label="Robometer">[2]</a>
 </sup>
@@ -105,11 +105,11 @@
 </sup> and RoboFail<sup class="citation">
 <a href="#ref-reflect" aria-label="REFLECT / RoboFail">[4]</a>
 </sup>. We examine trajectory quality scoring, direct preference judgments, task progress estimation, and subtask success and failure judgments with explanations, assessing the model's ability to compare executions, track task progression, and recognize failures. We further compare zero-shot performance with conditions that provide in-context examples, and use exploratory observation-masking cases to examine how responses change with the available visual information.</p>
-<p class="">Our results identify <strong>execution-quality comparison as a strength of Astra in this study, but this ability does not translate into equally reliable completion judgments or failure diagnosis.</strong> Zero-shot ranking reaches Kendall τ<sub>a</sub> = <strong>0.8166</strong>, numerically above the published values of 0.655 for the specialized Robometer model<sup class="citation">
+<p class="">Our results identify <strong>execution-quality comparison as a strength of gpt-6-astra in this study, but this ability does not translate into equally reliable completion judgments or failure diagnosis.</strong> Zero-shot ranking reaches Kendall τ<sub>a</sub> = <strong>0.8166</strong>, numerically above the published values of 0.655 for the specialized Robometer model<sup class="citation">
 <a href="#ref-robometer" aria-label="Robometer">[2]</a>
 </sup> and 0.675 for RynnValue-8B<sup class="citation">
 <a href="#ref-rynnvalue" aria-label="RynnValue">[5]</a>
-</sup>; direct preference accuracy is <strong>92.4%</strong>. On RoboFail, zero-shot and five-example accuracy is <strong>64.91% and 85.96%</strong>, respectively, yet missed failures increase from <strong>2 to 6</strong>; <strong>89.3%</strong> of the composite explanation-score gain comes from correct success judgments. The evidence therefore supports Astra for offline execution-quality comparison, but <strong>it still misjudges completion and misses real failures, and higher composite explanation scores do not establish reliable diagnosis of failure causes</strong>. Whether these assessments improve policy learning or closed-loop execution remains untested.</p>
+</sup>; direct preference accuracy is <strong>92.4%</strong>. On RoboFail, zero-shot and five-example ICL accuracy is <strong>64.91% and 85.96%</strong>, respectively, yet missed failures increase from <strong>2 to 6</strong>; <strong>89.3%</strong> of the composite explanation-score gain comes from correct success judgments. The evidence therefore supports gpt-6-astra for offline execution-quality comparison, but <strong>it still misjudges completion and misses real failures, and higher composite explanation scores do not establish reliable diagnosis of failure causes</strong>. Whether these assessments improve policy learning or closed-loop execution remains untested.</p>
 </section>
 <section id="setup" class="" data-toc>
 <h2>1. Study design</h2>
@@ -123,8 +123,8 @@
 <a href="#ref-reflect" aria-label="REFLECT / RoboFail">[4]</a>
 </sup>.</p>
 <h3 id="comparison-protocol" data-toc>1.2 Model configurations and evaluation conditions</h3>
-<p class="">Our primary subject is GPT-6 Astra<sup class="citation">
-<a href="#ref-astra" aria-label="OpenAI: GPT-6 Astra">[1]</a>
+<p class="">Our primary subject is gpt-6-astra<sup class="citation">
+<a href="#ref-astra" aria-label="OpenAI: gpt-6-astra">[1]</a>
 </sup>, supplied with task descriptions and observations through prompts, without additional evaluation-task fine-tuning. The RBM evaluation also includes zero-shot comparisons with GPT-5.6-sol<sup class="citation">
 <a href="#ref-sol" aria-label="OpenAI: GPT-5.6 Sol">[6]</a>
 </sup> and DeepSeek-V4.1-Flash<sup class="citation">
@@ -139,13 +139,13 @@
 <h2>2. Results</h2>
 <section id="quality-results" class="result-topic" data-toc>
 <h3>2.1 Trajectory quality and preference</h3>
-<p class="">We compare independent trajectory scores and direct preference judgments from GPT-6 Astra<sup class="citation">
-<a href="#ref-astra" aria-label="OpenAI: GPT-6 Astra">[1]</a>
+<p class="">We compare independent trajectory scores and direct preference judgments from gpt-6-astra<sup class="citation">
+<a href="#ref-astra" aria-label="OpenAI: gpt-6-astra">[1]</a>
 </sup>, GPT-5.6-sol<sup class="citation">
 <a href="#ref-sol" aria-label="OpenAI: GPT-5.6 Sol">[6]</a>
 </sup>, and DeepSeek-V4.1-Flash<sup class="citation">
 <a href="#ref-deepseek" aria-label="DeepSeek-V4.1-Flash">[7]</a>
-</sup>, with Astra cases illustrating the basis of its judgments.</p>
+</sup>, with gpt-6-astra cases illustrating the basis of its judgments.</p>
 <p class="fine">Videos in this section replay the eight model-input frames.</p>
 <h4 id="ranking-results" data-toc>2.1.1 Trajectory quality ranking</h4>
 <p>We follow the RBM-EVAL-OOD trajectory quality ranking approach<sup class="citation">
@@ -153,8 +153,8 @@
 </sup>
 <sup class="citation">
 <a href="#ref-rbm" aria-label="RBM-EVAL-OOD">[3]</a>
-</sup>: score trajectories independently and use Kendall τ<sub>a</sub> to measure agreement with the reference order of success &gt; suboptimal &gt; failure within the same task. In the zero-shot setting, GPT-6 Astra, GPT-5.6-sol, and DeepSeek-V4.1-Flash reach <strong>0.8166, 0.7500, and 0.5300</strong>, respectively. All three general-purpose multimodal models distinguish execution quality, with substantial numerical differences in agreement. Astra scores highest in this evaluation.</p>
-<p>Astra and GPT-5.6-sol also score numerically above the published results of specialized models RynnValue-8B (0.675)<sup class="citation">
+</sup>: score trajectories independently and use Kendall τ<sub>a</sub> to measure agreement with the reference order of success &gt; suboptimal &gt; failure within the same task. In the zero-shot setting, gpt-6-astra, GPT-5.6-sol, and DeepSeek-V4.1-Flash reach <strong>0.8166, 0.7500, and 0.5300</strong>, respectively. All three general-purpose multimodal models distinguish execution quality, with substantial numerical differences in agreement. gpt-6-astra scores highest in this evaluation.</p>
+<p>gpt-6-astra and GPT-5.6-sol also score numerically above the published results of specialized models RynnValue-8B (0.675)<sup class="citation">
 <a href="#ref-rynnvalue" aria-label="RynnValue">[5]</a>
 </sup> and Robometer (0.655)<sup class="citation">
 <a href="#ref-robometer" aria-label="Robometer">[2]</a>
@@ -169,14 +169,14 @@
 
 <div class="positive-case" data-positive-case="ranking-drawer">
 <h5 class="case-title" id="ranking-drawer-case">Case Study: distinguishing a closed drawer from one left open</h5>
-<p>In this xArm drawer-closing task, A is labeled successful and B failed. Astra assigns <strong>1.00 and 0.00</strong>, respectively, correctly ordering the trajectories. DeepSeek assigns <strong>0.20 and 0.30</strong>, reversing the reference order.</p>
+<p>In this xArm drawer-closing task, A is labeled successful and B failed. gpt-6-astra assigns <strong>1.00 and 0.00</strong>, respectively, correctly ordering the trajectories. DeepSeek assigns <strong>0.20 and 0.30</strong>, reversing the reference order.</p>
 <div class="table-scroll" role="region" tabindex="0">
 <table class="case-table">
 <caption>Table 1. Independent scores for the same task, on a 0–1 scale. A/B distinguish trajectories in this article; each scoring request contains one video.</caption>
 <thead>
 <tr>
 <th scope="col">Trajectory / reference label</th>
-<th scope="col">Astra</th>
+<th scope="col">gpt-6-astra</th>
 <th scope="col">DeepSeek-V4.1-Flash</th>
 </tr>
 </thead>
@@ -211,16 +211,16 @@
 </figure>
 </div>
 <p class="case-replay-note" id="ranking-drawer-note">Replay of the eight model-input frames.</p>
-<p>In the input frames, A pushes the drawer front back until its interior is no longer exposed; B ends with the drawer visibly open. Astra’s reasons identify this final-state difference. DeepSeek instead describes A as remaining in its initial open position.</p>
+<p>In the input frames, A pushes the drawer front back until its interior is no longer exposed; B ends with the drawer visibly open. gpt-6-astra’s reasons identify this final-state difference. DeepSeek instead describes A as remaining in its initial open position.</p>
 <details class="method-detail">
 <summary>Read both models’ original reasons</summary>
 <dl class="model-quotes">
 <div>
-<dt>Astra · A · 1.00</dt>
+<dt>gpt-6-astra · A · 1.00</dt>
 <dd lang="en">The robot pushes the protruding drawer inward until its front is flush with the cabinet frame and the open top is no longer visible. The final frames show the drawer closed.</dd>
 </div>
 <div>
-<dt>Astra · B · 0.00</dt>
+<dt>gpt-6-astra · B · 0.00</dt>
 <dd lang="en">The drawer remains extended with its open interior clearly visible in the final frames. The robot gripper enters the drawer, but no sustained closing motion or closed final state is shown.</dd>
 </div>
 <div>
@@ -237,14 +237,14 @@
 <!-- /positive-case -->
 <div class="positive-case" data-positive-case="ranking-banana">
 <h5 class="case-title" id="ranking-banana-case">Case Study: transferring the banana or the orange object</h5>
-<p>The MIT Franka task asks for the banana to be moved from the blue plate to the green plate. A is labeled successful and B suboptimal. Astra’s independent scores, <strong>A 1.00 > B 0.00</strong>, match that order; DeepSeek’s <strong>A 0.50 < B 1.00</strong> reverse it.</p>
+<p>The MIT Franka task asks for the banana to be moved from the blue plate to the green plate. A is labeled successful and B suboptimal. gpt-6-astra’s independent scores, <strong>A 1.00 > B 0.00</strong>, match that order; DeepSeek’s <strong>A 0.50 < B 1.00</strong> reverse it.</p>
 <div class="table-scroll" role="region" tabindex="0">
 <table class="case-table">
 <caption>Table 2. Independent scores for the same task, on a 0–1 scale. A/B distinguish trajectories in this article; each scoring request contains one video.</caption>
 <thead>
 <tr>
 <th scope="col">Trajectory / reference label</th>
-<th scope="col">Astra</th>
+<th scope="col">gpt-6-astra</th>
 <th scope="col">DeepSeek-V4.1-Flash</th>
 </tr>
 </thead>
@@ -279,16 +279,16 @@
 </figure>
 </div>
 <p class="case-replay-note" id="ranking-banana-note">Replay of the eight model-input frames.</p>
-<p>A’s final input image shows the banana at the green plate’s rim. B transfers the orange object while the banana stays on the blue plate. Astra distinguishes the target object; DeepSeek’s original reason for B instead describes a banana transfer. Astra recovers the reference quality order, although the sparse final frames do not fully establish stability after release in A.</p>
+<p>A’s final input image shows the banana at the green plate’s rim. B transfers the orange object while the banana stays on the blue plate. gpt-6-astra distinguishes the target object; DeepSeek’s original reason for B instead describes a banana transfer. gpt-6-astra recovers the reference quality order, although the sparse final frames do not fully establish stability after release in A.</p>
 <details class="method-detail">
 <summary>Read both models’ original reasons</summary>
 <dl class="model-quotes">
 <div>
-<dt>Astra · A · 1.00</dt>
+<dt>gpt-6-astra · A · 1.00</dt>
 <dd lang="en">The robot grasps the banana from the blue plate, carries it to the green plate, and opens its gripper. The final frame shows the banana resting on the green plate near its rim, with the carrot left behind.</dd>
 </div>
 <div>
-<dt>Astra · B · 0.00</dt>
+<dt>gpt-6-astra · B · 0.00</dt>
 <dd lang="en">The robot grasps and releases the orange object onto the green plate, not the banana. The yellow banana remains on the blue plate in the final frame, so the requested transfer is not completed.</dd>
 </div>
 <div>
@@ -303,24 +303,24 @@
 </details>
 </div>
 <!-- /positive-case -->
-<h5 class="case-title">Astra’s ranking errors: inversions and ties</h5>
+<h5 class="case-title">gpt-6-astra’s ranking errors: inversions and ties</h5>
 
 <h5 class="case-title" id="banana-case">Case Study: moving the wrong object and tilting the plate</h5>
-<p>The task is to move the banana from the blue plate to the green plate. One execution moves the carrot, leaving the banana on the blue plate and the green plate empty; Astra scores it 0.00. Another lifts and tilts the blue plate, causing the banana to slip off without reaching the green plate, yet receives 0.15. The reasons identify that neither execution completes the goal. However, the reference labels the first suboptimal and the second failed, so the predicted order is reversed.</p>
+<p>The task is to move the banana from the blue plate to the green plate. One execution moves the carrot, leaving the banana on the blue plate and the green plate empty; gpt-6-astra scores it 0.00. Another lifts and tilts the blue plate, causing the banana to slip off without reaching the green plate, yet receives 0.15. The reasons identify that neither execution completes the goal. However, the reference labels the first suboptimal and the second failed, so the predicted order is reversed.</p>
 <div class="case-video-grid case-replay-grid" role="group" aria-labelledby="banana-case" aria-describedby="banana-case-note">
 <figure>
-<video controls playsinline preload="none" poster="assets/case-studies/banana-wrong-object.jpg" aria-label="Moving the carrot, reference suboptimal · Astra 0.00, evaluation-input frame replay" aria-describedby="banana-wrong-object-caption">
+<video controls playsinline preload="none" poster="assets/case-studies/banana-wrong-object.jpg" aria-label="Moving the carrot, reference suboptimal · gpt-6-astra 0.00, evaluation-input frame replay" aria-describedby="banana-wrong-object-caption">
 <source src="assets/case-studies/banana-wrong-object.mp4" type="video/mp4">Your browser does not support video playback.<a href="assets/case-studies/banana-wrong-object.mp4">Open the input-frame replay</a>
 </video>
 <figcaption id="banana-wrong-object-caption">
-<strong>Moving the carrot</strong>Reference suboptimal · Astra 0.00</figcaption>
+<strong>Moving the carrot</strong>Reference suboptimal · gpt-6-astra 0.00</figcaption>
 </figure>
 <figure>
-<video controls playsinline preload="none" poster="assets/case-studies/banana-tilted-plate.jpg" aria-label="Banana slipping after the plate is tilted, reference failure · Astra 0.15, evaluation-input frame replay" aria-describedby="banana-tilted-plate-caption">
+<video controls playsinline preload="none" poster="assets/case-studies/banana-tilted-plate.jpg" aria-label="Banana slipping after the plate is tilted, reference failure · gpt-6-astra 0.15, evaluation-input frame replay" aria-describedby="banana-tilted-plate-caption">
 <source src="assets/case-studies/banana-tilted-plate.mp4" type="video/mp4">Your browser does not support video playback.<a href="assets/case-studies/banana-tilted-plate.mp4">Open the input-frame replay</a>
 </video>
 <figcaption id="banana-tilted-plate-caption">
-<strong>Banana slips after the plate is tilted</strong>Reference failure · Astra 0.15</figcaption>
+<strong>Banana slips after the plate is tilted</strong>Reference failure · gpt-6-astra 0.15</figcaption>
 </figure>
 </div>
 <p class="case-replay-note" id="banana-case-note">Replay of the eight model-input frames.</p>
@@ -331,7 +331,7 @@
 <tr>
 <th scope="col">Trajectory</th>
 <th scope="col">Reference quality</th>
-<th scope="col">Astra score</th>
+<th scope="col">gpt-6-astra score</th>
 </tr>
 </thead>
 <tbody>
@@ -363,21 +363,21 @@
 </dl>
 </details>
 <h5 class="case-title" id="blue-bin-case">Case Study: different quality, the same full score</h5>
-<p>For two executions of opening the blue trash bin, the reference labels are success and suboptimal, but Astra assigns both <strong>1.00</strong>. For the successful execution, it cites the raised lid and clearly exposed interior. For the suboptimal execution, it also cites an opening beneath the lid and concludes that the correct bin is open. The lost credit comes from a tie: the model recognizes the shared outcome of opening the lid but does not distinguish the reference quality levels in its scores.</p>
+<p>For two executions of opening the blue trash bin, the reference labels are success and suboptimal, but gpt-6-astra assigns both <strong>1.00</strong>. For the successful execution, it cites the raised lid and clearly exposed interior. For the suboptimal execution, it also cites an opening beneath the lid and concludes that the correct bin is open. The lost credit comes from a tie: the model recognizes the shared outcome of opening the lid but does not distinguish the reference quality levels in its scores.</p>
 <div class="case-video-grid case-replay-grid" role="group" aria-labelledby="blue-bin-case" aria-describedby="blue-bin-case-note">
 <figure>
-<video controls playsinline preload="none" poster="assets/case-studies/blue-bin-success.jpg" aria-label="Opening the blue trash bin, reference success · Astra 1.00, evaluation-input frame replay" aria-describedby="blue-bin-success-caption">
+<video controls playsinline preload="none" poster="assets/case-studies/blue-bin-success.jpg" aria-label="Opening the blue trash bin, reference success · gpt-6-astra 1.00, evaluation-input frame replay" aria-describedby="blue-bin-success-caption">
 <source src="assets/case-studies/blue-bin-success.mp4" type="video/mp4">Your browser does not support video playback.<a href="assets/case-studies/blue-bin-success.mp4">Open the input-frame replay</a>
 </video>
 <figcaption id="blue-bin-success-caption">
-<strong>Opening the blue trash bin</strong>Reference success · Astra 1.00</figcaption>
+<strong>Opening the blue trash bin</strong>Reference success · gpt-6-astra 1.00</figcaption>
 </figure>
 <figure>
-<video controls playsinline preload="none" poster="assets/case-studies/blue-bin-suboptimal.jpg" aria-label="Opening the blue trash bin, reference suboptimal · Astra 1.00, evaluation-input frame replay" aria-describedby="blue-bin-suboptimal-caption">
+<video controls playsinline preload="none" poster="assets/case-studies/blue-bin-suboptimal.jpg" aria-label="Opening the blue trash bin, reference suboptimal · gpt-6-astra 1.00, evaluation-input frame replay" aria-describedby="blue-bin-suboptimal-caption">
 <source src="assets/case-studies/blue-bin-suboptimal.mp4" type="video/mp4">Your browser does not support video playback.<a href="assets/case-studies/blue-bin-suboptimal.mp4">Open the input-frame replay</a>
 </video>
 <figcaption id="blue-bin-suboptimal-caption">
-<strong>Opening the blue trash bin</strong>Reference suboptimal · Astra 1.00</figcaption>
+<strong>Opening the blue trash bin</strong>Reference suboptimal · gpt-6-astra 1.00</figcaption>
 </figure>
 </div>
 <p class="case-replay-note" id="blue-bin-case-note">Replay of the eight model-input frames.</p>
@@ -399,7 +399,7 @@
 <strong>Trajectory ranking. </strong>With three reference trajectories at different score levels, inversions decrease but ties increase. Kendall τa falls from <strong>0.8166 to 0.7953</strong>. Under score-consistent weighting, the inversion rate falls from 4.78% to 3.68%, while the tie rate rises from 8.78% to 13.11%.</p>
 <figure class="figure">
 <button type="button" data-zoom aria-label="Enlarge the zero-shot and ICL ranking comparison">
-<img loading="lazy" src="assets/figures/01_ranking.png" alt="Trajectory ranking: Astra has Kendall τa of 0.8166 zero-shot and 0.7953 with three-reference ICL; external values come from the cited publication versions." width="1384" height="1104">
+<img loading="lazy" src="assets/figures/01_ranking.png" alt="Trajectory ranking: gpt-6-astra has Kendall τa of 0.8166 zero-shot and 0.7953 with three-reference ICL; external values come from the cited publication versions." width="1600" height="1276">
 </button>
 <figcaption>Figure 2. <span>Zero-shot versus three-reference ICL for ranking. Each test trajectory is scored independently from eight frames; external values come from the cited publication versions.</span>
 <span class="zoom-label" aria-hidden="true">Enlarge ↗</span>
@@ -450,44 +450,44 @@
 </figure>
 </details>
 <h4 id="preference-results" data-toc>2.1.2 Direct preference</h4>
-<p>Direct preference presents two trajectories together and asks the model to select the better execution. Across 1,192 fixed pairs, source-equal accuracy is <strong>92.4%, 90.7%, and 82.2%</strong> for Astra, GPT-5.6-sol, and DeepSeek-V4.1-Flash, respectively. Their point estimates follow the same order as independent scoring, with a 1.7 percentage-point gap between Astra and GPT-5.6-sol. As a literature reference, Robometer reports 82.5% accuracy<sup class="citation">
+<p>Direct preference presents two trajectories together and asks the model to select the better execution. Across 1,192 fixed pairs, source-equal accuracy is <strong>92.4%, 90.7%, and 82.2%</strong> for gpt-6-astra, GPT-5.6-sol, and DeepSeek-V4.1-Flash, respectively. Their point estimates follow the same order as independent scoring, with a 1.7 percentage-point gap between gpt-6-astra and GPT-5.6-sol. As a literature reference, Robometer reports 82.5% accuracy<sup class="citation">
 <a href="#ref-robometer" aria-label="Robometer">[2]</a>
 </sup>.</p>
 <figure class="figure">
 <button type="button" data-zoom aria-label="Enlarge the direct-preference chart">
-<img loading="lazy" src="assets/figures/02_preference.png" alt="Direct preference: Astra has 92.4% source-equal accuracy across 1,192 fixed pairs." width="1384" height="576">
+<img loading="lazy" src="assets/figures/02_preference.png" alt="Direct preference: gpt-6-astra has 92.4% source-equal accuracy across 1,192 fixed pairs." width="1600" height="662">
 </button>
 <figcaption>Figure 3. <span>Direct preference. Eight frames from each trajectory are compared in one request; accuracy is averaged equally over six sources.</span>
 <span class="zoom-label" aria-hidden="true">Enlarge ↗</span>
 </figcaption>
 </figure>
-<p>Astra and DeepSeek receive the same task, images, and A/B order.</p>
+<p>gpt-6-astra and DeepSeek receive the same task, images, and A/B order.</p>
 <div class="positive-case" data-positive-case="preference-button">
 <h5 class="case-title" id="preference-button-case">Case Study: button activation matters more than lingering contact</h5>
-<p>For this SO101 button-press pair, the actual input order is <strong>A: suboptimal; B: successful; reference preference: B</strong>. Astra selects B and DeepSeek selects A.</p>
+<p>For this SO101 button-press pair, the actual input order is <strong>A: suboptimal; B: successful; reference preference: B</strong>. gpt-6-astra selects B and DeepSeek selects A.</p>
 <div class="case-video-grid case-replay-grid" role="group" aria-labelledby="preference-button-case" aria-describedby="preference-button-note">
 <figure>
-<video controls playsinline preload="none" poster="assets/case-studies/preference-button-a.jpg" aria-label="A · Press the button · Reference label: suboptimal · Reference and Astra choose B; DeepSeek chooses A" aria-describedby="preference-button-a-caption">
+<video controls playsinline preload="none" poster="assets/case-studies/preference-button-a.jpg" aria-label="A · Press the button · Reference label: suboptimal · Reference and gpt-6-astra choose B; DeepSeek chooses A" aria-describedby="preference-button-a-caption">
 <source src="assets/case-studies/preference-button-a.mp4" type="video/mp4">Your browser does not support video playback.<a href="assets/case-studies/preference-button-a.mp4">Open the input-frame replay</a>
 </video>
 <figcaption id="preference-button-a-caption">
-<strong>A · Press the button</strong>Reference label: suboptimal · Reference and Astra choose B; DeepSeek chooses A</figcaption>
+<strong>A · Press the button</strong>Reference label: suboptimal · Reference and gpt-6-astra choose B; DeepSeek chooses A</figcaption>
 </figure>
 <figure>
-<video controls playsinline preload="none" poster="assets/case-studies/preference-button-b.jpg" aria-label="B · Press the button · Reference label: success · Reference and Astra choose B; DeepSeek chooses A" aria-describedby="preference-button-b-caption">
+<video controls playsinline preload="none" poster="assets/case-studies/preference-button-b.jpg" aria-label="B · Press the button · Reference label: success · Reference and gpt-6-astra choose B; DeepSeek chooses A" aria-describedby="preference-button-b-caption">
 <source src="assets/case-studies/preference-button-b.mp4" type="video/mp4">Your browser does not support video playback.<a href="assets/case-studies/preference-button-b.mp4">Open the input-frame replay</a>
 </video>
 <figcaption id="preference-button-b-caption">
-<strong>B · Press the button</strong>Reference label: success · Reference and Astra choose B; DeepSeek chooses A</figcaption>
+<strong>B · Press the button</strong>Reference label: success · Reference and gpt-6-astra choose B; DeepSeek chooses A</figcaption>
 </figure>
 </div>
 <p class="case-replay-note" id="preference-button-note">Replay of the eight model-input frames.</p>
-<p>B’s input frames show the button lighting up after the gripper presses it, followed by retraction. A stays near the button without equally clear activation evidence. Astra selects B based on that state change. DeepSeek instead emphasizes A’s contact in the final frame and B’s retraction, choosing the opposite execution. In this case, button activation distinguishes execution quality more effectively than whether the gripper remains near the button.</p>
+<p>B’s input frames show the button lighting up after the gripper presses it, followed by retraction. A stays near the button without equally clear activation evidence. gpt-6-astra selects B based on that state change. DeepSeek instead emphasizes A’s contact in the final frame and B’s retraction, choosing the opposite execution. In this case, button activation distinguishes execution quality more effectively than whether the gripper remains near the button.</p>
 <details class="method-detail">
 <summary>Read both models’ original reasons</summary>
 <dl class="model-quotes">
 <div>
-<dt>Astra · Actual choice B</dt>
+<dt>gpt-6-astra · Actual choice B</dt>
 <dd lang="en">B lowers its gripper onto the button, which visibly lights up, then retracts. A approaches the button but shows no clear depression or activation.</dd>
 </div>
 <div>
@@ -500,30 +500,30 @@
 <!-- /positive-case -->
 <div class="positive-case" data-positive-case="preference-red-bin">
 <h5 class="case-title" id="preference-red-bin-case">Case Study: opening a lid is not the same as leaving it open</h5>
-<p>For this Koch red-bin pair, the actual input order is <strong>A: failed; B: successful; reference preference: B</strong>. Astra selects B, matching the reference; DeepSeek selects A, disagreeing with it.</p>
+<p>For this Koch red-bin pair, the actual input order is <strong>A: failed; B: successful; reference preference: B</strong>. gpt-6-astra selects B, matching the reference; DeepSeek selects A, disagreeing with it.</p>
 <div class="case-video-grid case-replay-grid" role="group" aria-labelledby="preference-red-bin-case" aria-describedby="preference-red-bin-note">
 <figure>
-<video controls playsinline preload="none" poster="assets/case-studies/preference-red-bin-a.jpg" aria-label="A · Open the red trash bin · Reference label: failure · Reference and Astra choose B; DeepSeek chooses A" aria-describedby="preference-red-bin-a-caption">
+<video controls playsinline preload="none" poster="assets/case-studies/preference-red-bin-a.jpg" aria-label="A · Open the red trash bin · Reference label: failure · Reference and gpt-6-astra choose B; DeepSeek chooses A" aria-describedby="preference-red-bin-a-caption">
 <source src="assets/case-studies/preference-red-bin-a.mp4" type="video/mp4">Your browser does not support video playback.<a href="assets/case-studies/preference-red-bin-a.mp4">Open the input-frame replay</a>
 </video>
 <figcaption id="preference-red-bin-a-caption">
-<strong>A · Open the red trash bin</strong>Reference label: failure · Reference and Astra choose B; DeepSeek chooses A</figcaption>
+<strong>A · Open the red trash bin</strong>Reference label: failure · Reference and gpt-6-astra choose B; DeepSeek chooses A</figcaption>
 </figure>
 <figure>
-<video controls playsinline preload="none" poster="assets/case-studies/preference-red-bin-b.jpg" aria-label="B · Open the red trash bin · Reference label: success · Reference and Astra choose B; DeepSeek chooses A" aria-describedby="preference-red-bin-b-caption">
+<video controls playsinline preload="none" poster="assets/case-studies/preference-red-bin-b.jpg" aria-label="B · Open the red trash bin · Reference label: success · Reference and gpt-6-astra choose B; DeepSeek chooses A" aria-describedby="preference-red-bin-b-caption">
 <source src="assets/case-studies/preference-red-bin-b.mp4" type="video/mp4">Your browser does not support video playback.<a href="assets/case-studies/preference-red-bin-b.mp4">Open the input-frame replay</a>
 </video>
 <figcaption id="preference-red-bin-b-caption">
-<strong>B · Open the red trash bin</strong>Reference label: success · Reference and Astra choose B; DeepSeek chooses A</figcaption>
+<strong>B · Open the red trash bin</strong>Reference label: success · Reference and gpt-6-astra choose B; DeepSeek chooses A</figcaption>
 </figure>
 </div>
 <p class="case-replay-note" id="preference-red-bin-note">Replay of the eight model-input frames.</p>
-<p>Both inputs show the lid being lifted, but A changes from open in the penultimate sampled image to closed in the final image. B ends with the lid raised and the interior exposed. Astra explicitly notes A’s lid falling closed. DeepSeek instead describes A as remaining open and discounts B because its gripper remains near the opening. This correct judgment coexists with the green-bin error below: similar tasks can still yield judgments of different quality.</p>
+<p>Both inputs show the lid being lifted, but A changes from open in the penultimate sampled image to closed in the final image. B ends with the lid raised and the interior exposed. gpt-6-astra explicitly notes A’s lid falling closed. DeepSeek instead describes A as remaining open and discounts B because its gripper remains near the opening. This correct judgment coexists with the green-bin error below: similar tasks can still yield judgments of different quality.</p>
 <details class="method-detail">
 <summary>Read both models’ original reasons</summary>
 <dl class="model-quotes">
 <div>
-<dt>Astra · Actual choice B</dt>
+<dt>gpt-6-astra · Actual choice B</dt>
 <dd lang="en">Both executions lift the correct red bin&#x27;s lid, but A&#x27;s lid falls closed again in its final frame. B ends with the lid raised and the bin interior visibly exposed, achieving the requested open state.</dd>
 </div>
 <div>
@@ -535,13 +535,13 @@
 </div>
 <!-- /positive-case -->
 
-<h4 id="preference-criteria" data-toc>2.1.3 Astra–reference preference disagreements: multidimensional criteria and alignment</h4>
+<h4 id="preference-criteria" data-toc>2.1.3 gpt-6-astra–reference preference disagreements: multidimensional criteria and alignment</h4>
 <p>The cup-separation and green-bin disagreements concern release, upright orientation, and stability—requirements whose priority the task descriptions do not specify.</p>
 <p>These requirements can form separate rubric items, such as “separated,” “released,” and “upright,” before an overall judgment is made. Flora-Rewarder offers stepwise rubric scoring<sup class="citation">
 <a href="#ref-flora" aria-label="NVIDIA Flora-Rewarder">[14]</a>
 </sup>; the cases here retain their original labels.</p>
 <h5 class="case-title" id="separate-cups-case">Case Study: release or tipping when separating cups</h5>
-<p>In the task of separating the purple and red cups, Astra describes both executions as creating a large gap. One does not show release in the final frame and is labeled successful. The other clearly releases the purple cup, but the cup tips onto its side, and is labeled failed. Astra chooses the latter and explicitly mentions both release and tipping in its reason.</p>
+<p>In the task of separating the purple and red cups, gpt-6-astra describes both executions as creating a large gap. One does not show release in the final frame and is labeled successful. The other clearly releases the purple cup, but the cup tips onto its side, and is labeled failed. gpt-6-astra chooses the latter and explicitly mentions both release and tipping in its reason.</p>
 <div class="case-video-grid case-replay-grid" role="group" aria-labelledby="separate-cups-case" aria-describedby="separate-cups-case-note">
 <figure>
 <video controls playsinline preload="none" poster="assets/case-studies/separate-cups-a.jpg" aria-label="A · Separate the red and purple cups, reference success · reference prefers A, evaluation-input frame replay" aria-describedby="separate-cups-a-caption">
@@ -551,15 +551,15 @@
 <strong>A · Separate the red and purple cups</strong>Reference success · reference prefers A</figcaption>
 </figure>
 <figure>
-<video controls playsinline preload="none" poster="assets/case-studies/separate-cups-b.jpg" aria-label="B · Separate the red and purple cups, reference failure · Astra chooses B, evaluation-input frame replay" aria-describedby="separate-cups-b-caption">
+<video controls playsinline preload="none" poster="assets/case-studies/separate-cups-b.jpg" aria-label="B · Separate the red and purple cups, reference failure · gpt-6-astra chooses B, evaluation-input frame replay" aria-describedby="separate-cups-b-caption">
 <source src="assets/case-studies/separate-cups-b.mp4" type="video/mp4">Your browser does not support video playback.<a href="assets/case-studies/separate-cups-b.mp4">Open the input-frame replay</a>
 </video>
 <figcaption id="separate-cups-b-caption">
-<strong>B · Separate the red and purple cups</strong>Reference failure · Astra chooses B</figcaption>
+<strong>B · Separate the red and purple cups</strong>Reference failure · gpt-6-astra chooses B</figcaption>
 </figure>
 </div>
 <p class="case-replay-note" id="separate-cups-case-note">Replay of the eight model-input frames.</p>
-<p>Astra notices the tipped cup but prioritizes release. Its choice and the reference reflect different tradeoffs, without an explicit priority in the task description.</p>
+<p>gpt-6-astra notices the tipped cup but prioritizes release. Its choice and the reference reflect different tradeoffs, without an explicit priority in the task description.</p>
 <details class="method-detail">
 <summary>Read the original model responses</summary>
 <dl class="model-quotes">
@@ -570,14 +570,14 @@
 </dl>
 </details>
 <h5 class="case-title" id="pencil-case-case">Case Study: choosing the reference failure when unzipping a pencil case</h5>
-<p>The task is to unzip a pencil case. Astra chooses the execution labeled failed: its reason says that the zipper slider moves toward the near end and leaves an opening behind it. For the reference success, it instead describes the slider moving toward the far end while the sides remain joined, as if closing the zipper. Astra’s interpretation of the open or closed state conflicts with the reference labels. Distinguishing visual misjudgment, insufficient sampled observations, and an annotation or trajectory-mapping issue requires review of the full videos and original annotations.</p>
+<p>The task is to unzip a pencil case. gpt-6-astra chooses the execution labeled failed: its reason says that the zipper slider moves toward the near end and leaves an opening behind it. For the reference success, it instead describes the slider moving toward the far end while the sides remain joined, as if closing the zipper. gpt-6-astra’s interpretation of the open or closed state conflicts with the reference labels. Distinguishing visual misjudgment, insufficient sampled observations, and an annotation or trajectory-mapping issue requires review of the full videos and original annotations.</p>
 <div class="case-video-grid case-replay-grid" role="group" aria-labelledby="pencil-case-case" aria-describedby="pencil-case-case-note">
 <figure>
-<video controls playsinline preload="none" poster="assets/case-studies/unzip-pencil-case-a.jpg" aria-label="A · Unzip the pencil case, reference failure · Astra chooses A, evaluation-input frame replay" aria-describedby="unzip-pencil-case-a-caption">
+<video controls playsinline preload="none" poster="assets/case-studies/unzip-pencil-case-a.jpg" aria-label="A · Unzip the pencil case, reference failure · gpt-6-astra chooses A, evaluation-input frame replay" aria-describedby="unzip-pencil-case-a-caption">
 <source src="assets/case-studies/unzip-pencil-case-a.mp4" type="video/mp4">Your browser does not support video playback.<a href="assets/case-studies/unzip-pencil-case-a.mp4">Open the input-frame replay</a>
 </video>
 <figcaption id="unzip-pencil-case-a-caption">
-<strong>A · Unzip the pencil case</strong>Reference failure · Astra chooses A</figcaption>
+<strong>A · Unzip the pencil case</strong>Reference failure · gpt-6-astra chooses A</figcaption>
 </figure>
 <figure>
 <video controls playsinline preload="none" poster="assets/case-studies/unzip-pencil-case-b.jpg" aria-label="B · Unzip the pencil case, reference success · reference prefers B, evaluation-input frame replay" aria-describedby="unzip-pencil-case-b-caption">
@@ -598,14 +598,14 @@
 </dl>
 </details>
 <h5 class="case-title" id="green-bin-case">Case Study: why does a wider opening receive a lower reference quality?</h5>
-<p>For the green bin, Astra chooses A for its wider opening, but the reference labels A suboptimal and B successful. The task does not specify how opening width, release, and stability should be weighted.</p>
+<p>For the green bin, gpt-6-astra chooses A for its wider opening, but the reference labels A suboptimal and B successful. The task does not specify how opening width, release, and stability should be weighted.</p>
 <div class="case-video-grid case-replay-grid" role="group" aria-labelledby="green-bin-case" aria-describedby="green-bin-case-note">
 <figure>
-<video controls playsinline preload="none" poster="assets/case-studies/green-bin-a.jpg" aria-label="A · Open the green trash bin, reference suboptimal · Astra chooses A, evaluation-input frame replay" aria-describedby="green-bin-a-caption">
+<video controls playsinline preload="none" poster="assets/case-studies/green-bin-a.jpg" aria-label="A · Open the green trash bin, reference suboptimal · gpt-6-astra chooses A, evaluation-input frame replay" aria-describedby="green-bin-a-caption">
 <source src="assets/case-studies/green-bin-a.mp4" type="video/mp4">Your browser does not support video playback.<a href="assets/case-studies/green-bin-a.mp4">Open the input-frame replay</a>
 </video>
 <figcaption id="green-bin-a-caption">
-<strong>A · Open the green trash bin</strong>Reference suboptimal · Astra chooses A</figcaption>
+<strong>A · Open the green trash bin</strong>Reference suboptimal · gpt-6-astra chooses A</figcaption>
 </figure>
 <figure>
 <video controls playsinline preload="none" poster="assets/case-studies/green-bin-b.jpg" aria-label="B · Open the green trash bin, reference success · reference prefers B, evaluation-input frame replay" aria-describedby="green-bin-b-caption">
@@ -628,12 +628,12 @@
 <details class="research-detail">
 <summary>Sampling, metrics, and cited versions</summary>
 <p class="">Ranking and different-quality preference evaluation reuse Robometer’s official sampling and metric rules with seed=44. Of 571 cached trajectories, four belong to tasks with only successful examples and are excluded by the official rule, leaving 567. Preference sampling uses up to 500 pairs per source, yielding 1,192 pairs. Both metrics use equal weighting across the six sources.</p>
-<p class="">This study uses seed=44; the current official default is 42. Both sample eight frames uniformly. Astra produces prompted scores or A/B choices, while Robometer uses trained progress/preference heads. We cite Robometer v1’s τa=0.655; the corresponding v2 value is approximately 0.643.</p>
+<p class="">This study uses seed=44; the current official default is 42. Both sample eight frames uniformly. gpt-6-astra produces prompted scores or A/B choices, while Robometer uses trained progress/preference heads. We cite Robometer v1’s τa=0.655; the corresponding v2 value is approximately 0.643.</p>
 </details>
 <h4 id="quality-results-summary" data-toc>2.1.4 Summary</h4>
 <div class="section-summary" id="literature">
 <p>
-<strong>Astra’s ranking and preference results are competitive with specialized reward models, but reference disagreements do not all indicate an inability to compare execution quality.</strong>
+<strong>gpt-6-astra’s ranking and preference results are competitive with specialized reward models, but reference disagreements do not all indicate an inability to compare execution quality.</strong>
 </p>
 <p>Inversions and ties account for some lost points; the cup and green-bin cases involve different quality requirements. Explicit release, uprightness, and stability criteria would help distinguish state-recognition errors from disagreements over standards.</p>
 </div>
@@ -641,22 +641,22 @@
 <section id="progress-results" class="result-topic" data-toc>
 <h3 id="context">2.2 Task progress estimation</h3>
 <h4 id="progress-zero" data-toc>2.2.1 Zero-shot progress estimation</h4>
-<p>Beyond comparing whole executions, we examine whether general-purpose multimodal models can estimate task progress from the instruction and observations available so far. Across 105 successful trajectories, zero-shot VOC is <strong>93.6, 93.5, and 89.7</strong> for Astra, GPT-5.6-sol, and DeepSeek-V4.1-Flash, respectively.</p>
+<p>Beyond comparing whole executions, we examine whether general-purpose multimodal models can estimate task progress from the instruction and observations available so far. Across 105 successful trajectories, zero-shot VOC is <strong>93.6, 93.5, and 89.7</strong> for gpt-6-astra, GPT-5.6-sol, and DeepSeek-V4.1-Flash, respectively.</p>
 <figure class="figure">
-<button type="button" data-zoom aria-label="Zero-shot task progress estimation: Astra 93.6, GPT-5.6-sol 93.5, DeepSeek-V4.1-Flash 89.7; literature references are shown separately.">
-<img loading="lazy" src="assets/figures/03_progress_zero_shot.png" alt="Zero-shot task progress estimation: Astra 93.6, GPT-5.6-sol 93.5, DeepSeek-V4.1-Flash 89.7; literature references are shown separately." width="1600" height="1233">
+<button type="button" data-zoom aria-label="Zero-shot task progress estimation: gpt-6-astra 93.6, GPT-5.6-sol 93.5, DeepSeek-V4.1-Flash 89.7; literature references are shown separately.">
+<img loading="lazy" src="assets/figures/03_progress_zero_shot.png" alt="Zero-shot task progress estimation: gpt-6-astra 93.6, GPT-5.6-sol 93.5, DeepSeek-V4.1-Flash 89.7; literature references are shown separately." width="1600" height="1233">
 </button>
 <figcaption>Figure 4. <span>Zero-shot progress estimation across models (VOC, higher is better). Study results and literature references are shown separately, sorted within each group.</span>
 </figcaption>
 </figure>
-<p>Astra and GPT-5.6-sol have similar temporal correlations, both above DeepSeek; Astra is below Robometer’s reported 94.8<sup class="citation">
+<p>gpt-6-astra and GPT-5.6-sol have similar temporal correlations, both above DeepSeek; gpt-6-astra is below Robometer’s reported 94.8<sup class="citation">
 <a href="#ref-robometer" aria-label="Robometer">[2]</a>
 </sup>. The following cases examine how scores respond to completion, setbacks, and retries.</p>
 
 <p class="fine">The following replays show sampled frames, not original-speed video. Each prediction uses only observations available at that point; the hollow initial point is fixed at zero, and lines guide the eye.</p>
 <h5 class="case-title" id="bluecup-case">Case Study: correctly distinguishing completion, slippage, and the wrong object</h5>
 <p>
-<strong>These positive cases show Astra recognizing task-relevant differences in state.</strong> For the same instruction to put the blue cup in the sink, it distinguishes successful placement, a slipping cup, and moving the wrong object, rather than treating all arm motion as progress.</p>
+<strong>These positive cases show gpt-6-astra recognizing task-relevant differences in state.</strong> For the same instruction to put the blue cup in the sink, it distinguishes successful placement, a slipping cup, and moving the wrong object, rather than treating all arm motion as progress.</p>
 <div class="progress-compare" data-progress-compare data-progress-indices="0,7,15,23,31" data-progress-values="0.00,0.10,0.20,0.60,1.00" data-progress-fps="4" data-progress-frames="32">
     <figure class="progress-video">
 <video controls playsinline muted preload="none" poster="assets/rbm/q0041-poster.jpg" src="assets/rbm/q0041-replay.mp4" aria-label="Successfully placed in the sink" aria-describedby="cup-success-playback-note">
@@ -664,9 +664,9 @@
 <figcaption>Figure 5. Successfully placed in the sink</figcaption>
 </figure>
     <div class="progress-chart">
-<p class="progress-chart-title">Astra predicted progress</p>
+<p class="progress-chart-title">gpt-6-astra predicted progress</p>
 <svg class="progress-svg" viewBox="0 0 440 270" role="img" aria-labelledby="cup-success-chart-title cup-success-chart-desc">
-<title id="cup-success-chart-title">Successfully placed in the sink · Astra predicted progress</title>
+<title id="cup-success-chart-title">Successfully placed in the sink · gpt-6-astra predicted progress</title>
 <desc id="cup-success-chart-desc">Stored sample and progress: 0: 0.00；7: 0.10；15: 0.20；23: 0.60；31: 1.00. The initial zero is protocol-set; other points are model predictions. Lines are visual guides only.</desc>
 <text class="progress-axis-title" x="48" y="20">Predicted progress (0–1)</text>
 <line class="progress-grid" x1="48" x2="396" y1="210.00" y2="210.00"/>
@@ -747,9 +747,9 @@
 <figcaption>Figure 6. Cup slips outside the sink</figcaption>
 </figure>
     <div class="progress-chart">
-<p class="progress-chart-title">Astra predicted progress</p>
+<p class="progress-chart-title">gpt-6-astra predicted progress</p>
 <svg class="progress-svg" viewBox="0 0 440 270" role="img" aria-labelledby="cup-slip-chart-title cup-slip-chart-desc">
-<title id="cup-slip-chart-title">Cup slips outside the sink · Astra predicted progress</title>
+<title id="cup-slip-chart-title">Cup slips outside the sink · gpt-6-astra predicted progress</title>
 <desc id="cup-slip-chart-desc">Stored sample and progress: 0: 0.00；7: 0.08；15: 0.22；23: 0.55；31: 0.40. The initial zero is protocol-set; other points are model predictions. Lines are visual guides only.</desc>
 <text class="progress-axis-title" x="48" y="20">Predicted progress (0–1)</text>
 <line class="progress-grid" x1="48" x2="396" y1="210.00" y2="210.00"/>
@@ -830,9 +830,9 @@
 <figcaption>Figure 7. The wrong object is moved</figcaption>
 </figure>
     <div class="progress-chart">
-<p class="progress-chart-title">Astra predicted progress</p>
+<p class="progress-chart-title">gpt-6-astra predicted progress</p>
 <svg class="progress-svg" viewBox="0 0 440 270" role="img" aria-labelledby="wrong-object-chart-title wrong-object-chart-desc">
-<title id="wrong-object-chart-title">The wrong object is moved · Astra predicted progress</title>
+<title id="wrong-object-chart-title">The wrong object is moved · gpt-6-astra predicted progress</title>
 <desc id="wrong-object-chart-desc">Stored sample and progress: 0: 0.00；7: 0.05；15: 0.05；23: 0.00；31: 0.00. The initial zero is protocol-set; other points are model predictions. Lines are visual guides only.</desc>
 <text class="progress-axis-title" x="48" y="20">Predicted progress (0–1)</text>
 <line class="progress-grid" x1="48" x2="396" y1="210.00" y2="210.00"/>
@@ -906,7 +906,7 @@
 <p class="progress-chart-note" id="wrong-object-playback-note">Select a sample to seek; the hollow point is the fixed start.</p>
 </div>
 </div>
-<p>In the successful execution, Astra gives 0.60 while the blue cup is still suspended outside the sink, then raises it to 1.00 after placement and release. In the slipping execution, the score is 0.55 near the sink and falls to 0.40 after the cup slips outside. When the wrong object is moved, the blue cup never moves and the final progress returns to 0.00. These rises and falls correspond to progress toward or setbacks from the task goal, rather than time passing alone.</p>
+<p>In the successful execution, gpt-6-astra gives 0.60 while the blue cup is still suspended outside the sink, then raises it to 1.00 after placement and release. In the slipping execution, the score is 0.55 near the sink and falls to 0.40 after the cup slips outside. When the wrong object is moved, the blue cup never moves and the final progress returns to 0.00. These rises and falls correspond to progress toward or setbacks from the task goal, rather than time passing alone.</p>
 <details class="method-detail">
 <summary>Read the three original final-step responses</summary>
 <dl class="model-quotes">
@@ -925,7 +925,7 @@
 </dl>
 </details>
 <h5 class="case-title" id="banana-retry-case">Case Study: recognizing a setback, a retry, and completion</h5>
-<p>The task is to move the banana from the blue plate to the green plate. Its public quality label is successful. After the first approach, the banana remains on the blue plate and the arm withdraws, so Astra reduces progress from 0.15 to 0.00. It returns to 0.15 on the renewed approach and reaches 1.00 only at the final sampled observation, when the banana rests on the green plate and the gripper has moved away. <strong>The model distinguishes the temporary setback from the eventual outcome, without treating a renewed approach as completion.</strong>
+<p>The task is to move the banana from the blue plate to the green plate. Its public quality label is successful. After the first approach, the banana remains on the blue plate and the arm withdraws, so gpt-6-astra reduces progress from 0.15 to 0.00. It returns to 0.15 on the renewed approach and reaches 1.00 only at the final sampled observation, when the banana rests on the green plate and the gripper has moved away. <strong>The model distinguishes the temporary setback from the eventual outcome, without treating a renewed approach as completion.</strong>
 </p>
 <div class="progress-compare" data-progress-compare data-progress-indices="0,7,15,23,31" data-progress-values="0.00,0.15,0.00,0.15,1.00" data-progress-fps="4" data-progress-frames="32">
     <figure class="progress-video">
@@ -934,9 +934,9 @@
 <figcaption id="banana-retry-caption">MIT Franka · Banana transfer · Reference label: success.</figcaption>
 </figure>
     <div class="progress-chart">
-<p class="progress-chart-title">Astra predicted progress</p>
+<p class="progress-chart-title">gpt-6-astra predicted progress</p>
 <svg class="progress-svg" viewBox="0 0 440 270" role="img" aria-labelledby="banana-retry-chart-title banana-retry-chart-desc">
-<title id="banana-retry-chart-title">Successful retry after a setback · Astra predicted progress</title>
+<title id="banana-retry-chart-title">Successful retry after a setback · gpt-6-astra predicted progress</title>
 <desc id="banana-retry-chart-desc">Stored sample and progress: 0: 0.00；7: 0.15；15: 0.00；23: 0.15；31: 1.00. The initial zero is protocol-set; other points are model predictions. Lines are visual guides only.</desc>
 <text class="progress-axis-title" x="48" y="20">Predicted progress (0–1)</text>
 <line class="progress-grid" x1="48" x2="396" y1="210.00" y2="210.00"/>
@@ -1039,7 +1039,7 @@
 <strong>Progress estimation. </strong>With one same- or similar-task trajectory annotated with stage scores, VOC rises from <strong>93.6 to 94.2</strong>, a small increase in overall time correlation.</p>
 <figure class="figure">
 <button type="button" data-zoom aria-label="Enlarge the zero-shot and ICL progress comparison">
-<img loading="lazy" src="assets/figures/03_progress.png?v=voc" alt="Progress estimation: Astra has VOC of 93.6 zero-shot and 94.2 with single-trajectory ICL; external reports use different protocols." width="1384" height="960">
+<img loading="lazy" src="assets/figures/03_progress.png?v=voc" alt="Progress estimation: gpt-6-astra has VOC of 93.6 zero-shot and 94.2 with single-trajectory ICL; external reports use different protocols." width="1600" height="1109">
 </button>
 <figcaption>Figure 8. <span>Zero-shot versus single-trajectory ICL for progress estimation (VOC). The model uses only observations available up to the current moment; external values retain their published protocols.</span>
 <span class="zoom-label" aria-hidden="true">Enlarge ↗</span>
@@ -1116,14 +1116,14 @@
 </thead>
 <tbody>
 <tr>
-<th scope="row">GPT-6 Astra (zero-shot)</th>
+<th scope="row">gpt-6-astra (zero-shot)</th>
 <td>This study</td>
 <td>93.6</td>
 <td>0.8166</td>
 <td>92.4</td>
 </tr>
 <tr>
-<th scope="row">GPT-6 Astra (ICL)</th>
+<th scope="row">gpt-6-astra (ICL)</th>
 <td>This study</td>
 <td>94.2</td>
 <td>0.7953</td>
@@ -1296,7 +1296,7 @@
 <h4 id="progress-results-summary" data-toc>2.2.3 Summary</h4>
 <div class="section-summary">
 <p>
-<strong>Astra can track task-relevant progress and setbacks, but higher temporal correlation does not guarantee more accurate completion judgments.</strong>
+<strong>gpt-6-astra can track task-relevant progress and setbacks, but higher temporal correlation does not guarantee more accurate completion judgments.</strong>
 </p>
 <p>VOC measures correlation with normalized time. The bottle case combines higher VOC with a worse endpoint estimate, motivating separate checks of completion states and score error.</p>
 </div>
@@ -1304,7 +1304,7 @@
 <section id="failure" class="result-topic" data-toc>
 <h3>2.3 Subtask success and failure</h3>
 <h4 id="outcome-results" data-toc>2.3.1 Overall performance and error distribution</h4>
-<p>We evaluate Astra’s subtask outcome judgments and failure explanations on 57 RoboFail<sup class="citation">
+<p>We evaluate gpt-6-astra’s subtask outcome judgments and failure explanations on 57 RoboFail<sup class="citation">
 <a href="#ref-reflect" aria-label="REFLECT / RoboFail">[4]</a>
 </sup> questions, using subtask descriptions and keyframe montages as input. The output is a Yes/No outcome judgment with a textual explanation.</p>
 <p>Zero-shot accuracy is <strong>64.91%</strong>, comparable to the reported results of the specialized AHA models. With five external examples, accuracy reaches <strong>85.96%</strong>, about <strong>19.9 percentage points</strong> above the <strong>66.1%</strong> reported for AHA-13B Vicuna<sup class="citation">
@@ -1377,13 +1377,13 @@
 </thead>
 <tbody>
 <tr>
-<th scope="row">Astra / zero-shot</th>
+<th scope="row">gpt-6-astra / zero-shot</th>
 <td>This study</td>
 <td>64.91</td>
 <td>0.185</td>
 </tr>
 <tr>
-<th scope="row">Astra / 5 examples</th>
+<th scope="row">gpt-6-astra / ICL (5 examples)</th>
 <td>This study</td>
 <td>85.96</td>
 <td>0.499</td>
@@ -1602,7 +1602,7 @@
 <div class="robofail-extra">
 <article class="robo-expanded-case" id="robo-case-50">
 <h5 class="case-title">Case Study: Pressing the coffee-machine button</h5>
-<p>Zero-shot predicts failure because activation is not visible; the five-example response matches the success label.</p>
+<p>Zero-shot predicts failure because activation is not visible; the five-example ICL response matches the success label.</p>
 <div class="case-video-grid">
 <figure>
 <video controls playsinline muted preload="none" src="assets/robofail/case-050-source-replay.mp4" poster="assets/robofail/case-050-frame-2.jpg" aria-label="Press the coffee-machine button">
@@ -1627,7 +1627,7 @@
 </p>
 <blockquote lang="en">No. The robot arm is near the coffee machine, but it has not visibly pressed the button. The end effector appears misaligned with the control, and there is no visible indication that the machine has been activated.</blockquote>
 <p>
-<strong>Five examples · Correct judgment</strong>
+<strong>ICL (5 examples) · Correct judgment</strong>
 </p>
 <blockquote lang="en">Yes, the robot successfully pressed the button on the coffee machine.</blockquote>
 <p>
@@ -1638,7 +1638,7 @@
 </article>
 <article class="robo-expanded-case" id="robo-case-49">
 <h5 class="case-title">Case Study: Placing in a bowl: an unspecified target object</h5>
-<p>The reference attributes failure to the wrong object. Zero-shot instead cites an unreleased strawberry, while the five-example response calls placement successful. The input question says only “place in the bowl,” without specifying the object.</p>
+<p>The reference attributes failure to the wrong object. Zero-shot instead cites an unreleased strawberry, while the five-example ICL response calls placement successful. The input question says only “place in the bowl,” without specifying the object.</p>
 <div class="case-video-grid">
 <figure>
 <video controls playsinline muted preload="none" src="assets/robofail/case-049-source-replay.mp4" poster="assets/robofail/case-049-frame-3.jpg" aria-label="Place the object in the bowl">
@@ -1663,7 +1663,7 @@
 </p>
 <blockquote lang="en">No. The robot lowers the strawberry into the bowl but appears to still be holding it with the gripper. The placement is incomplete because the strawberry has not been released.</blockquote>
 <p>
-<strong>Five examples · Missed failure</strong>
+<strong>ICL (5 examples) · Missed failure</strong>
 </p>
 <blockquote lang="en">Yes, the robot successfully placed the strawberry in the bowl.</blockquote>
 <p>
@@ -1701,7 +1701,7 @@
 </p>
 <blockquote lang="en">Yes. The robot has successfully picked up the apple: in frame 2, the apple is held by the gripper and lifted clear of the countertop. No failure is visible.</blockquote>
 <p>
-<strong>Five examples · Correct judgment</strong>
+<strong>ICL (5 examples) · Correct judgment</strong>
 </p>
 <blockquote lang="en">Yes, the robot successfully grasped the apple and lifted it off the countertop.</blockquote>
 <p>
@@ -1715,14 +1715,14 @@
 </span>
 <div class="visibility-study">
 <h4 id="robofail-visibility" data-toc>2.3.3 In-context learning (ICL)</h4>
-<p>We provide five fixed external demonstrations before the test subtask, each consisting of an image, a subtask question, and a reference answer. The model then judges the test subtask’s success or failure and provides a textual explanation; the zero-shot condition omits these demonstrations.</p>
+<p>We use the evaluation’s fixed set of five external demonstrations for in-context learning (ICL). Each contains an image, a subtask question, and a reference answer and is supplied before the test subtask. The model then judges the test subtask’s success or failure and provides a textual explanation; zero-shot prompting omits the demonstrations.</p>
 <p>
-<strong>The five-example condition produces fewer false alarms but still misses failures.</strong>False alarms fall from 18 to 2, while missed failures rise from 2 to 6. The knob and slicing cases also compare the first frame, first two frames, and all observations, with one request per condition.</p>
+<strong>The five-example ICL condition produces fewer false alarms but still misses failures.</strong>False alarms fall from 18 to 2, while missed failures rise from 2 to 6. The knob and slicing cases also compare the first frame, first two frames, and all observations, with one request per condition.</p>
 <article class="visibility-case">
 <div class="robofail-extra">
 <article class="robo-expanded-case" id="robo-case-55">
 <h5 class="case-title">Case Study: Grasping the stove knob</h5>
-<p>The reference identifies failure because the gripper does not close. Zero-shot predicts failure but cites grasp location; the five-example condition predicts success.</p>
+<p>The reference identifies failure because the gripper does not close. Zero-shot predicts failure but cites grasp location; the five-example ICL condition predicts success.</p>
 <div class="case-video-grid">
 <figure>
 <video controls playsinline muted preload="none" src="assets/robofail/case-055-source-replay.mp4" poster="assets/robofail/case-055-frame-4.jpg" aria-label="Grasp the stove knob">
@@ -1747,7 +1747,7 @@
 </p>
 <blockquote lang="en">No. The gripper is positioned over the burner area rather than around a stove knob, so it has not established a secure grasp on the knob.</blockquote>
 <p>
-<strong>Five examples · Missed failure</strong>
+<strong>ICL (5 examples) · Missed failure</strong>
 </p>
 <blockquote lang="en">Yes, the robot successfully grasped the stove knob.</blockquote>
 <p>
@@ -1770,7 +1770,7 @@
 <span class="visibility-label no">Failure</span>
 <span class="visibility-label no">Failure</span>
 <span class="visibility-label no">Failure</span>
-<strong>Five examples</strong>
+<strong>ICL (5 examples)</strong>
 <span class="visibility-label no">Failure</span>
 <span class="visibility-label no">Failure</span>
 <span class="visibility-label yes">Success</span>
@@ -1791,7 +1791,7 @@
 </p>
 <blockquote lang="en">No. The gripper is positioned near the sink, away from the stove knobs, and has not closed around a knob.</blockquote>
 <p>
-<strong>Five examples</strong>
+<strong>ICL (5 examples)</strong>
 </p>
 <blockquote lang="en">No, the robot’s gripper is positioned away from the stove knobs and has not grasped one.</blockquote>
 <p>
@@ -1807,7 +1807,7 @@
 </p>
 <blockquote lang="en">No. The gripper is positioned above the pot near the sink rather than around a stove knob, so it has not established a grasp on the target.</blockquote>
 <p>
-<strong>Five examples</strong>
+<strong>ICL (5 examples)</strong>
 </p>
 <blockquote lang="en">No, the robot grasped and lifted the pot instead of grasping the stove knob.</blockquote>
 <p>
@@ -1823,7 +1823,7 @@
 </p>
 <blockquote lang="en">No. The robot moves its gripper toward the stove, but it does not securely grasp a stove knob. The gripper remains above the burner area rather than closing around the knob.</blockquote>
 <p>
-<strong>Five examples</strong>
+<strong>ICL (5 examples)</strong>
 </p>
 <blockquote lang="en">Yes, the robot successfully grasped the stove knob.</blockquote>
 </details>
@@ -1832,7 +1832,7 @@
 <div class="robofail-extra">
 <article class="robo-expanded-case" id="robo-case-36">
 <h5 class="case-title">Case Study: Slicing a carrot</h5>
-<p>The reference labels success; both zero-shot and five-example conditions predict failure because no separated slice is visible.</p>
+<p>The reference labels success; both zero-shot and five-example ICL conditions predict failure because no separated slice is visible.</p>
 <div class="case-video-grid">
 <figure>
 <video controls playsinline muted preload="none" src="assets/robofail/case-036-source-replay.mp4" poster="assets/robofail/case-036-frame-3.jpg" aria-label="Slice the carrot">
@@ -1857,7 +1857,7 @@
 </p>
 <blockquote lang="en">No. The arm moves toward the carrot, but the blade does not complete a cut through it. The carrot remains intact on the board, with no visibly separated slice.</blockquote>
 <p>
-<strong>Five examples · False alarm</strong>
+<strong>ICL (5 examples) · False alarm</strong>
 </p>
 <blockquote lang="en">No, the carrot remains whole on the counter; the robot did not successfully cut it into slices.</blockquote>
 <p>
@@ -1880,7 +1880,7 @@
 <span class="visibility-label no">Failure</span>
 <span class="visibility-label no">Failure</span>
 <span class="visibility-label no">Failure</span>
-<strong>Five examples</strong>
+<strong>ICL (5 examples)</strong>
 <span class="visibility-label no">Failure</span>
 <span class="visibility-label no">Failure</span>
 <span class="visibility-label no">Failure</span>
@@ -1901,7 +1901,7 @@
 </p>
 <blockquote lang="en">No. The carrot remains intact on the cutting board; the robot has not completed a cut or separated a slice.</blockquote>
 <p>
-<strong>Five examples</strong>
+<strong>ICL (5 examples)</strong>
 </p>
 <blockquote lang="en">No, the carrot remains whole on the counter; the robot has not cut it into slices.</blockquote>
 <p>
@@ -1917,7 +1917,7 @@
 </p>
 <blockquote lang="en">No. The robot arm moves upward without visibly completing a cut through the carrot. The carrot remains on the cutting board, with no newly separated slice visible.</blockquote>
 <p>
-<strong>Five examples</strong>
+<strong>ICL (5 examples)</strong>
 </p>
 <blockquote lang="en">No, the robot picked up the knife but did not slice the carrot; the carrot remains whole on the countertop.</blockquote>
 <p>
@@ -1933,7 +1933,7 @@
 </p>
 <blockquote lang="en">No. The arm moves toward the carrot, but the blade does not complete a cut through it. The carrot remains intact, with no visibly separated slice.</blockquote>
 <p>
-<strong>Five examples</strong>
+<strong>ICL (5 examples)</strong>
 </p>
 <blockquote lang="en">No, the robot placed the knife across the carrot but did not cut through it. The carrot remains whole.</blockquote>
 </details>
@@ -1945,21 +1945,22 @@
 <h4 id="failure-summary" data-toc>2.3.4 Summary</h4>
 <div class="section-summary">
 <p>
-<strong>The five-example condition recognizes successful subtasks more accurately, but improved success recognition does not eliminate missed failures.</strong>
+<strong>The five-example ICL condition recognizes successful subtasks more accurately, but improved success recognition does not eliminate missed failures.</strong>
 </p>
 <p>Disagreements persist at full visibility in the knob and slicing cases, while the bowl question leaves the target object unspecified. Outcome recognition depends on both visual evidence and explicit task requirements.</p>
 </div>
 </section>
 <section id="explanations" class="result-topic" data-toc>
 <h3>2.4 Failure explanations and scores</h3>
+<p class="">This section evaluates explanation scores from the same zero-shot and five-example ICL responses as Section 2.3. ICL uses the same fixed set of external image–question–answer demonstrations.</p>
 <h4 id="explanation-scores" data-toc>2.4.1 Overall performance and baseline comparison</h4>
-<p class="">Composite ROUGE-L is <strong>0.499</strong> with five examples versus <strong>0.185</strong> zero-shot. The success-recognition term rises from <strong>0.0877 to 0.3684 (+0.2807)</strong>, and the failure-explanation term from <strong>0.0969 to 0.1305 (+0.0336)</strong>.</p>
-<p class="">Astra’s five-example composite score is above the AHA-reported values for AHA-13B Vicuna (0.290), AHA-13B Llama-2 (0.280), AHA-7B (0.204), and five-shot GPT-4o (0.236)<sup class="citation">
+<p class="">Composite ROUGE-L is <strong>0.499</strong> with five-example ICL versus <strong>0.185</strong> zero-shot. The success-recognition term rises from <strong>0.0877 to 0.3684 (+0.2807)</strong>, and the failure-explanation term from <strong>0.0969 to 0.1305 (+0.0336)</strong>.</p>
+<p class="">gpt-6-astra’s five-example ICL composite score is above the AHA-reported values for AHA-13B Vicuna (0.290), AHA-13B Llama-2 (0.280), AHA-7B (0.204), and five-shot GPT-4o (0.236)<sup class="citation">
 <a href="#ref-aha" aria-label="AHA">[8]</a>
 </sup>.</p>
 <figure class="figure">
 <button type="button" data-zoom aria-label="Enlarge: Composite ROUGE-L including AHA and other baselines">
-<img loading="lazy" src="assets/figures/05_robofail_icl.png" alt="Composite ROUGE-L including AHA and other baselines" width="1180" height="875">
+<img loading="lazy" src="assets/figures/05_robofail_icl.png" alt="Composite ROUGE-L including AHA and other baselines" width="1600" height="1192">
 </button>
 <figcaption>Figure 19. Composite ROUGE-L comparison; literature results retain their own protocols.<span class="zoom-label" aria-hidden="true">Enlarge ↗</span>
 </figcaption>
@@ -1982,10 +1983,10 @@
 <span style="width:17.618181818181817%">0.0969</span>
 </div>
 <div class="stack-heading">
-<strong>External five-example</strong>
+<strong>External five-example ICL</strong>
 <span>Composite score 0.499</span>
 </div>
-<div class="rouge-stack" role="img" aria-label="External five-example: 0.3684 + 0.1305">
+<div class="rouge-stack" role="img" aria-label="External five-example ICL: 0.3684 + 0.1305">
 <span style="width:66.98181818181817%">0.3684</span>
 <span style="width:23.727272727272727%">0.1305</span>
 </div>
@@ -1997,7 +1998,7 @@
 </figure>
 <details class="research-detail">
 <summary>Composite scoring rule and component calculations</summary>
-<p class="">Composite ROUGE-L rises from 0.185 to 0.499 in the five-example condition. This metric does not measure failure explanations alone. Under the AHA rules<sup class="citation">
+<p class="">Composite ROUGE-L rises from 0.185 to 0.499 in the five-example ICL condition. This metric does not measure failure explanations alone. Under the AHA rules<sup class="citation">
 <a href="#ref-aha" aria-label="AHA">[8]</a>
 </sup>, a correct success answer receives 1; a correct failure receives stemmed ROUGE-L F1 against the reference explanation; and a label disagreement receives 0. Scores are summed and divided by 57. Evaluation uses the original English answers, not the Chinese paraphrases in this article.</p>
 <div class="formula" role="math" aria-label="Composite score equals correct successes plus summed explanation scores for correctly detected failures, divided by 57">R = (correct successes + summed explanation scores for correct failures) / 57</div>
@@ -2005,7 +2006,7 @@
 </details>
 <h4 id="explanation-cases" data-toc>2.4.2 Failure-explanation quality</h4>
 <p class="">
-<strong>The failure-explanation term rises from 0.0969 to 0.1305 (+0.0336) with five examples.</strong> This term sums explanation ROUGE-L for correctly detected failures and divides by all 57 questions. Meanwhile, correct detections among the 34 failure questions fall from 32 to 28: the higher explanation term does not come from detecting more failures.</p>
+<strong>The failure-explanation term rises from 0.0969 to 0.1305 (+0.0336) with five-example ICL.</strong> This term sums explanation ROUGE-L for correctly detected failures and divides by all 57 questions. Meanwhile, correct detections among the 34 failure questions fall from 32 to 28: the higher explanation term does not come from detecting more failures.</p>
 <div class="robofail-extra">
 <article class="robo-expanded-case" id="robo-case-33">
 <h5 class="case-title">Case Study: Picking up a knife: identifying the wrong object</h5>
@@ -2034,7 +2035,7 @@
 </p>
 <blockquote lang="en">No. The knife remains on the countertop beside the sink while the robot arm lifts away without securing it. The grasp failed, so the knife was not picked up.</blockquote>
 <p>
-<strong>Five examples · Correct judgment</strong>
+<strong>ICL (5 examples) · Correct judgment</strong>
 </p>
 <blockquote lang="en">No, The robot picked up the spoon instead of the knife.</blockquote>
 <p>
@@ -2048,9 +2049,9 @@
 <h4 id="explanations-summary" data-toc>2.4.3 Summary</h4>
 <div class="section-summary">
 <p>
-<strong>Both success-recognition and failure-explanation terms improve with five examples, with most of the gain in success recognition.</strong>
+<strong>Both success-recognition and failure-explanation terms improve with five-example ICL, with most of the gain in success recognition.</strong>
 </p>
-<p>Both knife-case responses detect failure, but only the five-example answer identifies the wrong object. Outcome labels and specific causes should be evaluated separately.</p>
+<p>Both knife-case responses detect failure, but only the five-example ICL answer identifies the wrong object. Outcome labels and specific causes should be evaluated separately.</p>
 </div>
 </section>
 </section>
@@ -2058,20 +2059,20 @@
 <h2>3. Discussion and outlook</h2>
 <h3 id="conclusions" data-toc>3.1 Main findings</h3>
 <p class="">
-<strong>Astra is competitive with specialized models at ranking and preference judgment.</strong> Astra’s zero-shot ranking and direct-preference results are numerically above the cited specialized-model results, without additional fine-tuning for the evaluation tasks.</p>
+<strong>gpt-6-astra is competitive with specialized models at ranking and preference judgment.</strong> gpt-6-astra’s zero-shot ranking and direct-preference results are numerically above the cited specialized-model results, without additional fine-tuning for the evaluation tasks.</p>
 <p class="">
-<strong>Progress scores track advancement, setbacks, and retries.</strong> In the blue-cup and banana-transfer cases, Astra’s scores rise with successful placement, fall after slipping or ineffective attempts, and recover when a retry completes the task.</p>
+<strong>Progress scores track advancement, setbacks, and retries.</strong> In the blue-cup and banana-transfer cases, gpt-6-astra’s scores rise with successful placement, fall after slipping or ineffective attempts, and recover when a retry completes the task.</p>
 <p class="">
-<strong>Five-example RoboFail outcome accuracy reaches 85.96%.</strong> Correct recognition of the 23 successful subtasks rises from 5 to 21.</p>
+<strong>Five-example ICL RoboFail outcome accuracy reaches 85.96%.</strong> Correct recognition of the 23 successful subtasks rises from 5 to 21.</p>
 <p class="">
-<strong>The five-example composite explanation score reaches 0.499, above the listed specialized-model reports.</strong> Both success-recognition and failure-explanation terms improve; in the knife case, the response also moves from a generic failed grasp to the specific wrong-object error.</p>
-<h3 id="failure-modes" data-toc>3.2 How and when Astra fails</h3>
+<strong>The five-example ICL composite explanation score reaches 0.499, above the listed specialized-model reports.</strong> Both success-recognition and failure-explanation terms improve; in the knife case, the response also moves from a generic failed grasp to the specific wrong-object error.</p>
+<h3 id="failure-modes" data-toc>3.2 How and when gpt-6-astra fails</h3>
 <p class="">
 <strong>Quality distinctions can be too coarse.</strong> The <a href="#blue-bin-case">blue-bin case</a> receives full scores for both successful and suboptimal executions.</p>
 <p class="">
 <strong>Final-state recognition remains unreliable.</strong> In the <a href="#progress-icl">bottle-opening case</a>, correlation across five score positions improves, but the successful endpoint receives only 0.35.</p>
 <p class="">
-<strong>Failure diagnosis can miss the specific error.</strong> In the <a href="#robo-case-33">knife case</a>, zero-shot only reports a failed knife grasp; the five-example answer identifies a spoon, matching the reference’s wrong-object diagnosis.</p>
+<strong>Failure diagnosis can miss the specific error.</strong> In the <a href="#robo-case-33">knife case</a>, zero-shot only reports a failed knife grasp; the five-example ICL answer identifies a spoon, matching the reference’s wrong-object diagnosis.</p>
 <p class="">
 <strong>Ranking errors and missed failures remain with examples.</strong> More tied trajectory scores accompany a fall in τa from 0.8166 to 0.7953, while missed RoboFail failures rise from 2 to 6.</p>
 <h3 id="limitations" data-toc>3.3 Limitations and future work</h3>
@@ -2167,7 +2168,7 @@
 <a href="#ref-aha" aria-label="AHA">[8]</a>
 </sup> on the 57 questions recorded in this study. This set is not the entire original dataset and is not assumed to match other publications’ evaluation subsets exactly.</p>
 <p class="">
-<strong>In-context examples.</strong> Astra receives task-specific context conditions:</p>
+<strong>In-context examples.</strong> gpt-6-astra receives task-specific context conditions:</p>
 <ul>
 <li>
 <strong>Progress estimation:</strong> one training trajectory of the same or a similar task, with six stage scores.</li>
@@ -2178,12 +2179,12 @@
 </ul>
 <p class="method-note">Direct preference is evaluated only in the zero-shot setting.</p>
 <p class="">
-<strong>Observation masking.</strong> Two RoboFail cases use the first frame, first two frames, or all observations, with one request per zero-shot and five-example condition, for 12 requests. Partial observations have no time-specific labels; we compare responses without scoring accuracy.</p>
+<strong>Observation masking.</strong> Two RoboFail cases use the first frame, first two frames, or all observations, with one request per zero-shot and five-example ICL condition, for 12 requests. Partial observations have no time-specific labels; we compare responses without scoring accuracy.</p>
 <p class="">
 <strong>Result sources.</strong> Chart tags [S], [P], [W], [R], and [A] denote this study, the Robometer paper, its project website, RynnValue, and AHA. RBM ranking and different-quality preference follow official sampling and metric rules; the details in Section 2.1 record seeds, model interfaces, and cited versions. RoboFail literature comparisons use different question sets, as described in Section 2.3.</p>
 <div id="positive-case-protocol">
 <p class="">
-<strong>Case comparisons.</strong> The four positive examples are selected post hoc for illustration, not to estimate overall error rates. Astra and DeepSeek receive identical tasks, trajectories, prompts, and input images without reference quality labels; preference cases retain the actual A/B order. Reasoning settings and compute budgets are unmatched: Astra uses low effort with a 512-token output limit, while DeepSeek uses max effort with a 32768-token limit. No swapped-order repeat or matched per-example Robometer output is available.</p>
+<strong>Case comparisons.</strong> The four positive examples are selected post hoc for illustration, not to estimate overall error rates. gpt-6-astra and DeepSeek receive identical tasks, trajectories, prompts, and input images without reference quality labels; preference cases retain the actual A/B order. Reasoning settings and compute budgets are unmatched: gpt-6-astra uses low effort with a 512-token output limit, while DeepSeek uses max effort with a 32768-token limit. No swapped-order repeat or matched per-example Robometer output is available.</p>
 </div>
 <p class="">
 <strong>Replays and curves.</strong> Ranking and preference cases in Section 2.1 replay eight model-input images per trajectory at one image per second, using the last image as the poster. The added positive cases sample positions 0 / 4 / 9 / 13 / 18 / 22 / 27 / 31 from 32 stored frames. Progress cases in Section 2.2 replay 32 stored frames at four frames per second, with scores at positions 0 / 7 / 15 / 23 / 31. The initial zero is protocol-set; the other four points are predictions. These replays do not preserve original timing, and sample indices are not seconds. Lines guide the eye without adding predictions or human annotations between samples.</p>
@@ -2275,7 +2276,7 @@
 <p class="">To cite this article:</p>
 <pre class="citation-block" tabindex="0" aria-label="BibTeX">
 <code>@misc{zhang2026beyondthescore,
-  title        = {Beyond the Score: Early Evaluations of {GPT-6 Astra} as a Robot Critic},
+  title        = {Beyond the Score: Early Evaluations of {gpt-6-astra} as a Robot Critic},
   author       = {Zhang, Jinhao and Zhang, Yuwei and Zhou, Weitao and others},
   year         = {2026},
   month        = oct,

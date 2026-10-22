@@ -18,7 +18,7 @@ IMAGE_SIZES = json.loads((ROOT / 'data/media-dimensions.json').read_text())
 REFERENCES = json.loads((ROOT / 'data/references.json').read_text())
 LANG = 'zh'
 REFERENCE_LABELS = {
-    'astra': (1, 'OpenAI: GPT-6 Astra'),
+    'astra': (1, 'OpenAI: gpt-6-astra'),
     'robometer': (2, 'Robometer'),
     'rbm': (3, 'RBM-EVAL-OOD'),
     'reflect': (4, 'REFLECT / RoboFail'),
@@ -30,7 +30,7 @@ REFERENCE_LABELS = {
     'primo': (10, 'PRIMO'),
     'unexpected': (11, 'An Unexpected Robot Policy'),
     'astranomy': (12, 'Astranomy'),
-    'embodied': (13, 'Systematically Exploring GPT-6 Astra as Embodied Policies'),
+    'embodied': (13, 'Systematically Exploring gpt-6-astra as Embodied Policies'),
     'flora': (14, 'NVIDIA Flora-Rewarder'),
 }
 
@@ -38,7 +38,8 @@ def t(zh, en):
     return zh if LANG == 'zh' else en
 
 def model_label(name):
-    return re.sub(r'\s+(?:low|max)\b', '', name).replace('DpskV4.1-flash', 'DeepSeek-V4.1-Flash')
+    name = re.sub(r'(?<![\w-])(?:GPT-6 Astra|Astra)(?![\w-])', 'gpt-6-astra', name)
+    return re.sub(r'\s+(?:low|max)\b', '', name).replace('DpskV4.1-flash', 'DeepSeek-V4.1-Flash').replace('5 examples', 'ICL (5 examples)')
 
 
 def p(zh, en, cls=''):
@@ -127,13 +128,13 @@ def diagnosis():
     ]:
         rows.append([t(zh, en), *r[key]])
     return '<div id="outcome-counts">' + table(
-        [t('参考标签 → 模型判断', 'Reference → prediction'), t('零样本', 'Zero-shot'), t('五示例 ICL', 'Five-example ICL')],
+        [t('参考标签 → 模型判断', 'Reference → prediction'), t('零样本', 'Zero-shot'), t('ICL（5 个示例）', 'Five-example ICL')],
         rows, t('同一组 57 个问题的成败判断：23 个成功，34 个失败。', 'Outcome judgments on the same 57 questions: 23 successes and 34 failures.')) + '</div>'
 
 def rouge_chart():
     r = DATA['rouge_decomposition']
     out = '<div class="stack-key rouge-key">' + ''.join(f'<span><i></i>{x}</span>' for x in [t('正确成功项', 'Correct-success term'), t('失败解释项', 'Failure-explanation term')]) + '</div>'
-    for i, label in enumerate([t('零样本', 'Zero-shot'), t('外部五示例', 'External five-example')]):
+    for i, label in enumerate([t('零样本', 'Zero-shot'), t('ICL（5 个外部示例）', 'External five-example ICL')]):
         values = [r['success_terms'][i], r['failure_explanation_terms'][i]]
         bars = ''.join(f'<span style="width:{v / .55 * 100}%">{v:.4f}</span>' for v in values)
         desc = f'{label}: {values[0]:.4f} + {values[1]:.4f}'
@@ -163,20 +164,20 @@ def study_design():
     protocol_details += p('<strong>RoboFail 协议。</strong>RoboFail 由 REFLECT 提出[[cite:reflect]]。本文采用 AHA 提供的问答评测形式[[cite:aha]]，在本研究记录的 57 个问题上评估；该问题集合不等同于原始数据集的全部内容，也不假定与其他文献的评测子集完全一致。', '<strong>RoboFail protocol.</strong> RoboFail was introduced by REFLECT[[cite:reflect]]. We use the question–answer evaluation format provided by AHA[[cite:aha]] on the 57 questions recorded in this study. This set is not the entire original dataset and is not assumed to match other publications’ evaluation subsets exactly.')
 
     body += h3('comparison-protocol', '1.2 模型配置与评测条件', '1.2 Model configurations and evaluation conditions')
-    body += p('我们以 GPT-6 Astra[[cite:astra]] 为主要研究对象，通过提示提供任务与观测，不进行额外的评价任务微调。RBM 评测另包含 GPT-5.6-sol[[cite:sol]] 和 DeepSeek-V4.1-Flash[[cite:deepseek]] 的零样本比较。', 'Our primary subject is GPT-6 Astra[[cite:astra]], supplied with task descriptions and observations through prompts, without additional evaluation-task fine-tuning. The RBM evaluation also includes zero-shot comparisons with GPT-5.6-sol[[cite:sol]] and DeepSeek-V4.1-Flash[[cite:deepseek]].')
+    body += p('我们以 gpt-6-astra[[cite:astra]] 为主要研究对象，通过提示提供任务与观测，不进行额外的评价任务微调。RBM 评测另包含 GPT-5.6-sol[[cite:sol]] 和 DeepSeek-V4.1-Flash[[cite:deepseek]] 的零样本比较。', 'Our primary subject is gpt-6-astra[[cite:astra]], supplied with task descriptions and observations through prompts, without additional evaluation-task fine-tuning. The RBM evaluation also includes zero-shot comparisons with GPT-5.6-sol[[cite:sol]] and DeepSeek-V4.1-Flash[[cite:deepseek]].')
     body += p('进度估计、独立排序与 RoboFail 另设上下文示例条件；两个 RoboFail 案例还比较了不同观测帧数下的回答。', 'Progress estimation, independent ranking, and RoboFail also include in-context examples. Two RoboFail cases additionally compare responses across different numbers of observed frames.')
 
-    protocol_details += p('<strong>上下文示例。</strong> Astra 的示例条件按评价任务分别设置：', '<strong>In-context examples.</strong> Astra receives task-specific context conditions:')
+    protocol_details += p('<strong>上下文示例。</strong> gpt-6-astra 的示例条件按评价任务分别设置：', '<strong>In-context examples.</strong> gpt-6-astra receives task-specific context conditions:')
     protocol_details += '<ul>' + ''.join('<li>' + t(zh, en) + '</li>' for zh, en in [
         ('<strong>进度估计：</strong>一条相同或相近任务的训练轨迹，附六个阶段评分。', '<strong>Progress estimation:</strong> one training trajectory of the same or a similar task, with six stage scores.'),
         ('<strong>独立排序：</strong>随机选取高、中、低分训练轨迹各一条，不要求与测试任务相同；中等参考分数不等于测试集的“次优”标签。', '<strong>Independent ranking:</strong> one randomly selected training trajectory at each of three score levels—high, middle, and low—without requiring a task match. The middle reference score is not the test set’s suboptimal label.'),
         ('<strong>RoboFail：</strong>五个固定的外部图像–问题–答案示例，报告为与测试轨迹不重叠。', '<strong>RoboFail:</strong> five fixed external image–question–answer demonstrations, reported disjoint from test trajectories.'),
     ]) + '</ul>'
     protocol_details += p('直接偏好仅评估零样本。', 'Direct preference is evaluated only in the zero-shot setting.', 'method-note')
-    protocol_details += p('<strong>观测遮蔽。</strong>两个 RoboFail 案例分别使用前 1 帧、前 2 帧与全部观测，在零样本和五示例条件下各请求一次，共 12 次。少帧条件没有时间级真值，只比较模型回答。', '<strong>Observation masking.</strong> Two RoboFail cases use the first frame, first two frames, or all observations, with one request per zero-shot and five-example condition, for 12 requests. Partial observations have no time-specific labels; we compare responses without scoring accuracy.')
+    protocol_details += p('<strong>观测遮蔽。</strong>两个 RoboFail 案例分别使用前 1 帧、前 2 帧与全部观测，在零样本和使用五个示例的 ICL 条件下各请求一次，共 12 次。少帧条件没有时间级真值，只比较模型回答。', '<strong>Observation masking.</strong> Two RoboFail cases use the first frame, first two frames, or all observations, with one request per zero-shot and five-example ICL condition, for 12 requests. Partial observations have no time-specific labels; we compare responses without scoring accuracy.')
     protocol_details += p('<strong>结果来源。</strong>图中 [S] 为本研究，[P]、[W]、[R]、[A] 分别为 Robometer 论文、项目网站、RynnValue 与 AHA。RBM 排序与“不同质量”偏好沿用官方采样和指标规则；随机种子、模型接口与引用版本见 2.1 的折叠说明。RoboFail 的文献对照使用不同问题集合，范围见 2.3。', '<strong>Result sources.</strong> Chart tags [S], [P], [W], [R], and [A] denote this study, the Robometer paper, its project website, RynnValue, and AHA. RBM ranking and different-quality preference follow official sampling and metric rules; the details in Section 2.1 record seeds, model interfaces, and cited versions. RoboFail literature comparisons use different question sets, as described in Section 2.3.')
 
-    protocol_details += '<div id="positive-case-protocol">' + p('<strong>案例对照。</strong>四组正例为评测后的说明性选例，不用于估计整体错误率。Astra 与 DeepSeek 使用相同任务、轨迹、提示和输入图像，不接收参考质量标签；偏好案例保留实际 A/B 顺序。两者推理配置与计算预算未匹配：Astra 为 low、输出上限 512 token，DeepSeek 为 max、上限 32768 token。未进行 A/B 交换复测，也没有匹配的 Robometer 逐条输出。', '<strong>Case comparisons.</strong> The four positive examples are selected post hoc for illustration, not to estimate overall error rates. Astra and DeepSeek receive identical tasks, trajectories, prompts, and input images without reference quality labels; preference cases retain the actual A/B order. Reasoning settings and compute budgets are unmatched: Astra uses low effort with a 512-token output limit, while DeepSeek uses max effort with a 32768-token limit. No swapped-order repeat or matched per-example Robometer output is available.') + '</div>'
+    protocol_details += '<div id="positive-case-protocol">' + p('<strong>案例对照。</strong>四组正例为评测后的说明性选例，不用于估计整体错误率。gpt-6-astra 与 DeepSeek 使用相同任务、轨迹、提示和输入图像，不接收参考质量标签；偏好案例保留实际 A/B 顺序。两者推理配置与计算预算未匹配：gpt-6-astra 为 low、输出上限 512 token，DeepSeek 为 max、上限 32768 token。未进行 A/B 交换复测，也没有匹配的 Robometer 逐条输出。', '<strong>Case comparisons.</strong> The four positive examples are selected post hoc for illustration, not to estimate overall error rates. gpt-6-astra and DeepSeek receive identical tasks, trajectories, prompts, and input images without reference quality labels; preference cases retain the actual A/B order. Reasoning settings and compute budgets are unmatched: gpt-6-astra uses low effort with a 512-token output limit, while DeepSeek uses max effort with a 32768-token limit. No swapped-order repeat or matched per-example Robometer output is available.') + '</div>'
 
     protocol_details += p('<strong>回放与曲线。</strong>2.1 的排序与偏好案例回放各轨迹的 8 张模型输入图像，每秒 1 张，封面取最后一张；新增正例在 32 张保存帧中的采样位置为 0 / 4 / 9 / 13 / 18 / 22 / 27 / 31。2.2 的进度案例将 32 张保存帧按每秒 4 帧回放，评分位置为 0 / 7 / 15 / 23 / 31；起点由协议设为 0，其余四点为模型预测。以上回放均非原速视频，采样位置不是秒数。曲线连线仅辅助阅读，中间位置没有额外预测或人工标注。', '<strong>Replays and curves.</strong> Ranking and preference cases in Section 2.1 replay eight model-input images per trajectory at one image per second, using the last image as the poster. The added positive cases sample positions 0 / 4 / 9 / 13 / 18 / 22 / 27 / 31 from 32 stored frames. Progress cases in Section 2.2 replay 32 stored frames at four frames per second, with scores at positions 0 / 7 / 15 / 23 / 31. The initial zero is protocol-set; the other four points are predictions. These replays do not preserve original timing, and sample indices are not seconds. Lines guide the eye without adding predictions or human annotations between samples.')
 
@@ -203,23 +204,23 @@ def study_design():
 
 def article():
     takeaways = [
-        t('<strong>Astra 能区分不同质量的机器人执行。</strong>零样本排序 τa 为 0.8166，直接偏好准确率为 92.4%；在本研究的三个通用模型配置中，这两项结果的点估计最高。', '<strong>Astra distinguishes execution quality without task-specific fine-tuning.</strong> Zero-shot ranking τa is 0.8166 and direct preference accuracy is 92.4%, the highest point estimates among the three general-purpose configurations tested here.'),
+        t('<strong>gpt-6-astra 能区分不同质量的机器人执行。</strong>零样本排序 τa 为 0.8166，直接偏好准确率为 92.4%；在本研究的三个通用模型配置中，这两项结果的点估计最高。', '<strong>gpt-6-astra distinguishes execution quality without task-specific fine-tuning.</strong> Zero-shot ranking τa is 0.8166 and direct preference accuracy is 92.4%, the highest point estimates among the three general-purpose configurations tested here.'),
         t('<strong>上下文示例对不同判断的影响并不一致。</strong>进度 VOC 从 93.6 升至 94.2，排序 τa 却从 0.8166 降至 0.7953。开瓶案例中，更高的进度相关性还伴随更差的终点估计。', '<strong>Context examples have mixed effects.</strong> Progress VOC rises from 93.6 to 94.2, while ranking τa falls from 0.8166 to 0.7953. In a bottle-opening example, higher progress correlation also accompanies a worse endpoint estimate.'),
-        t('<strong>RoboFail 准确率提高，但失败召回率下降。</strong>五示例条件的准确率为 85.96%，零样本为 64.91%；误报由 18 个降至 2 个，漏检由 2 个增至 6 个。', '<strong>Higher RoboFail accuracy comes with lower failure recall.</strong> Accuracy is 85.96% with five examples versus 64.91% zero-shot. False alarms fall from 18 to 2, but misses rise from 2 to 6.'),
+        t('<strong>RoboFail 准确率提高，但失败召回率下降。</strong>使用五个示例的 ICL 条件的准确率为 85.96%，零样本为 64.91%；误报由 18 个降至 2 个，漏检由 2 个增至 6 个。', '<strong>Higher RoboFail accuracy comes with lower failure recall.</strong> Accuracy is 85.96% with five-example ICL versus 64.91% zero-shot. False alarms fall from 18 to 2, but misses rise from 2 to 6.'),
         t('<strong>综合解释分数的增量主要来自成功判断。</strong>ROUGE-L 从 0.185 升至 0.499，其中约 89.3% 的增量来自正确成功项；这一变化不等于失败原因解释的同等改善。', '<strong>Most of the composite explanation-score gain comes from success recognition.</strong> ROUGE-L rises from 0.185 to 0.499; about 89.3% of the gain comes from the correct-success term, rather than the failure-explanation term.'),
     ]
     out = section('takeaways', 'Key takeaways · 主要发现', 'Key takeaways', '<ul>' + ''.join(f'<li>{x}</li>' for x in takeaways) + '</ul>', 'key-takeaways')
 
     body = p('机器人系统需要评价自身的行为：判断任务推进了多少、比较不同执行的质量，以及识别和解释失败。通用多模态模型能够联合处理视觉观测与任务描述，并通过上下文接收评价要求和示例，为这些判断提供了一种无需额外任务微调的途径。我们研究：<strong>通用多模态模型已有的视觉理解与推理能力，能在多大程度上支持对机器人行为的评价？这些能力如何随评价任务、观测信息与上下文示例而变化？</strong>', 'Robot systems need to evaluate their own behavior: assess how far a task has progressed, compare the quality of different executions, and identify and explain failures. General-purpose multimodal models can jointly process visual observations and task descriptions, while receiving evaluation criteria and examples through context, offering a way to make these judgments without additional task-specific fine-tuning. We ask: <strong>To what extent can the existing visual understanding and reasoning capabilities of general-purpose multimodal models support the evaluation of robot behavior? How do these capabilities vary across evaluation tasks, available observations, and in-context examples?</strong>')
-    body += p('本文以 GPT-6 Astra[[cite:astra]] 为主要研究对象，在 RBM[[cite:robometer]][[cite:rbm]] 和 RoboFail[[cite:reflect]] 上开展实证评估。我们考察轨迹质量评分、直接偏好判断、任务进度估计，以及子任务成败判断与解释，分别衡量模型比较执行、追踪任务推进和识别失败的能力。我们进一步比较零样本与上下文示例条件下的表现，并通过观测遮蔽的探索性案例，考察可见信息变化时模型回答的变化。', "We conduct an empirical study with GPT-6 Astra[[cite:astra]] as our primary subject on RBM[[cite:robometer]][[cite:rbm]] and RoboFail[[cite:reflect]]. We examine trajectory quality scoring, direct preference judgments, task progress estimation, and subtask success and failure judgments with explanations, assessing the model's ability to compare executions, track task progression, and recognize failures. We further compare zero-shot performance with conditions that provide in-context examples, and use exploratory observation-masking cases to examine how responses change with the available visual information.")
-    body += p('结果显示，<strong>执行质量比较是 Astra 在本研究中表现突出的能力，但这种能力没有转化为同样可靠的完成判断和失败诊断。</strong>零样本排序 Kendall τ<sub>a</sub> 达到 <strong>0.8166</strong>，高于专用模型 Robometer 的已报告数值 0.655[[cite:robometer]] 和 RynnValue-8B 的 0.675[[cite:rynnvalue]]；直接偏好准确率为 <strong>92.4%</strong>。在 RoboFail 上，零样本与五示例条件的准确率分别为 <strong>64.91% 和 85.96%</strong>，失败漏检却由 <strong>2 个增至 6 个</strong>；综合解释得分增量的 <strong>89.3%</strong> 来自正确成功项。因此，当前证据支持将 Astra 用于离线执行质量比较，但<strong>它仍会误判任务是否完成、漏掉真实失败；更高的解释总分也不足以证明失败原因诊断可靠</strong>。本文尚未验证这些评价能否带来策略学习或闭环执行的提升。', 'Our results identify <strong>execution-quality comparison as a strength of Astra in this study, but this ability does not translate into equally reliable completion judgments or failure diagnosis.</strong> Zero-shot ranking reaches Kendall τ<sub>a</sub> = <strong>0.8166</strong>, numerically above the published values of 0.655 for the specialized Robometer model[[cite:robometer]] and 0.675 for RynnValue-8B[[cite:rynnvalue]]; direct preference accuracy is <strong>92.4%</strong>. On RoboFail, zero-shot and five-example accuracy is <strong>64.91% and 85.96%</strong>, respectively, yet missed failures increase from <strong>2 to 6</strong>; <strong>89.3%</strong> of the composite explanation-score gain comes from correct success judgments. The evidence therefore supports Astra for offline execution-quality comparison, but <strong>it still misjudges completion and misses real failures, and higher composite explanation scores do not establish reliable diagnosis of failure causes</strong>. Whether these assessments improve policy learning or closed-loop execution remains untested.')
+    body += p('本文以 gpt-6-astra[[cite:astra]] 为主要研究对象，在 RBM[[cite:robometer]][[cite:rbm]] 和 RoboFail[[cite:reflect]] 上开展实证评估。我们考察轨迹质量评分、直接偏好判断、任务进度估计，以及子任务成败判断与解释，分别衡量模型比较执行、追踪任务推进和识别失败的能力。我们进一步比较零样本与上下文示例条件下的表现，并通过观测遮蔽的探索性案例，考察可见信息变化时模型回答的变化。', "We conduct an empirical study with gpt-6-astra[[cite:astra]] as our primary subject on RBM[[cite:robometer]][[cite:rbm]] and RoboFail[[cite:reflect]]. We examine trajectory quality scoring, direct preference judgments, task progress estimation, and subtask success and failure judgments with explanations, assessing the model's ability to compare executions, track task progression, and recognize failures. We further compare zero-shot performance with conditions that provide in-context examples, and use exploratory observation-masking cases to examine how responses change with the available visual information.")
+    body += p('结果显示，<strong>执行质量比较是 gpt-6-astra 在本研究中表现突出的能力，但这种能力没有转化为同样可靠的完成判断和失败诊断。</strong>零样本排序 Kendall τ<sub>a</sub> 达到 <strong>0.8166</strong>，高于专用模型 Robometer 的已报告数值 0.655[[cite:robometer]] 和 RynnValue-8B 的 0.675[[cite:rynnvalue]]；直接偏好准确率为 <strong>92.4%</strong>。在 RoboFail 上，零样本与使用五个示例的 ICL 条件的准确率分别为 <strong>64.91% 和 85.96%</strong>，失败漏检却由 <strong>2 个增至 6 个</strong>；综合解释得分增量的 <strong>89.3%</strong> 来自正确成功项。因此，当前证据支持将 gpt-6-astra 用于离线执行质量比较，但<strong>它仍会误判任务是否完成、漏掉真实失败；更高的解释总分也不足以证明失败原因诊断可靠</strong>。本文尚未验证这些评价能否带来策略学习或闭环执行的提升。', 'Our results identify <strong>execution-quality comparison as a strength of gpt-6-astra in this study, but this ability does not translate into equally reliable completion judgments or failure diagnosis.</strong> Zero-shot ranking reaches Kendall τ<sub>a</sub> = <strong>0.8166</strong>, numerically above the published values of 0.655 for the specialized Robometer model[[cite:robometer]] and 0.675 for RynnValue-8B[[cite:rynnvalue]]; direct preference accuracy is <strong>92.4%</strong>. On RoboFail, zero-shot and five-example ICL accuracy is <strong>64.91% and 85.96%</strong>, respectively, yet missed failures increase from <strong>2 to 6</strong>; <strong>89.3%</strong> of the composite explanation-score gain comes from correct success judgments. The evidence therefore supports gpt-6-astra for offline execution-quality comparison, but <strong>it still misjudges completion and misses real failures, and higher composite explanation scores do not establish reliable diagnosis of failure causes</strong>. Whether these assessments improve policy learning or closed-loop execution remains untested.')
     out += section('overview', 'Introduction', 'Introduction', body)
 
     out += study_design()
     result_topics = ''
 
 
-    body = p('我们比较 GPT-6 Astra[[cite:astra]]、GPT-5.6-sol[[cite:sol]] 和 DeepSeek-V4.1-Flash[[cite:deepseek]] 的独立轨迹评分与直接偏好判断，并以 Astra 的案例分析具体判断依据。', 'We compare independent trajectory scores and direct preference judgments from GPT-6 Astra[[cite:astra]], GPT-5.6-sol[[cite:sol]], and DeepSeek-V4.1-Flash[[cite:deepseek]], with Astra cases illustrating the basis of its judgments.')
+    body = p('我们比较 gpt-6-astra[[cite:astra]]、GPT-5.6-sol[[cite:sol]] 和 DeepSeek-V4.1-Flash[[cite:deepseek]] 的独立轨迹评分与直接偏好判断，并以 gpt-6-astra 的案例分析具体判断依据。', 'We compare independent trajectory scores and direct preference judgments from gpt-6-astra[[cite:astra]], GPT-5.6-sol[[cite:sol]], and DeepSeek-V4.1-Flash[[cite:deepseek]], with gpt-6-astra cases illustrating the basis of its judgments.')
     body += p('本节视频回放模型输入的 8 帧图像。', 'Videos in this section replay the eight model-input frames.', 'fine')
     body += h3('ranking-results', '2.1.1 轨迹质量排序', '2.1.1 Trajectory quality ranking')
     body += confirmed('ranking')
@@ -230,7 +231,7 @@ def article():
     body += h3('preference-results', '2.1.2 直接偏好判断', '2.1.2 Direct preference')
     body += confirmed('preference')
     comparison_details = p('排序与“不同质量”偏好评测复用 Robometer 官方采样和指标规则，使用 seed=44。571 条缓存轨迹中，4 条属于仅含成功样本的任务，按官方规则排除后得到 567 条；偏好配对按每来源最多 500 对采样，共 1,192 对。两项指标均按六来源等权汇总。', 'Ranking and different-quality preference evaluation reuse Robometer’s official sampling and metric rules with seed=44. Of 571 cached trajectories, four belong to tasks with only successful examples and are excluded by the official rule, leaving 567. Preference sampling uses up to 500 pairs per source, yielding 1,192 pairs. Both metrics use equal weighting across the six sources.')
-    comparison_details += p('本研究 seed=44，当前官方默认值为 42。双方均匀取 8 帧；Astra 通过提示输出评分或 A/B，Robometer 使用训练后的 progress/preference head。正文引用 Robometer v1 的 τa=0.655；v2 对应值约为 0.643。', 'This study uses seed=44; the current official default is 42. Both sample eight frames uniformly. Astra produces prompted scores or A/B choices, while Robometer uses trained progress/preference heads. We cite Robometer v1’s τa=0.655; the corresponding v2 value is approximately 0.643.')
+    comparison_details += p('本研究 seed=44，当前官方默认值为 42。双方均匀取 8 帧；gpt-6-astra 通过提示输出评分或 A/B，Robometer 使用训练后的 progress/preference head。正文引用 Robometer v1 的 τa=0.655；v2 对应值约为 0.643。', 'This study uses seed=44; the current official default is 42. Both sample eight frames uniformly. gpt-6-astra produces prompted scores or A/B choices, while Robometer uses trained progress/preference heads. We cite Robometer v1’s τa=0.655; the corresponding v2 value is approximately 0.643.')
     body += detail('采样、指标与引用版本', 'Sampling, metrics, and cited versions', comparison_details)
     result_topics += result_section('quality-results', '2.1 轨迹质量与偏好', '2.1 Trajectory quality and preference', re.sub(r'<(/?)h4\b', r'<\1h5', body))
 
@@ -269,31 +270,32 @@ def article():
     body += visibility_experiment(VISIBILITY, ROBOFAIL_CASES, t)
     result_topics += result_section('failure', '2.3 子任务成败判断', '2.3 Subtask success and failure', re.sub(r'<(/?)h4\b', r'<\1h5', body))
 
-    body = h3('explanation-scores', '2.4.1 总体表现与基线比较', '2.4.1 Overall performance and baseline comparison')
-    body += p('五示例条件的综合 ROUGE-L 为 <strong>0.499</strong>，零样本为 <strong>0.185</strong>。其中，成功识别项从 <strong>0.0877 增至 0.3684（+0.2807）</strong>，失败解释项从 <strong>0.0969 增至 0.1305（+0.0336）</strong>。', 'Composite ROUGE-L is <strong>0.499</strong> with five examples versus <strong>0.185</strong> zero-shot. The success-recognition term rises from <strong>0.0877 to 0.3684 (+0.2807)</strong>, and the failure-explanation term from <strong>0.0969 to 0.1305 (+0.0336)</strong>.')
-    body += p('Astra 五示例的综合得分高于 AHA 报告中的 AHA-13B Vicuna（0.290）、AHA-13B Llama-2（0.280）、AHA-7B（0.204）和 GPT-4o 五示例（0.236）[[cite:aha]]。', 'Astra’s five-example composite score is above the AHA-reported values for AHA-13B Vicuna (0.290), AHA-13B Llama-2 (0.280), AHA-7B (0.204), and five-shot GPT-4o (0.236)[[cite:aha]].')
-    scoring_details = p('五示例条件的综合 ROUGE-L 从 0.185 增加到 0.499。这个指标不只衡量失败解释。按 AHA 评测规则[[cite:aha]]，正确成功回答计 1 分，正确失败回答按解释与参考答案的词干化 ROUGE-L F1 计分，成败标签错误则计 0 分。所有问题得分相加后除以 57。评分使用原始英文回答，不使用本文的中文转述。', 'Composite ROUGE-L rises from 0.185 to 0.499 in the five-example condition. This metric does not measure failure explanations alone. Under the AHA rules[[cite:aha]], a correct success answer receives 1; a correct failure receives stemmed ROUGE-L F1 against the reference explanation; and a label disagreement receives 0. Scores are summed and divided by 57. Evaluation uses the original English answers, not the Chinese paraphrases in this article.')
+    body = p('本节使用 2.3 中零样本与五个示例 ICL 的同一批回答，评价成败判断之外的解释得分。ICL 使用同一组固定的外部图像—问题—答案示例。', 'This section evaluates explanation scores from the same zero-shot and five-example ICL responses as Section 2.3. ICL uses the same fixed set of external image–question–answer demonstrations.')
+    body += h3('explanation-scores', '2.4.1 总体表现与基线比较', '2.4.1 Overall performance and baseline comparison')
+    body += p('使用五个示例的 ICL 条件的综合 ROUGE-L 为 <strong>0.499</strong>，零样本为 <strong>0.185</strong>。其中，成功识别项从 <strong>0.0877 增至 0.3684（+0.2807）</strong>，失败解释项从 <strong>0.0969 增至 0.1305（+0.0336）</strong>。', 'Composite ROUGE-L is <strong>0.499</strong> with five-example ICL versus <strong>0.185</strong> zero-shot. The success-recognition term rises from <strong>0.0877 to 0.3684 (+0.2807)</strong>, and the failure-explanation term from <strong>0.0969 to 0.1305 (+0.0336)</strong>.')
+    body += p('gpt-6-astra 使用五个示例进行 ICL 后的综合得分高于 AHA 报告中的 AHA-13B Vicuna（0.290）、AHA-13B Llama-2（0.280）、AHA-7B（0.204）和 GPT-4o 的 ICL 结果（5 个示例，0.236）[[cite:aha]]。', 'gpt-6-astra’s five-example ICL composite score is above the AHA-reported values for AHA-13B Vicuna (0.290), AHA-13B Llama-2 (0.280), AHA-7B (0.204), and five-shot GPT-4o (0.236)[[cite:aha]].')
+    scoring_details = p('使用五个示例的 ICL 条件的综合 ROUGE-L 从 0.185 增加到 0.499。这个指标不只衡量失败解释。按 AHA 评测规则[[cite:aha]]，正确成功回答计 1 分，正确失败回答按解释与参考答案的词干化 ROUGE-L F1 计分，成败标签错误则计 0 分。所有问题得分相加后除以 57。评分使用原始英文回答，不使用本文的中文转述。', 'Composite ROUGE-L rises from 0.185 to 0.499 in the five-example ICL condition. This metric does not measure failure explanations alone. Under the AHA rules[[cite:aha]], a correct success answer receives 1; a correct failure receives stemmed ROUGE-L F1 against the reference explanation; and a label disagreement receives 0. Scores are summed and divided by 57. Evaluation uses the original English answers, not the Chinese paraphrases in this article.')
     scoring_details += f'<div class="formula" role="math" aria-label="{t("综合得分等于正确成功数加上正确失败的解释分数总和，再除以57", "Composite score equals correct successes plus summed explanation scores for correctly detected failures, divided by 57")}">R = ({t("正确成功数 + 正确失败的解释分数之和", "correct successes + summed explanation scores for correct failures")}) / 57</div>'
     body += figure('assets/figures/05_robofail_icl.png', t('包含 AHA 及其他 baseline 的综合 ROUGE-L 对比', 'Composite ROUGE-L including AHA and other baselines'), t('综合 ROUGE-L 对比；文献结果沿用各自协议。', 'Composite ROUGE-L comparison; literature results retain their own protocols.'))
     body += rouge_chart()
     scoring_details += p('正确成功项从 0.0877 增至 0.3684，增量约为 16 / 57 = 0.2807，占报告总增量 0.3144 的约 89.3%。失败解释项从 0.0969 增至 0.1305，占剩余约 10.7%。因此，0.499 不能读作“49.9% 的失败解释正确”；大部分增量来自识别成功，而非失败解释项。', 'The correct-success term rises from 0.0877 to 0.3684. Its increase, 16 / 57 ≈ 0.2807, accounts for about 89.3% of the reported total gain of 0.3144. The failure-explanation term rises from 0.0969 to 0.1305, accounting for the remaining 10.7%. A score of 0.499 therefore does not mean that 49.9% of failure explanations are correct. Most of the gain comes from recognizing success.')
     body += detail('综合评分规则与分项计算', 'Composite scoring rule and component calculations', scoring_details)
     body += h3('explanation-cases', '2.4.2 失败解释质量', '2.4.2 Failure-explanation quality')
-    body += p('<strong>五示例条件的失败解释项由 0.0969 增至 0.1305（+0.0336）。</strong>该分项将正确检出失败的解释 ROUGE-L 求和后除以全部 57 个问题。与此同时，34 个失败问题中的正确检出数从 32 个降至 28 个：解释项得分提高，并非因为识别出了更多失败。', '<strong>The failure-explanation term rises from 0.0969 to 0.1305 (+0.0336) with five examples.</strong> This term sums explanation ROUGE-L for correctly detected failures and divides by all 57 questions. Meanwhile, correct detections among the 34 failure questions fall from 32 to 28: the higher explanation term does not come from detecting more failures.')
+    body += p('<strong>使用五个示例的 ICL 条件的失败解释项由 0.0969 增至 0.1305（+0.0336）。</strong>该分项将正确检出失败的解释 ROUGE-L 求和后除以全部 57 个问题。与此同时，34 个失败问题中的正确检出数从 32 个降至 28 个：解释项得分提高，并非因为识别出了更多失败。', '<strong>The failure-explanation term rises from 0.0969 to 0.1305 (+0.0336) with five-example ICL.</strong> This term sums explanation ROUGE-L for correctly detected failures and divides by all 57 questions. Meanwhile, correct detections among the 34 failure questions fall from 32 to 28: the higher explanation term does not come from detecting more failures.')
     body += expanded_cases(ROBOFAIL_CASES, t, ids=(33,))
     body += p('<a href="#robo-case-55">旋钮案例</a>中，零样本同样判对失败，但强调抓取位置，参考答案则强调夹爪未闭合。', 'In the <a href="#robo-case-55">knob case</a>, zero-shot also detects failure, but emphasizes grasp location while the reference identifies an unclosed gripper.')
     result_topics += result_section('explanations', '2.4 失败解释与得分', '2.4 Failure explanations and scores', re.sub(r'<(/?)h4\b', r'<\1h5', body))
     out += section('results', '2. 结果', '2. Results', result_topics)
 
     body = h3('conclusions', '3.1 主要发现', '3.1 Main findings')
-    body += p('<strong>Astra 的排序与偏好判断能与专用模型竞争。</strong> Astra 在本研究中的零样本排序与直接偏好结果，数值上高于所引用的专用模型报告结果；这种能力无需针对评测任务额外微调。', '<strong>Astra is competitive with specialized models at ranking and preference judgment.</strong> Astra’s zero-shot ranking and direct-preference results are numerically above the cited specialized-model results, without additional fine-tuning for the evaluation tasks.')
-    body += p('<strong>进度评分能够反映任务推进、受挫和重试。</strong>在蓝杯与香蕉转移案例中，Astra 的评分随放置成功而上升，随滑落或无效尝试而下降，并在重试完成后恢复。', '<strong>Progress scores track advancement, setbacks, and retries.</strong> In the blue-cup and banana-transfer cases, Astra’s scores rise with successful placement, fall after slipping or ineffective attempts, and recover when a retry completes the task.')
-    body += p('<strong>五示例条件下，RoboFail 成败识别准确率达到 85.96%。</strong>23 个成功子任务中，正确识别数从 5 个增至 21 个。', '<strong>Five-example RoboFail outcome accuracy reaches 85.96%.</strong> Correct recognition of the 23 successful subtasks rises from 5 to 21.')
-    body += p('<strong>五示例条件的综合解释得分达到 0.499，高于所列专用模型报告值。</strong>成功识别与失败解释两项均提高；拿刀案例中，回答还从笼统的抓取失败转向了具体的对象错误。', '<strong>The five-example composite explanation score reaches 0.499, above the listed specialized-model reports.</strong> Both success-recognition and failure-explanation terms improve; in the knife case, the response also moves from a generic failed grasp to the specific wrong-object error.')
-    body += h3('failure-modes', '3.2 Astra 何时仍会判断失误', '3.2 How and when Astra fails')
+    body += p('<strong>gpt-6-astra 的排序与偏好判断能与专用模型竞争。</strong> gpt-6-astra 在本研究中的零样本排序与直接偏好结果，数值上高于所引用的专用模型报告结果；这种能力无需针对评测任务额外微调。', '<strong>gpt-6-astra is competitive with specialized models at ranking and preference judgment.</strong> gpt-6-astra’s zero-shot ranking and direct-preference results are numerically above the cited specialized-model results, without additional fine-tuning for the evaluation tasks.')
+    body += p('<strong>进度评分能够反映任务推进、受挫和重试。</strong>在蓝杯与香蕉转移案例中，gpt-6-astra 的评分随放置成功而上升，随滑落或无效尝试而下降，并在重试完成后恢复。', '<strong>Progress scores track advancement, setbacks, and retries.</strong> In the blue-cup and banana-transfer cases, gpt-6-astra’s scores rise with successful placement, fall after slipping or ineffective attempts, and recover when a retry completes the task.')
+    body += p('<strong>使用五个示例的 ICL 条件下，RoboFail 成败识别准确率达到 85.96%。</strong>23 个成功子任务中，正确识别数从 5 个增至 21 个。', '<strong>Five-example ICL RoboFail outcome accuracy reaches 85.96%.</strong> Correct recognition of the 23 successful subtasks rises from 5 to 21.')
+    body += p('<strong>使用五个示例的 ICL 条件的综合解释得分达到 0.499，高于所列专用模型报告值。</strong>成功识别与失败解释两项均提高；拿刀案例中，回答还从笼统的抓取失败转向了具体的对象错误。', '<strong>The five-example ICL composite explanation score reaches 0.499, above the listed specialized-model reports.</strong> Both success-recognition and failure-explanation terms improve; in the knife case, the response also moves from a generic failed grasp to the specific wrong-object error.')
+    body += h3('failure-modes', '3.2 gpt-6-astra 何时仍会判断失误', '3.2 How and when gpt-6-astra fails')
     body += p('<strong>质量等级区分不够细。</strong><a href="#blue-bin-case">蓝桶案例</a>中的成功和次优执行都得到满分。', '<strong>Quality distinctions can be too coarse.</strong> The <a href="#blue-bin-case">blue-bin case</a> receives full scores for both successful and suboptimal executions.')
     body += p('<strong>终态识别仍会出错。</strong><a href="#progress-icl">开瓶案例</a>中，五个评分位置的整体相关性提高，但成功终点只得到 0.35。', '<strong>Final-state recognition remains unreliable.</strong> In the <a href="#progress-icl">bottle-opening case</a>, correlation across five score positions improves, but the successful endpoint receives only 0.35.')
-    body += p('<strong>失败原因可能判断不准。</strong><a href="#robo-case-33">拿刀案例</a>中，零样本只指出未抓住刀，五示例回答才指出拿到的是勺子，与参考的对象错误对应。', '<strong>Failure diagnosis can miss the specific error.</strong> In the <a href="#robo-case-33">knife case</a>, zero-shot only reports a failed knife grasp; the five-example answer identifies a spoon, matching the reference’s wrong-object diagnosis.')
+    body += p('<strong>失败原因可能判断不准。</strong><a href="#robo-case-33">拿刀案例</a>中，零样本只指出未抓住刀，ICL 回答才指出拿到的是勺子，与参考的对象错误对应。', '<strong>Failure diagnosis can miss the specific error.</strong> In the <a href="#robo-case-33">knife case</a>, zero-shot only reports a failed knife grasp; the five-example ICL answer identifies a spoon, matching the reference’s wrong-object diagnosis.')
     body += p('<strong>示例条件下仍有排序错误和失败漏检。</strong>轨迹排序中的平分增多，τa 从 0.8166 降至 0.7953；RoboFail 的失败漏检从 2 个增至 6 个。', '<strong>Ranking errors and missed failures remain with examples.</strong> More tied trajectory scores accompany a fall in τa from 0.8166 to 0.7953, while missed RoboFail failures rise from 2 to 6.')
     body += h3('limitations', '3.3 局限与未来工作', '3.3 Limitations and future work')
     body += p('本研究使用固定离线轨迹，模型与任务覆盖有限。RoboFail 的 57 个问题来自 15 组轨迹，尚需通过重复调用和独立任务评估结果的稳定性。', 'This study uses fixed offline trajectories and a limited set of models and tasks. The 57 RoboFail questions come from 15 trajectory groups. Repeated calls and independent tasks are needed to assess stability.')
@@ -340,8 +342,8 @@ def reserve_image_space(content):
 
 def render():
     filename = 'index.html' if LANG == 'zh' else 'en.html'
-    title = DATA['source']['title']
-    description = t('机器人轨迹质量、进度估计与失败诊断：GPT-6 Astra 的离线评估结果、上下文示例分析与研究局限。', 'Offline evaluations of GPT-6 Astra as a robot critic: trajectory quality, progress estimation, failure diagnosis, context examples, and limitations.')
+    title = model_label(DATA['source']['title'])
+    description = t('机器人轨迹质量、进度估计与失败诊断：gpt-6-astra 的离线评估结果、上下文示例分析与研究局限。', 'Offline evaluations of gpt-6-astra as a robot critic: trajectory quality, progress estimation, failure diagnosis, context examples, and limitations.')
     items = [
         ('takeaways', 'Key takeaways', 'Key takeaways', False), ('overview','Introduction','Introduction',False),
         ('setup','1. 研究设置','1. Study design',False),
@@ -351,7 +353,7 @@ def render():
         ('progress-results','2.2 任务进度估计','2.2 Task progress estimation',True),
         ('failure','2.3 子任务成败判断','2.3 Subtask classification',True),
         ('explanations','2.4 失败解释与得分','2.4 Explanations and scores',True),
-        ('outlook','3. 讨论与展望','3. Discussion and outlook',False), ('conclusions','3.1 主要发现','3.1 Main findings',True), ('failure-modes','3.2 Astra 何时仍会判断失误','3.2 How and when Astra fails',True), ('limitations','3.3 局限与未来工作','3.3 Limitations and future work',True),
+        ('outlook','3. 讨论与展望','3. Discussion and outlook',False), ('conclusions','3.1 主要发现','3.1 Main findings',True), ('failure-modes','3.2 gpt-6-astra 何时仍会判断失误','3.2 How and when gpt-6-astra fails',True), ('limitations','3.3 局限与未来工作','3.3 Limitations and future work',True),
         ('resources','参考文献','References',False), ('citation','引用本文','Citation',False),
     ]
     toc = ''.join(f'<a class="{"subsection" if sub else ""}" href="#{id}">{t(zh,en)}</a>' for id, zh, en, sub in items)
@@ -367,7 +369,7 @@ def render():
 <header class="header"><div class="wrap header-inner"><a class="brand" href="#top" aria-label="Simple AI">SIMPLE<span>·AI</span></a><span class="research">RESEARCH</span><nav class="language-switch" aria-label="{t('语言','Language')}">{langs}</nav></div></header><div id="reading-progress" aria-hidden="true"></div>
 <main id="top"><div class="wrap article-shell"><aside class="toc" aria-label="{t('文章目录','Table of contents')}"><p>{t('目录','Contents')}</p><nav>{toc}</nav></aside><article class="article">
 <header class="article-title"><p class="publication-meta">RESEARCH BLOG <span>·</span> <time datetime="{PUB['updated']}">{t('2026 年 10 月 15 日','October 15, 2026')}</time></p>
-<h1><span class="title-name">Beyond the Score</span><span class="title-description">Early Evaluations of GPT-6 Astra as a Robot Critic</span></h1>
+<h1><span class="title-name">Beyond the Score</span><span class="title-description">Early Evaluations of gpt-6-astra as a Robot Critic</span></h1>
 <div class="author-block"><p class="authors">{authors}</p><p class="organization">{PUB['organization']}</p></div>
 <div class="publication-links" aria-label="{t('研究材料','Research materials')}"><span class="unreleased">Code <small>(coming soon)</small></span><span class="unreleased">arXiv <small>(coming soon)</small></span></div></header>
 {article()}

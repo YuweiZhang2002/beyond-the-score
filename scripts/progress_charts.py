@@ -20,7 +20,7 @@ def render_progress_video(case, lang):
     assert indices == [0, 7, 15, 23, 31] and case['storedFrameCount'] == 32 and case['playbackFps'] == 4
     x = lambda sample: 48 + sample / 31 * 348
     y = lambda value: 210 - value * 160
-    chart_title = pick('Astra 预测进度', 'Astra predicted progress')
+    chart_title = pick('gpt-6-astra 预测进度', 'gpt-6-astra predicted progress')
     description = pick('采样位置与进度：', 'Stored sample and progress: ') + '；'.join(f'{i}: {v:.2f}' for i, v in zip(indices, values))
     description += pick('。起点由协议设为 0，其余为模型预测；连线仅辅助阅读。', '. The initial zero is protocol-set; other points are model predictions. Lines are visual guides only.')
     svg = [f'<svg class="progress-svg" viewBox="0 0 440 270" role="img" aria-labelledby="{slug}-chart-title {slug}-chart-desc">', f'<title id="{slug}-chart-title">{escape(title)} · {chart_title}</title>', f'<desc id="{slug}-chart-desc">{escape(description)}</desc>']

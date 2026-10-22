@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Beyond the Score: Early Evaluations of GPT-6 Astra as a Robot Critic · Simple AI</title>
-<meta name="description" content="机器人轨迹质量、进度估计与失败诊断：GPT-6 Astra 的离线评估结果、上下文示例分析与研究局限。">
+<title>Beyond the Score: Early Evaluations of gpt-6-astra as a Robot Critic · Simple AI</title>
+<meta name="description" content="机器人轨迹质量、进度估计与失败诊断：gpt-6-astra 的离线评估结果、上下文示例分析与研究局限。">
 <meta name="theme-color" content="#f8f7f3">
 <meta name="citation_author" content="Jinhao Zhang">
 <meta name="citation_author" content="Yuwei Zhang">
 <meta name="citation_author" content="Weitao Zhou">
-<meta property="og:title" content="Beyond the Score: Early Evaluations of GPT-6 Astra as a Robot Critic">
-<meta property="og:description" content="机器人轨迹质量、进度估计与失败诊断：GPT-6 Astra 的离线评估结果、上下文示例分析与研究局限。">
+<meta property="og:title" content="Beyond the Score: Early Evaluations of gpt-6-astra as a Robot Critic">
+<meta property="og:description" content="机器人轨迹质量、进度估计与失败诊断：gpt-6-astra 的离线评估结果、上下文示例分析与研究局限。">
 <meta property="og:type" content="article">
 <link rel="alternate" hreflang="zh-CN" href="index.html">
 <link rel="alternate" hreflang="en" href="en.html">
@@ -51,7 +51,7 @@
 <a class="subsection" href="#explanations">2.4 失败解释与得分</a>
 <a class="" href="#outlook">3. 讨论与展望</a>
 <a class="subsection" href="#conclusions">3.1 主要发现</a>
-<a class="subsection" href="#failure-modes">3.2 Astra 何时仍会判断失误</a>
+<a class="subsection" href="#failure-modes">3.2 gpt-6-astra 何时仍会判断失误</a>
 <a class="subsection" href="#limitations">3.3 局限与未来工作</a>
 <a class="" href="#resources">参考文献</a>
 <a class="" href="#citation">引用本文</a>
@@ -63,7 +63,7 @@
 </p>
 <h1>
 <span class="title-name">Beyond the Score</span>
-<span class="title-description">Early Evaluations of GPT-6 Astra as a Robot Critic</span>
+<span class="title-description">Early Evaluations of gpt-6-astra as a Robot Critic</span>
 </h1>
 <div class="author-block">
 <p class="authors">
@@ -82,11 +82,11 @@
 <h2>Key takeaways · 主要发现</h2>
 <ul>
 <li>
-<strong>Astra 能区分不同质量的机器人执行。</strong>零样本排序 τa 为 0.8166，直接偏好准确率为 92.4%；在本研究的三个通用模型配置中，这两项结果的点估计最高。</li>
+<strong>gpt-6-astra 能区分不同质量的机器人执行。</strong>零样本排序 τa 为 0.8166，直接偏好准确率为 92.4%；在本研究的三个通用模型配置中，这两项结果的点估计最高。</li>
 <li>
 <strong>上下文示例对不同判断的影响并不一致。</strong>进度 VOC 从 93.6 升至 94.2，排序 τa 却从 0.8166 降至 0.7953。开瓶案例中，更高的进度相关性还伴随更差的终点估计。</li>
 <li>
-<strong>RoboFail 准确率提高，但失败召回率下降。</strong>五示例条件的准确率为 85.96%，零样本为 64.91%；误报由 18 个降至 2 个，漏检由 2 个增至 6 个。</li>
+<strong>RoboFail 准确率提高，但失败召回率下降。</strong>使用五个示例的 ICL 条件的准确率为 85.96%，零样本为 64.91%；误报由 18 个降至 2 个，漏检由 2 个增至 6 个。</li>
 <li>
 <strong>综合解释分数的增量主要来自成功判断。</strong>ROUGE-L 从 0.185 升至 0.499，其中约 89.3% 的增量来自正确成功项；这一变化不等于失败原因解释的同等改善。</li>
 </ul>
@@ -95,8 +95,8 @@
 <h2>Introduction</h2>
 <p class="">机器人系统需要评价自身的行为：判断任务推进了多少、比较不同执行的质量，以及识别和解释失败。通用多模态模型能够联合处理视觉观测与任务描述，并通过上下文接收评价要求和示例，为这些判断提供了一种无需额外任务微调的途径。我们研究：<strong>通用多模态模型已有的视觉理解与推理能力，能在多大程度上支持对机器人行为的评价？这些能力如何随评价任务、观测信息与上下文示例而变化？</strong>
 </p>
-<p class="">本文以 GPT-6 Astra<sup class="citation">
-<a href="#ref-astra" aria-label="OpenAI: GPT-6 Astra">[1]</a>
+<p class="">本文以 gpt-6-astra<sup class="citation">
+<a href="#ref-astra" aria-label="OpenAI: gpt-6-astra">[1]</a>
 </sup> 为主要研究对象，在 RBM<sup class="citation">
 <a href="#ref-robometer" aria-label="Robometer">[2]</a>
 </sup>
@@ -105,11 +105,11 @@
 </sup> 和 RoboFail<sup class="citation">
 <a href="#ref-reflect" aria-label="REFLECT / RoboFail">[4]</a>
 </sup> 上开展实证评估。我们考察轨迹质量评分、直接偏好判断、任务进度估计，以及子任务成败判断与解释，分别衡量模型比较执行、追踪任务推进和识别失败的能力。我们进一步比较零样本与上下文示例条件下的表现，并通过观测遮蔽的探索性案例，考察可见信息变化时模型回答的变化。</p>
-<p class="">结果显示，<strong>执行质量比较是 Astra 在本研究中表现突出的能力，但这种能力没有转化为同样可靠的完成判断和失败诊断。</strong>零样本排序 Kendall τ<sub>a</sub> 达到 <strong>0.8166</strong>，高于专用模型 Robometer 的已报告数值 0.655<sup class="citation">
+<p class="">结果显示，<strong>执行质量比较是 gpt-6-astra 在本研究中表现突出的能力，但这种能力没有转化为同样可靠的完成判断和失败诊断。</strong>零样本排序 Kendall τ<sub>a</sub> 达到 <strong>0.8166</strong>，高于专用模型 Robometer 的已报告数值 0.655<sup class="citation">
 <a href="#ref-robometer" aria-label="Robometer">[2]</a>
 </sup> 和 RynnValue-8B 的 0.675<sup class="citation">
 <a href="#ref-rynnvalue" aria-label="RynnValue">[5]</a>
-</sup>；直接偏好准确率为 <strong>92.4%</strong>。在 RoboFail 上，零样本与五示例条件的准确率分别为 <strong>64.91% 和 85.96%</strong>，失败漏检却由 <strong>2 个增至 6 个</strong>；综合解释得分增量的 <strong>89.3%</strong> 来自正确成功项。因此，当前证据支持将 Astra 用于离线执行质量比较，但<strong>它仍会误判任务是否完成、漏掉真实失败；更高的解释总分也不足以证明失败原因诊断可靠</strong>。本文尚未验证这些评价能否带来策略学习或闭环执行的提升。</p>
+</sup>；直接偏好准确率为 <strong>92.4%</strong>。在 RoboFail 上，零样本与使用五个示例的 ICL 条件的准确率分别为 <strong>64.91% 和 85.96%</strong>，失败漏检却由 <strong>2 个增至 6 个</strong>；综合解释得分增量的 <strong>89.3%</strong> 来自正确成功项。因此，当前证据支持将 gpt-6-astra 用于离线执行质量比较，但<strong>它仍会误判任务是否完成、漏掉真实失败；更高的解释总分也不足以证明失败原因诊断可靠</strong>。本文尚未验证这些评价能否带来策略学习或闭环执行的提升。</p>
 </section>
 <section id="setup" class="" data-toc>
 <h2>1. 研究设置</h2>
@@ -123,8 +123,8 @@
 <a href="#ref-reflect" aria-label="REFLECT / RoboFail">[4]</a>
 </sup> 评估子任务成败判断与失败解释。</p>
 <h3 id="comparison-protocol" data-toc>1.2 模型配置与评测条件</h3>
-<p class="">我们以 GPT-6 Astra<sup class="citation">
-<a href="#ref-astra" aria-label="OpenAI: GPT-6 Astra">[1]</a>
+<p class="">我们以 gpt-6-astra<sup class="citation">
+<a href="#ref-astra" aria-label="OpenAI: gpt-6-astra">[1]</a>
 </sup> 为主要研究对象，通过提示提供任务与观测，不进行额外的评价任务微调。RBM 评测另包含 GPT-5.6-sol<sup class="citation">
 <a href="#ref-sol" aria-label="OpenAI: GPT-5.6 Sol">[6]</a>
 </sup> 和 DeepSeek-V4.1-Flash<sup class="citation">
@@ -139,13 +139,13 @@
 <h2>2. 结果</h2>
 <section id="quality-results" class="result-topic" data-toc>
 <h3>2.1 轨迹质量与偏好</h3>
-<p class="">我们比较 GPT-6 Astra<sup class="citation">
-<a href="#ref-astra" aria-label="OpenAI: GPT-6 Astra">[1]</a>
+<p class="">我们比较 gpt-6-astra<sup class="citation">
+<a href="#ref-astra" aria-label="OpenAI: gpt-6-astra">[1]</a>
 </sup>、GPT-5.6-sol<sup class="citation">
 <a href="#ref-sol" aria-label="OpenAI: GPT-5.6 Sol">[6]</a>
 </sup> 和 DeepSeek-V4.1-Flash<sup class="citation">
 <a href="#ref-deepseek" aria-label="DeepSeek-V4.1-Flash">[7]</a>
-</sup> 的独立轨迹评分与直接偏好判断，并以 Astra 的案例分析具体判断依据。</p>
+</sup> 的独立轨迹评分与直接偏好判断，并以 gpt-6-astra 的案例分析具体判断依据。</p>
 <p class="fine">本节视频回放模型输入的 8 帧图像。</p>
 <h4 id="ranking-results" data-toc>2.1.1 轨迹质量排序</h4>
 <p>我们沿用 RBM-EVAL-OOD 的轨迹质量排序评测方式<sup class="citation">
@@ -153,8 +153,8 @@
 </sup>
 <sup class="citation">
 <a href="#ref-rbm" aria-label="RBM-EVAL-OOD">[3]</a>
-</sup>：对轨迹独立评分，并用 Kendall τ<sub>a</sub> 衡量同一任务内评分顺序与“成功 &gt; 次优 &gt; 失败”参考顺序的一致性。零样本条件下，GPT-6 Astra、GPT-5.6-sol 和 DeepSeek-V4.1-Flash 分别达到 <strong>0.8166、0.7500 和 0.5300</strong>。三种通用多模态模型都表现出质量区分能力，但一致性存在明显的数值差异；Astra 在本次评测中最高。</p>
-<p>Astra 和 GPT-5.6-sol 的排序数值还高于专用模型 RynnValue-8B（0.675）<sup class="citation">
+</sup>：对轨迹独立评分，并用 Kendall τ<sub>a</sub> 衡量同一任务内评分顺序与“成功 &gt; 次优 &gt; 失败”参考顺序的一致性。零样本条件下，gpt-6-astra、GPT-5.6-sol 和 DeepSeek-V4.1-Flash 分别达到 <strong>0.8166、0.7500 和 0.5300</strong>。三种通用多模态模型都表现出质量区分能力，但一致性存在明显的数值差异；gpt-6-astra 在本次评测中最高。</p>
+<p>gpt-6-astra 和 GPT-5.6-sol 的排序数值还高于专用模型 RynnValue-8B（0.675）<sup class="citation">
 <a href="#ref-rynnvalue" aria-label="RynnValue">[5]</a>
 </sup>和 Robometer（0.655）<sup class="citation">
 <a href="#ref-robometer" aria-label="Robometer">[2]</a>
@@ -169,14 +169,14 @@
 
 <div class="positive-case" data-positive-case="ranking-drawer">
 <h5 class="case-title" id="ranking-drawer-case">Case Study：区分抽屉关合与仍然敞开</h5>
-<p>xArm 的关抽屉任务中，A 的参考标签为成功，B 为失败。Astra 分别给出 <strong>1.00 和 0.00</strong>，正确区分了两条轨迹；DeepSeek 的对应分数为 <strong>0.20 和 0.30</strong>，顺序与参考相反。</p>
+<p>xArm 的关抽屉任务中，A 的参考标签为成功，B 为失败。gpt-6-astra 分别给出 <strong>1.00 和 0.00</strong>，正确区分了两条轨迹；DeepSeek 的对应分数为 <strong>0.20 和 0.30</strong>，顺序与参考相反。</p>
 <div class="table-scroll" role="region" tabindex="0">
 <table class="case-table">
 <caption>表 1. 同任务的独立评分；分数范围 0–1。A/B 仅用于本文区分轨迹，模型每次单独看一段。</caption>
 <thead>
 <tr>
 <th scope="col">轨迹 / 参考标签</th>
-<th scope="col">Astra</th>
+<th scope="col">gpt-6-astra</th>
 <th scope="col">DeepSeek-V4.1-Flash</th>
 </tr>
 </thead>
@@ -211,16 +211,16 @@
 </figure>
 </div>
 <p class="case-replay-note" id="ranking-drawer-note">模型输入的 8 帧回放。</p>
-<p>输入帧中，A 的抽屉前面板被推回，最后不再露出抽屉内部；B 最后仍明显敞开。Astra 的理由指出了这一最终状态差异。DeepSeek 对 A 的理由却称抽屉仍处于初始打开位置。</p>
+<p>输入帧中，A 的抽屉前面板被推回，最后不再露出抽屉内部；B 最后仍明显敞开。gpt-6-astra 的理由指出了这一最终状态差异。DeepSeek 对 A 的理由却称抽屉仍处于初始打开位置。</p>
 <details class="method-detail">
 <summary>查看两模型的逐字理由</summary>
 <dl class="model-quotes">
 <div>
-<dt>Astra · A · 1.00</dt>
+<dt>gpt-6-astra · A · 1.00</dt>
 <dd lang="en">The robot pushes the protruding drawer inward until its front is flush with the cabinet frame and the open top is no longer visible. The final frames show the drawer closed.</dd>
 </div>
 <div>
-<dt>Astra · B · 0.00</dt>
+<dt>gpt-6-astra · B · 0.00</dt>
 <dd lang="en">The drawer remains extended with its open interior clearly visible in the final frames. The robot gripper enters the drawer, but no sustained closing motion or closed final state is shown.</dd>
 </div>
 <div>
@@ -237,14 +237,14 @@
 <!-- /positive-case -->
 <div class="positive-case" data-positive-case="ranking-banana">
 <h5 class="case-title" id="ranking-banana-case">Case Study：搬的是香蕉，还是橙色物体</h5>
-<p>MIT Franka 的任务要求把香蕉从蓝盘移到绿盘。A 的参考标签为成功，B 为次优；Astra 的独立分数是 <strong>A 1.00 > B 0.00</strong>，符合参考顺序。DeepSeek 给出 <strong>A 0.50 < B 1.00</strong>，形成反序。</p>
+<p>MIT Franka 的任务要求把香蕉从蓝盘移到绿盘。A 的参考标签为成功，B 为次优；gpt-6-astra 的独立分数是 <strong>A 1.00 > B 0.00</strong>，符合参考顺序。DeepSeek 给出 <strong>A 0.50 < B 1.00</strong>，形成反序。</p>
 <div class="table-scroll" role="region" tabindex="0">
 <table class="case-table">
 <caption>表 2. 同任务的独立评分；分数范围 0–1。A/B 仅用于本文区分轨迹，模型每次单独看一段。</caption>
 <thead>
 <tr>
 <th scope="col">轨迹 / 参考标签</th>
-<th scope="col">Astra</th>
+<th scope="col">gpt-6-astra</th>
 <th scope="col">DeepSeek-V4.1-Flash</th>
 </tr>
 </thead>
@@ -279,16 +279,16 @@
 </figure>
 </div>
 <p class="case-replay-note" id="ranking-banana-note">模型输入的 8 帧回放。</p>
-<p>A 的末帧显示香蕉已到绿盘边缘，B 搬到绿盘的则是橙色物体，香蕉仍留在蓝盘。Astra 的理由区分了目标物体；DeepSeek 对 B 的原文却说搬运的是香蕉。</p>
+<p>A 的末帧显示香蕉已到绿盘边缘，B 搬到绿盘的则是橙色物体，香蕉仍留在蓝盘。gpt-6-astra 的理由区分了目标物体；DeepSeek 对 B 的原文却说搬运的是香蕉。</p>
 <details class="method-detail">
 <summary>查看两模型的逐字理由</summary>
 <dl class="model-quotes">
 <div>
-<dt>Astra · A · 1.00</dt>
+<dt>gpt-6-astra · A · 1.00</dt>
 <dd lang="en">The robot grasps the banana from the blue plate, carries it to the green plate, and opens its gripper. The final frame shows the banana resting on the green plate near its rim, with the carrot left behind.</dd>
 </div>
 <div>
-<dt>Astra · B · 0.00</dt>
+<dt>gpt-6-astra · B · 0.00</dt>
 <dd lang="en">The robot grasps and releases the orange object onto the green plate, not the banana. The yellow banana remains on the blue plate in the final frame, so the requested transfer is not completed.</dd>
 </div>
 <div>
@@ -303,24 +303,24 @@
 </details>
 </div>
 <!-- /positive-case -->
-<h5 class="case-title">Astra 的排序错误：逆序与平分</h5>
+<h5 class="case-title">gpt-6-astra 的排序错误：逆序与平分</h5>
 
 <h5 class="case-title" id="banana-case">Case Study：搬错物体与抬盘失误</h5>
-<p>例如，任务要求把香蕉从蓝盘移到绿盘。一条执行搬走了胡萝卜，香蕉仍在蓝盘、绿盘为空，Astra 给出 0.00；另一条抬起并倾斜蓝盘，香蕉滑落，未放到绿盘，却得到 0.15。模型的理由已指出两次执行都没有完成目标，但参考将前者标为次优、后者标为失败，因此分数顺序与参考相反。</p>
+<p>例如，任务要求把香蕉从蓝盘移到绿盘。一条执行搬走了胡萝卜，香蕉仍在蓝盘、绿盘为空，gpt-6-astra 给出 0.00；另一条抬起并倾斜蓝盘，香蕉滑落，未放到绿盘，却得到 0.15。模型的理由已指出两次执行都没有完成目标，但参考将前者标为次优、后者标为失败，因此分数顺序与参考相反。</p>
 <div class="case-video-grid case-replay-grid" role="group" aria-labelledby="banana-case" aria-describedby="banana-case-note">
 <figure>
-<video controls playsinline preload="none" poster="assets/case-studies/banana-wrong-object.jpg" aria-label="搬动胡萝卜，参考次优 · Astra 0.00，评测输入帧回放" aria-describedby="banana-wrong-object-caption">
+<video controls playsinline preload="none" poster="assets/case-studies/banana-wrong-object.jpg" aria-label="搬动胡萝卜，参考次优 · gpt-6-astra 0.00，评测输入帧回放" aria-describedby="banana-wrong-object-caption">
 <source src="assets/case-studies/banana-wrong-object.mp4" type="video/mp4">当前浏览器不支持视频播放。<a href="assets/case-studies/banana-wrong-object.mp4">打开输入帧回放</a>
 </video>
 <figcaption id="banana-wrong-object-caption">
-<strong>搬动胡萝卜</strong>参考次优 · Astra 0.00</figcaption>
+<strong>搬动胡萝卜</strong>参考次优 · gpt-6-astra 0.00</figcaption>
 </figure>
 <figure>
-<video controls playsinline preload="none" poster="assets/case-studies/banana-tilted-plate.jpg" aria-label="抬盘后香蕉滑落，参考失败 · Astra 0.15，评测输入帧回放" aria-describedby="banana-tilted-plate-caption">
+<video controls playsinline preload="none" poster="assets/case-studies/banana-tilted-plate.jpg" aria-label="抬盘后香蕉滑落，参考失败 · gpt-6-astra 0.15，评测输入帧回放" aria-describedby="banana-tilted-plate-caption">
 <source src="assets/case-studies/banana-tilted-plate.mp4" type="video/mp4">当前浏览器不支持视频播放。<a href="assets/case-studies/banana-tilted-plate.mp4">打开输入帧回放</a>
 </video>
 <figcaption id="banana-tilted-plate-caption">
-<strong>抬盘后香蕉滑落</strong>参考失败 · Astra 0.15</figcaption>
+<strong>抬盘后香蕉滑落</strong>参考失败 · gpt-6-astra 0.15</figcaption>
 </figure>
 </div>
 <p class="case-replay-note" id="banana-case-note">模型输入的 8 帧回放。</p>
@@ -331,7 +331,7 @@
 <tr>
 <th scope="col">轨迹</th>
 <th scope="col">参考质量</th>
-<th scope="col">Astra 评分</th>
+<th scope="col">gpt-6-astra 评分</th>
 </tr>
 </thead>
 <tbody>
@@ -363,21 +363,21 @@
 </dl>
 </details>
 <h5 class="case-title" id="blue-bin-case">Case Study：开盖后，两种质量都得满分</h5>
-<p>在打开蓝色垃圾桶的两条轨迹中，参考分别标为成功和次优，Astra 却都给出 <strong>1.00</strong>。它对成功执行的理由是桶盖已抬起、内部明显露出；对次优执行也依据桶盖下方出现开口，判断正确的桶已打开。这里的失分来自同分：模型识别到开盖这一共同结果，却没有在分数中区分参考质量等级。</p>
+<p>在打开蓝色垃圾桶的两条轨迹中，参考分别标为成功和次优，gpt-6-astra 却都给出 <strong>1.00</strong>。它对成功执行的理由是桶盖已抬起、内部明显露出；对次优执行也依据桶盖下方出现开口，判断正确的桶已打开。这里的失分来自同分：模型识别到开盖这一共同结果，却没有在分数中区分参考质量等级。</p>
 <div class="case-video-grid case-replay-grid" role="group" aria-labelledby="blue-bin-case" aria-describedby="blue-bin-case-note">
 <figure>
-<video controls playsinline preload="none" poster="assets/case-studies/blue-bin-success.jpg" aria-label="打开蓝色垃圾桶，参考成功 · Astra 1.00，评测输入帧回放" aria-describedby="blue-bin-success-caption">
+<video controls playsinline preload="none" poster="assets/case-studies/blue-bin-success.jpg" aria-label="打开蓝色垃圾桶，参考成功 · gpt-6-astra 1.00，评测输入帧回放" aria-describedby="blue-bin-success-caption">
 <source src="assets/case-studies/blue-bin-success.mp4" type="video/mp4">当前浏览器不支持视频播放。<a href="assets/case-studies/blue-bin-success.mp4">打开输入帧回放</a>
 </video>
 <figcaption id="blue-bin-success-caption">
-<strong>打开蓝色垃圾桶</strong>参考成功 · Astra 1.00</figcaption>
+<strong>打开蓝色垃圾桶</strong>参考成功 · gpt-6-astra 1.00</figcaption>
 </figure>
 <figure>
-<video controls playsinline preload="none" poster="assets/case-studies/blue-bin-suboptimal.jpg" aria-label="打开蓝色垃圾桶，参考次优 · Astra 1.00，评测输入帧回放" aria-describedby="blue-bin-suboptimal-caption">
+<video controls playsinline preload="none" poster="assets/case-studies/blue-bin-suboptimal.jpg" aria-label="打开蓝色垃圾桶，参考次优 · gpt-6-astra 1.00，评测输入帧回放" aria-describedby="blue-bin-suboptimal-caption">
 <source src="assets/case-studies/blue-bin-suboptimal.mp4" type="video/mp4">当前浏览器不支持视频播放。<a href="assets/case-studies/blue-bin-suboptimal.mp4">打开输入帧回放</a>
 </video>
 <figcaption id="blue-bin-suboptimal-caption">
-<strong>打开蓝色垃圾桶</strong>参考次优 · Astra 1.00</figcaption>
+<strong>打开蓝色垃圾桶</strong>参考次优 · gpt-6-astra 1.00</figcaption>
 </figure>
 </div>
 <p class="case-replay-note" id="blue-bin-case-note">模型输入的 8 帧回放。</p>
@@ -399,7 +399,7 @@
 <strong>轨迹排序。</strong>提供三条不同评分水平的参考轨迹后，错序减少但平分增多，Kendall τa 从 <strong>0.8166 降至 0.7953</strong>。按与指标一致的加权口径，反序率从 4.78% 降至 3.68%，平分率从 8.78% 增至 13.11%。</p>
 <figure class="figure">
 <button type="button" data-zoom aria-label="放大轨迹排序零样本与 ICL 对照图">
-<img loading="lazy" src="assets/figures/01_ranking.png" alt="轨迹质量排序：Astra 零样本 Kendall τa 为 0.8166，三轨迹示例 ICL 为 0.7953；外部数值来自所引用的文献版本。" width="1384" height="1104">
+<img loading="lazy" src="assets/figures/01_ranking.png" alt="轨迹质量排序：gpt-6-astra 零样本 Kendall τa 为 0.8166，三轨迹示例 ICL 为 0.7953；外部数值来自所引用的文献版本。" width="1600" height="1276">
 </button>
 <figcaption>图 2. <span>轨迹排序的零样本与三轨迹示例 ICL 对照。每条待评轨迹独立输入八帧图像评分；外部数值来自所引用的文献版本。</span>
 <span class="zoom-label" aria-hidden="true">放大 ↗</span>
@@ -450,44 +450,44 @@
 </figure>
 </details>
 <h4 id="preference-results" data-toc>2.1.2 直接偏好判断</h4>
-<p>直接偏好判断将两条轨迹同时提供给模型，要求选择更好的执行。在 1,192 组固定轨迹对上，Astra、GPT-5.6-sol 和 DeepSeek-V4.1-Flash 的来源等权准确率分别为 <strong>92.4%、90.7% 和 82.2%</strong>。三者的点估计顺序与独立评分一致；Astra 与 GPT-5.6-sol 的差距为 1.7 个百分点。作为文献参照，Robometer 报告的准确率为 82.5%<sup class="citation">
+<p>直接偏好判断将两条轨迹同时提供给模型，要求选择更好的执行。在 1,192 组固定轨迹对上，gpt-6-astra、GPT-5.6-sol 和 DeepSeek-V4.1-Flash 的来源等权准确率分别为 <strong>92.4%、90.7% 和 82.2%</strong>。三者的点估计顺序与独立评分一致；gpt-6-astra 与 GPT-5.6-sol 的差距为 1.7 个百分点。作为文献参照，Robometer 报告的准确率为 82.5%<sup class="citation">
 <a href="#ref-robometer" aria-label="Robometer">[2]</a>
 </sup>。</p>
 <figure class="figure">
 <button type="button" data-zoom aria-label="放大直接偏好判断图">
-<img loading="lazy" src="assets/figures/02_preference.png" alt="直接偏好判断：Astra 在 1,192 组固定轨迹对上的来源等权准确率为 92.4%。" width="1384" height="576">
+<img loading="lazy" src="assets/figures/02_preference.png" alt="直接偏好判断：gpt-6-astra 在 1,192 组固定轨迹对上的来源等权准确率为 92.4%。" width="1600" height="662">
 </button>
 <figcaption>图 3. <span>直接偏好判断。两条轨迹各八帧，同次比较；准确率按六个来源等权汇总。</span>
 <span class="zoom-label" aria-hidden="true">放大 ↗</span>
 </figcaption>
 </figure>
-<p>Astra 与 DeepSeek 接收相同的任务、图像和 A/B 顺序。</p>
+<p>gpt-6-astra 与 DeepSeek 接收相同的任务、图像和 A/B 顺序。</p>
 <div class="positive-case" data-positive-case="preference-button">
 <h5 class="case-title" id="preference-button-case">Case Study：按键亮起，比末帧停留更有说服力</h5>
-<p>SO101 的按按钮配对中，实际输入 <strong>A 为次优，B 为成功，参考偏好为 B</strong>。Astra 选择 B，DeepSeek 选择 A。</p>
+<p>SO101 的按按钮配对中，实际输入 <strong>A 为次优，B 为成功，参考偏好为 B</strong>。gpt-6-astra 选择 B，DeepSeek 选择 A。</p>
 <div class="case-video-grid case-replay-grid" role="group" aria-labelledby="preference-button-case" aria-describedby="preference-button-note">
 <figure>
-<video controls playsinline preload="none" poster="assets/case-studies/preference-button-a.jpg" aria-label="A · 按按钮 · 参考标签：次优 · 参考与 Astra 选 B；DeepSeek 选 A" aria-describedby="preference-button-a-caption">
+<video controls playsinline preload="none" poster="assets/case-studies/preference-button-a.jpg" aria-label="A · 按按钮 · 参考标签：次优 · 参考与 gpt-6-astra 选 B；DeepSeek 选 A" aria-describedby="preference-button-a-caption">
 <source src="assets/case-studies/preference-button-a.mp4" type="video/mp4">浏览器不支持视频播放。<a href="assets/case-studies/preference-button-a.mp4">打开输入帧回放</a>
 </video>
 <figcaption id="preference-button-a-caption">
-<strong>A · 按按钮</strong>参考标签：次优 · 参考与 Astra 选 B；DeepSeek 选 A</figcaption>
+<strong>A · 按按钮</strong>参考标签：次优 · 参考与 gpt-6-astra 选 B；DeepSeek 选 A</figcaption>
 </figure>
 <figure>
-<video controls playsinline preload="none" poster="assets/case-studies/preference-button-b.jpg" aria-label="B · 按按钮 · 参考标签：成功 · 参考与 Astra 选 B；DeepSeek 选 A" aria-describedby="preference-button-b-caption">
+<video controls playsinline preload="none" poster="assets/case-studies/preference-button-b.jpg" aria-label="B · 按按钮 · 参考标签：成功 · 参考与 gpt-6-astra 选 B；DeepSeek 选 A" aria-describedby="preference-button-b-caption">
 <source src="assets/case-studies/preference-button-b.mp4" type="video/mp4">浏览器不支持视频播放。<a href="assets/case-studies/preference-button-b.mp4">打开输入帧回放</a>
 </video>
 <figcaption id="preference-button-b-caption">
-<strong>B · 按按钮</strong>参考标签：成功 · 参考与 Astra 选 B；DeepSeek 选 A</figcaption>
+<strong>B · 按按钮</strong>参考标签：成功 · 参考与 gpt-6-astra 选 B；DeepSeek 选 A</figcaption>
 </figure>
 </div>
 <p class="case-replay-note" id="preference-button-note">模型输入的 8 帧回放。</p>
-<p>B 的输入帧显示夹爪下压后按钮亮起，随后撤回；A 在按钮附近停留，但没有同样清晰的亮起证据。Astra 依据激活状态选择 B。DeepSeek 的理由更强调 A 在末帧仍接触按钮、B 已撤回，因此选择相反。</p>
+<p>B 的输入帧显示夹爪下压后按钮亮起，随后撤回；A 在按钮附近停留，但没有同样清晰的亮起证据。gpt-6-astra 依据激活状态选择 B。DeepSeek 的理由更强调 A 在末帧仍接触按钮、B 已撤回，因此选择相反。</p>
 <details class="method-detail">
 <summary>查看两模型的逐字理由</summary>
 <dl class="model-quotes">
 <div>
-<dt>Astra · 实际选择 B</dt>
+<dt>gpt-6-astra · 实际选择 B</dt>
 <dd lang="en">B lowers its gripper onto the button, which visibly lights up, then retracts. A approaches the button but shows no clear depression or activation.</dd>
 </div>
 <div>
@@ -500,30 +500,30 @@
 <!-- /positive-case -->
 <div class="positive-case" data-positive-case="preference-red-bin">
 <h5 class="case-title" id="preference-red-bin-case">Case Study：打开过桶盖，不等于最后仍然打开</h5>
-<p>Koch 的打开红色垃圾桶配对中，实际输入 <strong>A 为失败，B 为成功，参考偏好为 B</strong>。Astra 选择 B，符合参考；DeepSeek 选择 A，与参考相反。</p>
+<p>Koch 的打开红色垃圾桶配对中，实际输入 <strong>A 为失败，B 为成功，参考偏好为 B</strong>。gpt-6-astra 选择 B，符合参考；DeepSeek 选择 A，与参考相反。</p>
 <div class="case-video-grid case-replay-grid" role="group" aria-labelledby="preference-red-bin-case" aria-describedby="preference-red-bin-note">
 <figure>
-<video controls playsinline preload="none" poster="assets/case-studies/preference-red-bin-a.jpg" aria-label="A · 打开红色垃圾桶 · 参考标签：失败 · 参考与 Astra 选 B；DeepSeek 选 A" aria-describedby="preference-red-bin-a-caption">
+<video controls playsinline preload="none" poster="assets/case-studies/preference-red-bin-a.jpg" aria-label="A · 打开红色垃圾桶 · 参考标签：失败 · 参考与 gpt-6-astra 选 B；DeepSeek 选 A" aria-describedby="preference-red-bin-a-caption">
 <source src="assets/case-studies/preference-red-bin-a.mp4" type="video/mp4">浏览器不支持视频播放。<a href="assets/case-studies/preference-red-bin-a.mp4">打开输入帧回放</a>
 </video>
 <figcaption id="preference-red-bin-a-caption">
-<strong>A · 打开红色垃圾桶</strong>参考标签：失败 · 参考与 Astra 选 B；DeepSeek 选 A</figcaption>
+<strong>A · 打开红色垃圾桶</strong>参考标签：失败 · 参考与 gpt-6-astra 选 B；DeepSeek 选 A</figcaption>
 </figure>
 <figure>
-<video controls playsinline preload="none" poster="assets/case-studies/preference-red-bin-b.jpg" aria-label="B · 打开红色垃圾桶 · 参考标签：成功 · 参考与 Astra 选 B；DeepSeek 选 A" aria-describedby="preference-red-bin-b-caption">
+<video controls playsinline preload="none" poster="assets/case-studies/preference-red-bin-b.jpg" aria-label="B · 打开红色垃圾桶 · 参考标签：成功 · 参考与 gpt-6-astra 选 B；DeepSeek 选 A" aria-describedby="preference-red-bin-b-caption">
 <source src="assets/case-studies/preference-red-bin-b.mp4" type="video/mp4">浏览器不支持视频播放。<a href="assets/case-studies/preference-red-bin-b.mp4">打开输入帧回放</a>
 </video>
 <figcaption id="preference-red-bin-b-caption">
-<strong>B · 打开红色垃圾桶</strong>参考标签：成功 · 参考与 Astra 选 B；DeepSeek 选 A</figcaption>
+<strong>B · 打开红色垃圾桶</strong>参考标签：成功 · 参考与 gpt-6-astra 选 B；DeepSeek 选 A</figcaption>
 </figure>
 </div>
 <p class="case-replay-note" id="preference-red-bin-note">模型输入的 8 帧回放。</p>
-<p>两段输入都出现抬盖动作，但 A 在倒数第二张采样图中打开后，最后一张又合上；B 的最后一张仍显示桶盖抬起和桶内开口。Astra 的原文明确指出 A 的回落。DeepSeek 则将 A 描述为最终保持打开，并因 B 的夹爪仍在开口附近而降低其评价。</p>
+<p>两段输入都出现抬盖动作，但 A 在倒数第二张采样图中打开后，最后一张又合上；B 的最后一张仍显示桶盖抬起和桶内开口。gpt-6-astra 的原文明确指出 A 的回落。DeepSeek 则将 A 描述为最终保持打开，并因 B 的夹爪仍在开口附近而降低其评价。</p>
 <details class="method-detail">
 <summary>查看两模型的逐字理由</summary>
 <dl class="model-quotes">
 <div>
-<dt>Astra · 实际选择 B</dt>
+<dt>gpt-6-astra · 实际选择 B</dt>
 <dd lang="en">Both executions lift the correct red bin&#x27;s lid, but A&#x27;s lid falls closed again in its final frame. B ends with the lid raised and the bin interior visibly exposed, achieving the requested open state.</dd>
 </div>
 <div>
@@ -535,13 +535,13 @@
 </div>
 <!-- /positive-case -->
 
-<h4 id="preference-criteria" data-toc>2.1.3 Astra 与参考偏好的分歧：多维评价与判据对齐</h4>
+<h4 id="preference-criteria" data-toc>2.1.3 gpt-6-astra 与参考偏好的分歧：多维评价与判据对齐</h4>
 <p>分杯与开绿桶的分歧涉及释放、直立和稳定保持等要求，而任务描述没有规定这些要求的优先级。</p>
 <p>这些要求可以分别列为 rubric，例如分杯中的“已分离”“已释放”“保持直立”，再按任务要求形成总体评价。Flora-Rewarder 提供了按 rubric 步骤评分的接口<sup class="citation">
 <a href="#ref-flora" aria-label="NVIDIA Flora-Rewarder">[14]</a>
 </sup>；本文的案例仍沿用原始标签。</p>
 <h5 class="case-title" id="separate-cups-case">Case Study：分杯时，更看重释放还是侧倒</h5>
-<p>例如，在“分开紫杯与红杯”的任务中，Astra 认为两次执行都已把两杯拉开距离。一条在末帧仍未显示释放，参考标为成功；另一条明确释放紫杯、但杯子侧倒，参考标为失败。Astra 选择了后者，并在理由中同时写出了“已释放”和“侧倒”。</p>
+<p>例如，在“分开紫杯与红杯”的任务中，gpt-6-astra 认为两次执行都已把两杯拉开距离。一条在末帧仍未显示释放，参考标为成功；另一条明确释放紫杯、但杯子侧倒，参考标为失败。gpt-6-astra 选择了后者，并在理由中同时写出了“已释放”和“侧倒”。</p>
 <div class="case-video-grid case-replay-grid" role="group" aria-labelledby="separate-cups-case" aria-describedby="separate-cups-case-note">
 <figure>
 <video controls playsinline preload="none" poster="assets/case-studies/separate-cups-a.jpg" aria-label="A · 分开红杯与紫杯，参考成功 · 参考偏好 A，评测输入帧回放" aria-describedby="separate-cups-a-caption">
@@ -551,15 +551,15 @@
 <strong>A · 分开红杯与紫杯</strong>参考成功 · 参考偏好 A</figcaption>
 </figure>
 <figure>
-<video controls playsinline preload="none" poster="assets/case-studies/separate-cups-b.jpg" aria-label="B · 分开红杯与紫杯，参考失败 · Astra 选择 B，评测输入帧回放" aria-describedby="separate-cups-b-caption">
+<video controls playsinline preload="none" poster="assets/case-studies/separate-cups-b.jpg" aria-label="B · 分开红杯与紫杯，参考失败 · gpt-6-astra 选择 B，评测输入帧回放" aria-describedby="separate-cups-b-caption">
 <source src="assets/case-studies/separate-cups-b.mp4" type="video/mp4">当前浏览器不支持视频播放。<a href="assets/case-studies/separate-cups-b.mp4">打开输入帧回放</a>
 </video>
 <figcaption id="separate-cups-b-caption">
-<strong>B · 分开红杯与紫杯</strong>参考失败 · Astra 选择 B</figcaption>
+<strong>B · 分开红杯与紫杯</strong>参考失败 · gpt-6-astra 选择 B</figcaption>
 </figure>
 </div>
 <p class="case-replay-note" id="separate-cups-case-note">模型输入的 8 帧回放。</p>
-<p>Astra 注意到杯子侧倒，却更看重释放。参考偏好与模型选择体现了不同的权衡，而任务没有明确哪项要求优先。</p>
+<p>gpt-6-astra 注意到杯子侧倒，却更看重释放。参考偏好与模型选择体现了不同的权衡，而任务没有明确哪项要求优先。</p>
 <details class="method-detail">
 <summary>查看模型原文</summary>
 <dl class="model-quotes">
@@ -570,14 +570,14 @@
 </dl>
 </details>
 <h5 class="case-title" id="pencil-case-case">Case Study：拉开笔袋，却选中了参考失败的执行</h5>
-<p>任务要求拉开笔袋拉链。Astra 选择了参考标为失败的一次：它的理由是拉链滑块向近端移动，后方留下开口；对参考成功的一次，它却认为滑块向远端移动后两侧仍合拢，像是在拉上拉链。这表明 Astra 对开合状态的解释与参考标签不一致；要判定是模型看反、采样画面不足，还是标注或轨迹对应问题，需要结合完整视频与原始标注复核。</p>
+<p>任务要求拉开笔袋拉链。gpt-6-astra 选择了参考标为失败的一次：它的理由是拉链滑块向近端移动，后方留下开口；对参考成功的一次，它却认为滑块向远端移动后两侧仍合拢，像是在拉上拉链。这表明 gpt-6-astra 对开合状态的解释与参考标签不一致；要判定是模型看反、采样画面不足，还是标注或轨迹对应问题，需要结合完整视频与原始标注复核。</p>
 <div class="case-video-grid case-replay-grid" role="group" aria-labelledby="pencil-case-case" aria-describedby="pencil-case-case-note">
 <figure>
-<video controls playsinline preload="none" poster="assets/case-studies/unzip-pencil-case-a.jpg" aria-label="A · 拉开笔袋拉链，参考失败 · Astra 选择 A，评测输入帧回放" aria-describedby="unzip-pencil-case-a-caption">
+<video controls playsinline preload="none" poster="assets/case-studies/unzip-pencil-case-a.jpg" aria-label="A · 拉开笔袋拉链，参考失败 · gpt-6-astra 选择 A，评测输入帧回放" aria-describedby="unzip-pencil-case-a-caption">
 <source src="assets/case-studies/unzip-pencil-case-a.mp4" type="video/mp4">当前浏览器不支持视频播放。<a href="assets/case-studies/unzip-pencil-case-a.mp4">打开输入帧回放</a>
 </video>
 <figcaption id="unzip-pencil-case-a-caption">
-<strong>A · 拉开笔袋拉链</strong>参考失败 · Astra 选择 A</figcaption>
+<strong>A · 拉开笔袋拉链</strong>参考失败 · gpt-6-astra 选择 A</figcaption>
 </figure>
 <figure>
 <video controls playsinline preload="none" poster="assets/case-studies/unzip-pencil-case-b.jpg" aria-label="B · 拉开笔袋拉链，参考成功 · 参考偏好 B，评测输入帧回放" aria-describedby="unzip-pencil-case-b-caption">
@@ -598,14 +598,14 @@
 </dl>
 </details>
 <h5 class="case-title" id="green-bin-case">Case Study：开口更大，为什么参考质量反而更低</h5>
-<p>开绿桶时，Astra 选择了开口更大的 A；参考却将 A 标为次优、B 标为成功。任务没有说明开盖幅度、释放和稳定保持各占多大权重。</p>
+<p>开绿桶时，gpt-6-astra 选择了开口更大的 A；参考却将 A 标为次优、B 标为成功。任务没有说明开盖幅度、释放和稳定保持各占多大权重。</p>
 <div class="case-video-grid case-replay-grid" role="group" aria-labelledby="green-bin-case" aria-describedby="green-bin-case-note">
 <figure>
-<video controls playsinline preload="none" poster="assets/case-studies/green-bin-a.jpg" aria-label="A · 打开绿色垃圾桶，参考次优 · Astra 选择 A，评测输入帧回放" aria-describedby="green-bin-a-caption">
+<video controls playsinline preload="none" poster="assets/case-studies/green-bin-a.jpg" aria-label="A · 打开绿色垃圾桶，参考次优 · gpt-6-astra 选择 A，评测输入帧回放" aria-describedby="green-bin-a-caption">
 <source src="assets/case-studies/green-bin-a.mp4" type="video/mp4">当前浏览器不支持视频播放。<a href="assets/case-studies/green-bin-a.mp4">打开输入帧回放</a>
 </video>
 <figcaption id="green-bin-a-caption">
-<strong>A · 打开绿色垃圾桶</strong>参考次优 · Astra 选择 A</figcaption>
+<strong>A · 打开绿色垃圾桶</strong>参考次优 · gpt-6-astra 选择 A</figcaption>
 </figure>
 <figure>
 <video controls playsinline preload="none" poster="assets/case-studies/green-bin-b.jpg" aria-label="B · 打开绿色垃圾桶，参考成功 · 参考偏好 B，评测输入帧回放" aria-describedby="green-bin-b-caption">
@@ -628,12 +628,12 @@
 <details class="research-detail">
 <summary>采样、指标与引用版本</summary>
 <p class="">排序与“不同质量”偏好评测复用 Robometer 官方采样和指标规则，使用 seed=44。571 条缓存轨迹中，4 条属于仅含成功样本的任务，按官方规则排除后得到 567 条；偏好配对按每来源最多 500 对采样，共 1,192 对。两项指标均按六来源等权汇总。</p>
-<p class="">本研究 seed=44，当前官方默认值为 42。双方均匀取 8 帧；Astra 通过提示输出评分或 A/B，Robometer 使用训练后的 progress/preference head。正文引用 Robometer v1 的 τa=0.655；v2 对应值约为 0.643。</p>
+<p class="">本研究 seed=44，当前官方默认值为 42。双方均匀取 8 帧；gpt-6-astra 通过提示输出评分或 A/B，Robometer 使用训练后的 progress/preference head。正文引用 Robometer v1 的 τa=0.655；v2 对应值约为 0.643。</p>
 </details>
 <h4 id="quality-results-summary" data-toc>2.1.4 小结</h4>
 <div class="section-summary" id="literature">
 <p>
-<strong>Astra 的排序与偏好结果可与专用奖励模型竞争，但参考分歧不都等于质量比较能力不足。</strong>
+<strong>gpt-6-astra 的排序与偏好结果可与专用奖励模型竞争，但参考分歧不都等于质量比较能力不足。</strong>
 </p>
 <p>逆序和平分造成了部分失分；分杯和绿桶则涉及不同的质量要求。明确释放、直立和稳定性等判据，有助于区分状态识别错误与评价标准分歧。</p>
 </div>
@@ -641,22 +641,22 @@
 <section id="progress-results" class="result-topic" data-toc>
 <h3 id="context">2.2 任务进度估计</h3>
 <h4 id="progress-zero" data-toc>2.2.1 零样本进度估计</h4>
-<p>除了比较整段执行的质量，我们还考察通用多模态模型能否根据任务描述和截至当前时刻的画面，判断任务已经推进到哪一步。在 105 条成功轨迹上，Astra、GPT-5.6-sol 和 DeepSeek-V4.1-Flash 的零样本 VOC 分别为 <strong>93.6、93.5 和 89.7</strong>。</p>
+<p>除了比较整段执行的质量，我们还考察通用多模态模型能否根据任务描述和截至当前时刻的画面，判断任务已经推进到哪一步。在 105 条成功轨迹上，gpt-6-astra、GPT-5.6-sol 和 DeepSeek-V4.1-Flash 的零样本 VOC 分别为 <strong>93.6、93.5 和 89.7</strong>。</p>
 <figure class="figure">
-<button type="button" data-zoom aria-label="零样本任务进度估计：Astra 93.6、GPT-5.6-sol 93.5、DeepSeek-V4.1-Flash 89.7；文献参照单独列示。">
-<img loading="lazy" src="assets/figures/03_progress_zero_shot.png" alt="零样本任务进度估计：Astra 93.6、GPT-5.6-sol 93.5、DeepSeek-V4.1-Flash 89.7；文献参照单独列示。" width="1600" height="1233">
+<button type="button" data-zoom aria-label="零样本任务进度估计：gpt-6-astra 93.6、GPT-5.6-sol 93.5、DeepSeek-V4.1-Flash 89.7；文献参照单独列示。">
+<img loading="lazy" src="assets/figures/03_progress_zero_shot.png" alt="零样本任务进度估计：gpt-6-astra 93.6、GPT-5.6-sol 93.5、DeepSeek-V4.1-Flash 89.7；文献参照单独列示。" width="1600" height="1233">
 </button>
 <figcaption>图 4. <span>零样本进度估计的模型对比（VOC，越高越好）。本研究与文献参照分组展示，各组内按报告值排序。</span>
 </figcaption>
 </figure>
-<p>Astra 与 GPT-5.6-sol 的时间相关性接近，两者均高于 DeepSeek；Astra 低于 Robometer 报告的 94.8<sup class="citation">
+<p>gpt-6-astra 与 GPT-5.6-sol 的时间相关性接近，两者均高于 DeepSeek；gpt-6-astra 低于 Robometer 报告的 94.8<sup class="citation">
 <a href="#ref-robometer" aria-label="Robometer">[2]</a>
 </sup>。</p>
 
 <p class="fine">以下为采样帧回放，非原速视频。每次评分仅使用截至当时的观测；空心起点由协议设为 0，连线仅辅助阅读。</p>
 <h5 class="case-title" id="bluecup-case">Case Study：分清完成、滑落与搬错物体</h5>
 <p>
-<strong>这组正向案例展示 Astra 能识别任务相关的状态差异。</strong>同样是“把蓝杯放进水槽”，模型区分了成功放置、杯子滑落和搬错物体，而没有把所有机械臂运动都当作进度。</p>
+<strong>这组正向案例展示 gpt-6-astra 能识别任务相关的状态差异。</strong>同样是“把蓝杯放进水槽”，模型区分了成功放置、杯子滑落和搬错物体，而没有把所有机械臂运动都当作进度。</p>
 <div class="progress-compare" data-progress-compare data-progress-indices="0,7,15,23,31" data-progress-values="0.00,0.10,0.20,0.60,1.00" data-progress-fps="4" data-progress-frames="32">
     <figure class="progress-video">
 <video controls playsinline muted preload="none" poster="assets/rbm/q0041-poster.jpg" src="assets/rbm/q0041-replay.mp4" aria-label="成功放入水槽" aria-describedby="cup-success-playback-note">
@@ -664,9 +664,9 @@
 <figcaption>图 5. 成功放入水槽</figcaption>
 </figure>
     <div class="progress-chart">
-<p class="progress-chart-title">Astra 预测进度</p>
+<p class="progress-chart-title">gpt-6-astra 预测进度</p>
 <svg class="progress-svg" viewBox="0 0 440 270" role="img" aria-labelledby="cup-success-chart-title cup-success-chart-desc">
-<title id="cup-success-chart-title">成功放入水槽 · Astra 预测进度</title>
+<title id="cup-success-chart-title">成功放入水槽 · gpt-6-astra 预测进度</title>
 <desc id="cup-success-chart-desc">采样位置与进度：0: 0.00；7: 0.10；15: 0.20；23: 0.60；31: 1.00。起点由协议设为 0，其余为模型预测；连线仅辅助阅读。</desc>
 <text class="progress-axis-title" x="48" y="20">预测进度（0–1）</text>
 <line class="progress-grid" x1="48" x2="396" y1="210.00" y2="210.00"/>
@@ -747,9 +747,9 @@
 <figcaption>图 6. 杯子滑落在槽外</figcaption>
 </figure>
     <div class="progress-chart">
-<p class="progress-chart-title">Astra 预测进度</p>
+<p class="progress-chart-title">gpt-6-astra 预测进度</p>
 <svg class="progress-svg" viewBox="0 0 440 270" role="img" aria-labelledby="cup-slip-chart-title cup-slip-chart-desc">
-<title id="cup-slip-chart-title">杯子滑落在槽外 · Astra 预测进度</title>
+<title id="cup-slip-chart-title">杯子滑落在槽外 · gpt-6-astra 预测进度</title>
 <desc id="cup-slip-chart-desc">采样位置与进度：0: 0.00；7: 0.08；15: 0.22；23: 0.55；31: 0.40。起点由协议设为 0，其余为模型预测；连线仅辅助阅读。</desc>
 <text class="progress-axis-title" x="48" y="20">预测进度（0–1）</text>
 <line class="progress-grid" x1="48" x2="396" y1="210.00" y2="210.00"/>
@@ -830,9 +830,9 @@
 <figcaption>图 7. 搬动了错误物体</figcaption>
 </figure>
     <div class="progress-chart">
-<p class="progress-chart-title">Astra 预测进度</p>
+<p class="progress-chart-title">gpt-6-astra 预测进度</p>
 <svg class="progress-svg" viewBox="0 0 440 270" role="img" aria-labelledby="wrong-object-chart-title wrong-object-chart-desc">
-<title id="wrong-object-chart-title">搬动了错误物体 · Astra 预测进度</title>
+<title id="wrong-object-chart-title">搬动了错误物体 · gpt-6-astra 预测进度</title>
 <desc id="wrong-object-chart-desc">采样位置与进度：0: 0.00；7: 0.05；15: 0.05；23: 0.00；31: 0.00。起点由协议设为 0，其余为模型预测；连线仅辅助阅读。</desc>
 <text class="progress-axis-title" x="48" y="20">预测进度（0–1）</text>
 <line class="progress-grid" x1="48" x2="396" y1="210.00" y2="210.00"/>
@@ -906,7 +906,7 @@
 <p class="progress-chart-note" id="wrong-object-playback-note">点选采样点定位画面；空心点为设定起点。</p>
 </div>
 </div>
-<p>成功的一次执行中，Astra 在蓝杯仍悬于槽外时给出 0.60，放入并释放后升至 1.00；杯子滑落的一次，到达水槽附近时为 0.55，滑落在槽外后降至 0.40；搬错物体的一次，蓝杯始终没有移动，最终进度回到 0.00。这些升降对应了任务目标的推进或受挫，而非单纯的时间流逝。</p>
+<p>成功的一次执行中，gpt-6-astra 在蓝杯仍悬于槽外时给出 0.60，放入并释放后升至 1.00；杯子滑落的一次，到达水槽附近时为 0.55，滑落在槽外后降至 0.40；搬错物体的一次，蓝杯始终没有移动，最终进度回到 0.00。这些升降对应了任务目标的推进或受挫，而非单纯的时间流逝。</p>
 <details class="method-detail">
 <summary>查看三次终点判断的模型原文</summary>
 <dl class="model-quotes">
@@ -925,7 +925,7 @@
 </dl>
 </details>
 <h5 class="case-title" id="banana-retry-case">Case Study：识别受挫后的重试与完成</h5>
-<p>任务是把香蕉从蓝盘移到绿盘。这条轨迹的公开质量标签为成功。第一次接近后，香蕉仍在蓝盘，手臂已经退回；Astra 的进度由 0.15 降回 0.00。再次接近时，分数回到 0.15；直到最后一次采样观测中香蕉位于绿盘、夹爪离开后，才升至 1.00。<strong>模型没有把暂时受挫误当成最终结果，也没有仅凭重新接近就宣告完成。</strong>
+<p>任务是把香蕉从蓝盘移到绿盘。这条轨迹的公开质量标签为成功。第一次接近后，香蕉仍在蓝盘，手臂已经退回；gpt-6-astra 的进度由 0.15 降回 0.00。再次接近时，分数回到 0.15；直到最后一次采样观测中香蕉位于绿盘、夹爪离开后，才升至 1.00。<strong>模型没有把暂时受挫误当成最终结果，也没有仅凭重新接近就宣告完成。</strong>
 </p>
 <div class="progress-compare" data-progress-compare data-progress-indices="0,7,15,23,31" data-progress-values="0.00,0.15,0.00,0.15,1.00" data-progress-fps="4" data-progress-frames="32">
     <figure class="progress-video">
@@ -934,9 +934,9 @@
 <figcaption id="banana-retry-caption">MIT Franka · 香蕉转移任务 · 参考标签：成功。</figcaption>
 </figure>
     <div class="progress-chart">
-<p class="progress-chart-title">Astra 预测进度</p>
+<p class="progress-chart-title">gpt-6-astra 预测进度</p>
 <svg class="progress-svg" viewBox="0 0 440 270" role="img" aria-labelledby="banana-retry-chart-title banana-retry-chart-desc">
-<title id="banana-retry-chart-title">受挫后重试成功 · Astra 预测进度</title>
+<title id="banana-retry-chart-title">受挫后重试成功 · gpt-6-astra 预测进度</title>
 <desc id="banana-retry-chart-desc">采样位置与进度：0: 0.00；7: 0.15；15: 0.00；23: 0.15；31: 1.00。起点由协议设为 0，其余为模型预测；连线仅辅助阅读。</desc>
 <text class="progress-axis-title" x="48" y="20">预测进度（0–1）</text>
 <line class="progress-grid" x1="48" x2="396" y1="210.00" y2="210.00"/>
@@ -1039,7 +1039,7 @@
 <strong>进度估计。</strong>加入一条相同或相近任务的带阶段评分轨迹后，VOC 从 <strong>93.6 升至 94.2</strong>，整体时间相关性略有提高。</p>
 <figure class="figure">
 <button type="button" data-zoom aria-label="放大进度估计零样本与 ICL 对照图">
-<img loading="lazy" src="assets/figures/03_progress.png?v=voc" alt="任务进度估计：Astra 零样本 VOC 为 93.6，单轨迹示例 ICL 为 94.2；外部文献报告值采用不同协议。" width="1384" height="960">
+<img loading="lazy" src="assets/figures/03_progress.png?v=voc" alt="任务进度估计：gpt-6-astra 零样本 VOC 为 93.6，单轨迹示例 ICL 为 94.2；外部文献报告值采用不同协议。" width="1600" height="1109">
 </button>
 <figcaption>图 8. <span>进度估计的零样本与单轨迹示例 ICL 对照（VOC）。模型仅使用截至当前时刻的观测；外部数值沿用各论文协议。</span>
 <span class="zoom-label" aria-hidden="true">放大 ↗</span>
@@ -1116,14 +1116,14 @@
 </thead>
 <tbody>
 <tr>
-<th scope="row">GPT-6 Astra (zero-shot)</th>
+<th scope="row">gpt-6-astra (zero-shot)</th>
 <td>本研究</td>
 <td>93.6</td>
 <td>0.8166</td>
 <td>92.4</td>
 </tr>
 <tr>
-<th scope="row">GPT-6 Astra (ICL)</th>
+<th scope="row">gpt-6-astra (ICL)</th>
 <td>本研究</td>
 <td>94.2</td>
 <td>0.7953</td>
@@ -1296,7 +1296,7 @@
 <h4 id="progress-results-summary" data-toc>2.2.3 小结</h4>
 <div class="section-summary">
 <p>
-<strong>Astra 能追踪与任务相关的推进和受挫，但更高的时间相关性不保证更准确的完成判断。</strong>
+<strong>gpt-6-astra 能追踪与任务相关的推进和受挫，但更高的时间相关性不保证更准确的完成判断。</strong>
 </p>
 <p>VOC 衡量预测与归一化时间的相关性。开瓶案例中，较高的 VOC 与较差的终点估计同时出现，说明还需检查完成状态和评分误差。</p>
 </div>
@@ -1306,8 +1306,8 @@
 <h4 id="outcome-results" data-toc>2.3.1 总体表现与错误分布</h4>
 <p>我们在 RoboFail<sup class="citation">
 <a href="#ref-reflect" aria-label="REFLECT / RoboFail">[4]</a>
-</sup> 的 57 个子任务问题上评估 Astra 的成败判断与失败解释能力，输入为子任务描述和关键帧拼图，输出为 Yes/No 成败判断及文字解释。</p>
-<p>零样本准确率为 <strong>64.91%</strong>，与专用模型 AHA 的报告结果接近；五个外部示例条件下达到 <strong>85.96%</strong>，比 AHA-13B Vicuna 报告的 <strong>66.1%</strong> 高约 <strong>19.9 个百分点</strong>
+</sup> 的 57 个子任务问题上评估 gpt-6-astra 的成败判断与失败解释能力，输入为子任务描述和关键帧拼图，输出为 Yes/No 成败判断及文字解释。</p>
+<p>零样本准确率为 <strong>64.91%</strong>，与专用模型 AHA 的报告结果接近；使用五个固定的外部图像—问题—答案示例进行 ICL 后达到 <strong>85.96%</strong>，比 AHA-13B Vicuna 报告的 <strong>66.1%</strong> 高约 <strong>19.9 个百分点</strong>
 <sup class="citation">
 <a href="#ref-aha" aria-label="AHA">[8]</a>
 </sup>。两种条件的分类计数见下表。</p>
@@ -1328,7 +1328,7 @@
 <tr>
 <th scope="col">参考标签 → 模型判断</th>
 <th scope="col">零样本</th>
-<th scope="col">五示例 ICL</th>
+<th scope="col">ICL（5 个示例）</th>
 </tr>
 </thead>
 <tbody>
@@ -1378,13 +1378,13 @@
 </thead>
 <tbody>
 <tr>
-<th scope="row">Astra / zero-shot</th>
+<th scope="row">gpt-6-astra / zero-shot</th>
 <td>本研究</td>
 <td>64.91</td>
 <td>0.185</td>
 </tr>
 <tr>
-<th scope="row">Astra / 5 examples</th>
+<th scope="row">gpt-6-astra / ICL (5 examples)</th>
 <td>本研究</td>
 <td>85.96</td>
 <td>0.499</td>
@@ -1603,7 +1603,7 @@
 <div class="robofail-extra">
 <article class="robo-expanded-case" id="robo-case-50">
 <h5 class="case-title">Case Study：按咖啡机按钮</h5>
-<p>零样本因未看到激活迹象而判为失败，五示例回答则与成功标签一致。</p>
+<p>零样本因未看到激活迹象而判为失败，ICL 回答则与成功标签一致。</p>
 <div class="case-video-grid">
 <figure>
 <video controls playsinline muted preload="none" src="assets/robofail/case-050-source-replay.mp4" poster="assets/robofail/case-050-frame-2.jpg" aria-label="Press the coffee-machine button">
@@ -1628,7 +1628,7 @@
 </p>
 <blockquote lang="en">No. The robot arm is near the coffee machine, but it has not visibly pressed the button. The end effector appears misaligned with the control, and there is no visible indication that the machine has been activated.</blockquote>
 <p>
-<strong>五示例 · 判断正确</strong>
+<strong>ICL（5 个示例） · 判断正确</strong>
 </p>
 <blockquote lang="en">Yes, the robot successfully pressed the button on the coffee machine.</blockquote>
 <p>
@@ -1639,7 +1639,7 @@
 </article>
 <article class="robo-expanded-case" id="robo-case-49">
 <h5 class="case-title">Case Study：放碗时的对象要求</h5>
-<p>参考答案将失败归因于对象错误。零样本却解释为草莓尚未释放，五示例回答放置成功。输入问题只写“放入碗中”，没有指定应放哪个对象。</p>
+<p>参考答案将失败归因于对象错误。零样本却解释为草莓尚未释放，ICL 回答放置成功。输入问题只写“放入碗中”，没有指定应放哪个对象。</p>
 <div class="case-video-grid">
 <figure>
 <video controls playsinline muted preload="none" src="assets/robofail/case-049-source-replay.mp4" poster="assets/robofail/case-049-frame-3.jpg" aria-label="Place the object in the bowl">
@@ -1664,7 +1664,7 @@
 </p>
 <blockquote lang="en">No. The robot lowers the strawberry into the bowl but appears to still be holding it with the gripper. The placement is incomplete because the strawberry has not been released.</blockquote>
 <p>
-<strong>五示例 · 漏检</strong>
+<strong>ICL（5 个示例） · 漏检</strong>
 </p>
 <blockquote lang="en">Yes, the robot successfully placed the strawberry in the bowl.</blockquote>
 <p>
@@ -1702,7 +1702,7 @@
 </p>
 <blockquote lang="en">Yes. The robot has successfully picked up the apple: in frame 2, the apple is held by the gripper and lifted clear of the countertop. No failure is visible.</blockquote>
 <p>
-<strong>五示例 · 判断正确</strong>
+<strong>ICL（5 个示例） · 判断正确</strong>
 </p>
 <blockquote lang="en">Yes, the robot successfully grasped the apple and lifted it off the countertop.</blockquote>
 <p>
@@ -1716,14 +1716,14 @@
 </span>
 <div class="visibility-study">
 <h4 id="robofail-visibility" data-toc>2.3.3 上下文学习（ICL）</h4>
-<p>我们在待评子任务之前提供五个固定的外部示例，每个示例包含图像、子任务问题和参考答案，再让模型对待评子任务输出成败判断及文字解释。零样本条件不提供这些示例。</p>
+<p>我们使用评测中固定的五个外部示例进行上下文学习（ICL）。每个示例包含图像、子任务问题和参考答案，与待评子任务一同输入模型；模型随后输出待评子任务的成败判断及文字解释。零样本条件不提供示例。</p>
 <p>
-<strong>五示例条件减少了成功误报，但仍会漏掉失败。</strong>成功误报由 18 个降至 2 个，失败漏检由 2 个增至 6 个。旋钮和切片两例还比较了前 1 帧、前 2 帧与全部观测，每个条件请求一次。</p>
+<strong>使用五个示例的 ICL 条件减少了成功误报，但仍会漏掉失败。</strong>成功误报由 18 个降至 2 个，失败漏检由 2 个增至 6 个。旋钮和切片两例还比较了前 1 帧、前 2 帧与全部观测，每个条件请求一次。</p>
 <article class="visibility-case">
 <div class="robofail-extra">
 <article class="robo-expanded-case" id="robo-case-55">
 <h5 class="case-title">Case Study：抓取炉灶旋钮</h5>
-<p>参考答案为失败：夹爪未闭合。零样本判为失败，理由是抓取位置不对；五示例条件判为成功。</p>
+<p>参考答案为失败：夹爪未闭合。零样本判为失败，理由是抓取位置不对；使用五个示例的 ICL 条件判为成功。</p>
 <div class="case-video-grid">
 <figure>
 <video controls playsinline muted preload="none" src="assets/robofail/case-055-source-replay.mp4" poster="assets/robofail/case-055-frame-4.jpg" aria-label="Grasp the stove knob">
@@ -1748,7 +1748,7 @@
 </p>
 <blockquote lang="en">No. The gripper is positioned over the burner area rather than around a stove knob, so it has not established a secure grasp on the knob.</blockquote>
 <p>
-<strong>五示例 · 漏检</strong>
+<strong>ICL（5 个示例） · 漏检</strong>
 </p>
 <blockquote lang="en">Yes, the robot successfully grasped the stove knob.</blockquote>
 <p>
@@ -1771,12 +1771,12 @@
 <span class="visibility-label no">失败</span>
 <span class="visibility-label no">失败</span>
 <span class="visibility-label no">失败</span>
-<strong>五示例</strong>
+<strong>ICL（5 个示例）</strong>
 <span class="visibility-label no">失败</span>
 <span class="visibility-label no">失败</span>
 <span class="visibility-label yes">成功</span>
 </div>
-<p>五示例回答在前 1、2 帧时均为失败，看到全部 4 帧后改为成功；零样本在三种观测条件下均回答失败。</p>
+<p>ICL 回答在前 1、2 帧时均为失败，看到全部 4 帧后改为成功；零样本在三种观测条件下均回答失败。</p>
 <details class="research-detail visibility-response">
 <summary>查看不同帧数下的输入与回答</summary>
 <p>
@@ -1792,7 +1792,7 @@
 </p>
 <blockquote lang="en">No. The gripper is positioned near the sink, away from the stove knobs, and has not closed around a knob.</blockquote>
 <p>
-<strong>五示例</strong>
+<strong>ICL（5 个示例）</strong>
 </p>
 <blockquote lang="en">No, the robot’s gripper is positioned away from the stove knobs and has not grasped one.</blockquote>
 <p>
@@ -1808,7 +1808,7 @@
 </p>
 <blockquote lang="en">No. The gripper is positioned above the pot near the sink rather than around a stove knob, so it has not established a grasp on the target.</blockquote>
 <p>
-<strong>五示例</strong>
+<strong>ICL（5 个示例）</strong>
 </p>
 <blockquote lang="en">No, the robot grasped and lifted the pot instead of grasping the stove knob.</blockquote>
 <p>
@@ -1824,7 +1824,7 @@
 </p>
 <blockquote lang="en">No. The robot moves its gripper toward the stove, but it does not securely grasp a stove knob. The gripper remains above the burner area rather than closing around the knob.</blockquote>
 <p>
-<strong>五示例</strong>
+<strong>ICL（5 个示例）</strong>
 </p>
 <blockquote lang="en">Yes, the robot successfully grasped the stove knob.</blockquote>
 </details>
@@ -1833,7 +1833,7 @@
 <div class="robofail-extra">
 <article class="robo-expanded-case" id="robo-case-36">
 <h5 class="case-title">Case Study：切胡萝卜</h5>
-<p>参考答案为成功；零样本和五示例条件均因未看到分离的切片而判为失败。</p>
+<p>参考答案为成功；零样本和使用五个示例的 ICL 条件均因未看到分离的切片而判为失败。</p>
 <div class="case-video-grid">
 <figure>
 <video controls playsinline muted preload="none" src="assets/robofail/case-036-source-replay.mp4" poster="assets/robofail/case-036-frame-3.jpg" aria-label="Slice the carrot">
@@ -1858,7 +1858,7 @@
 </p>
 <blockquote lang="en">No. The arm moves toward the carrot, but the blade does not complete a cut through it. The carrot remains intact on the board, with no visibly separated slice.</blockquote>
 <p>
-<strong>五示例 · 误报</strong>
+<strong>ICL（5 个示例） · 误报</strong>
 </p>
 <blockquote lang="en">No, the carrot remains whole on the counter; the robot did not successfully cut it into slices.</blockquote>
 <p>
@@ -1881,7 +1881,7 @@
 <span class="visibility-label no">失败</span>
 <span class="visibility-label no">失败</span>
 <span class="visibility-label no">失败</span>
-<strong>五示例</strong>
+<strong>ICL（5 个示例）</strong>
 <span class="visibility-label no">失败</span>
 <span class="visibility-label no">失败</span>
 <span class="visibility-label no">失败</span>
@@ -1902,7 +1902,7 @@
 </p>
 <blockquote lang="en">No. The carrot remains intact on the cutting board; the robot has not completed a cut or separated a slice.</blockquote>
 <p>
-<strong>五示例</strong>
+<strong>ICL（5 个示例）</strong>
 </p>
 <blockquote lang="en">No, the carrot remains whole on the counter; the robot has not cut it into slices.</blockquote>
 <p>
@@ -1918,7 +1918,7 @@
 </p>
 <blockquote lang="en">No. The robot arm moves upward without visibly completing a cut through the carrot. The carrot remains on the cutting board, with no newly separated slice visible.</blockquote>
 <p>
-<strong>五示例</strong>
+<strong>ICL（5 个示例）</strong>
 </p>
 <blockquote lang="en">No, the robot picked up the knife but did not slice the carrot; the carrot remains whole on the countertop.</blockquote>
 <p>
@@ -1934,7 +1934,7 @@
 </p>
 <blockquote lang="en">No. The arm moves toward the carrot, but the blade does not complete a cut through it. The carrot remains intact, with no visibly separated slice.</blockquote>
 <p>
-<strong>五示例</strong>
+<strong>ICL（5 个示例）</strong>
 </p>
 <blockquote lang="en">No, the robot placed the knife across the carrot but did not cut through it. The carrot remains whole.</blockquote>
 </details>
@@ -1946,21 +1946,22 @@
 <h4 id="failure-summary" data-toc>2.3.4 小结</h4>
 <div class="section-summary">
 <p>
-<strong>五示例条件更善于识别成功子任务，但成功识别的改善没有同时消除失败漏检。</strong>
+<strong>使用五个示例的 ICL 条件更善于识别成功子任务，但成功识别的改善没有同时消除失败漏检。</strong>
 </p>
 <p>旋钮与切片两例在补齐观测后仍有判断分歧；放碗问题又没有明确操作对象。成败识别既依赖画面，也依赖任务要求是否写清。</p>
 </div>
 </section>
 <section id="explanations" class="result-topic" data-toc>
 <h3>2.4 失败解释与得分</h3>
+<p class="">本节使用 2.3 中零样本与五个示例 ICL 的同一批回答，评价成败判断之外的解释得分。ICL 使用同一组固定的外部图像—问题—答案示例。</p>
 <h4 id="explanation-scores" data-toc>2.4.1 总体表现与基线比较</h4>
-<p class="">五示例条件的综合 ROUGE-L 为 <strong>0.499</strong>，零样本为 <strong>0.185</strong>。其中，成功识别项从 <strong>0.0877 增至 0.3684（+0.2807）</strong>，失败解释项从 <strong>0.0969 增至 0.1305（+0.0336）</strong>。</p>
-<p class="">Astra 五示例的综合得分高于 AHA 报告中的 AHA-13B Vicuna（0.290）、AHA-13B Llama-2（0.280）、AHA-7B（0.204）和 GPT-4o 五示例（0.236）<sup class="citation">
+<p class="">使用五个示例的 ICL 条件的综合 ROUGE-L 为 <strong>0.499</strong>，零样本为 <strong>0.185</strong>。其中，成功识别项从 <strong>0.0877 增至 0.3684（+0.2807）</strong>，失败解释项从 <strong>0.0969 增至 0.1305（+0.0336）</strong>。</p>
+<p class="">gpt-6-astra 使用五个示例进行 ICL 后的综合得分高于 AHA 报告中的 AHA-13B Vicuna（0.290）、AHA-13B Llama-2（0.280）、AHA-7B（0.204）和 GPT-4o 的 ICL 结果（5 个示例，0.236）<sup class="citation">
 <a href="#ref-aha" aria-label="AHA">[8]</a>
 </sup>。</p>
 <figure class="figure">
 <button type="button" data-zoom aria-label="放大: 包含 AHA 及其他 baseline 的综合 ROUGE-L 对比">
-<img loading="lazy" src="assets/figures/05_robofail_icl.png" alt="包含 AHA 及其他 baseline 的综合 ROUGE-L 对比" width="1180" height="875">
+<img loading="lazy" src="assets/figures/05_robofail_icl.png" alt="包含 AHA 及其他 baseline 的综合 ROUGE-L 对比" width="1600" height="1192">
 </button>
 <figcaption>图 19. 综合 ROUGE-L 对比；文献结果沿用各自协议。<span class="zoom-label" aria-hidden="true">放大 ↗</span>
 </figcaption>
@@ -1983,10 +1984,10 @@
 <span style="width:17.618181818181817%">0.0969</span>
 </div>
 <div class="stack-heading">
-<strong>外部五示例</strong>
+<strong>ICL（5 个外部示例）</strong>
 <span>综合得分 0.499</span>
 </div>
-<div class="rouge-stack" role="img" aria-label="外部五示例: 0.3684 + 0.1305">
+<div class="rouge-stack" role="img" aria-label="ICL（5 个外部示例）: 0.3684 + 0.1305">
 <span style="width:66.98181818181817%">0.3684</span>
 <span style="width:23.727272727272727%">0.1305</span>
 </div>
@@ -1998,7 +1999,7 @@
 </figure>
 <details class="research-detail">
 <summary>综合评分规则与分项计算</summary>
-<p class="">五示例条件的综合 ROUGE-L 从 0.185 增加到 0.499。这个指标不只衡量失败解释。按 AHA 评测规则<sup class="citation">
+<p class="">使用五个示例的 ICL 条件的综合 ROUGE-L 从 0.185 增加到 0.499。这个指标不只衡量失败解释。按 AHA 评测规则<sup class="citation">
 <a href="#ref-aha" aria-label="AHA">[8]</a>
 </sup>，正确成功回答计 1 分，正确失败回答按解释与参考答案的词干化 ROUGE-L F1 计分，成败标签错误则计 0 分。所有问题得分相加后除以 57。评分使用原始英文回答，不使用本文的中文转述。</p>
 <div class="formula" role="math" aria-label="综合得分等于正确成功数加上正确失败的解释分数总和，再除以57">R = (正确成功数 + 正确失败的解释分数之和) / 57</div>
@@ -2006,7 +2007,7 @@
 </details>
 <h4 id="explanation-cases" data-toc>2.4.2 失败解释质量</h4>
 <p class="">
-<strong>五示例条件的失败解释项由 0.0969 增至 0.1305（+0.0336）。</strong>该分项将正确检出失败的解释 ROUGE-L 求和后除以全部 57 个问题。与此同时，34 个失败问题中的正确检出数从 32 个降至 28 个：解释项得分提高，并非因为识别出了更多失败。</p>
+<strong>使用五个示例的 ICL 条件的失败解释项由 0.0969 增至 0.1305（+0.0336）。</strong>该分项将正确检出失败的解释 ROUGE-L 求和后除以全部 57 个问题。与此同时，34 个失败问题中的正确检出数从 32 个降至 28 个：解释项得分提高，并非因为识别出了更多失败。</p>
 <div class="robofail-extra">
 <article class="robo-expanded-case" id="robo-case-33">
 <h5 class="case-title">Case Study：拿刀时的对象错误</h5>
@@ -2035,7 +2036,7 @@
 </p>
 <blockquote lang="en">No. The knife remains on the countertop beside the sink while the robot arm lifts away without securing it. The grasp failed, so the knife was not picked up.</blockquote>
 <p>
-<strong>五示例 · 判断正确</strong>
+<strong>ICL（5 个示例） · 判断正确</strong>
 </p>
 <blockquote lang="en">No, The robot picked up the spoon instead of the knife.</blockquote>
 <p>
@@ -2050,9 +2051,9 @@
 <h4 id="explanations-summary" data-toc>2.4.3 小结</h4>
 <div class="section-summary">
 <p>
-<strong>五示例条件的成功识别项与失败解释项均提高，前者贡献了主要增量。</strong>
+<strong>使用五个示例的 ICL 条件的成功识别项与失败解释项均提高，前者贡献了主要增量。</strong>
 </p>
-<p>拿刀案例的两种回答都判对失败，但只有五示例回答指出操作对象错误。成败标签和具体原因应分开评价。</p>
+<p>拿刀案例的两种回答都判对失败，但只有ICL 回答指出操作对象错误。成败标签和具体原因应分开评价。</p>
 </div>
 </section>
 </section>
@@ -2060,14 +2061,14 @@
 <h2>3. 讨论与展望</h2>
 <h3 id="conclusions" data-toc>3.1 主要发现</h3>
 <p class="">
-<strong>Astra 的排序与偏好判断能与专用模型竞争。</strong> Astra 在本研究中的零样本排序与直接偏好结果，数值上高于所引用的专用模型报告结果；这种能力无需针对评测任务额外微调。</p>
+<strong>gpt-6-astra 的排序与偏好判断能与专用模型竞争。</strong> gpt-6-astra 在本研究中的零样本排序与直接偏好结果，数值上高于所引用的专用模型报告结果；这种能力无需针对评测任务额外微调。</p>
 <p class="">
-<strong>进度评分能够反映任务推进、受挫和重试。</strong>在蓝杯与香蕉转移案例中，Astra 的评分随放置成功而上升，随滑落或无效尝试而下降，并在重试完成后恢复。</p>
+<strong>进度评分能够反映任务推进、受挫和重试。</strong>在蓝杯与香蕉转移案例中，gpt-6-astra 的评分随放置成功而上升，随滑落或无效尝试而下降，并在重试完成后恢复。</p>
 <p class="">
-<strong>五示例条件下，RoboFail 成败识别准确率达到 85.96%。</strong>23 个成功子任务中，正确识别数从 5 个增至 21 个。</p>
+<strong>使用五个示例的 ICL 条件下，RoboFail 成败识别准确率达到 85.96%。</strong>23 个成功子任务中，正确识别数从 5 个增至 21 个。</p>
 <p class="">
-<strong>五示例条件的综合解释得分达到 0.499，高于所列专用模型报告值。</strong>成功识别与失败解释两项均提高；拿刀案例中，回答还从笼统的抓取失败转向了具体的对象错误。</p>
-<h3 id="failure-modes" data-toc>3.2 Astra 何时仍会判断失误</h3>
+<strong>使用五个示例的 ICL 条件的综合解释得分达到 0.499，高于所列专用模型报告值。</strong>成功识别与失败解释两项均提高；拿刀案例中，回答还从笼统的抓取失败转向了具体的对象错误。</p>
+<h3 id="failure-modes" data-toc>3.2 gpt-6-astra 何时仍会判断失误</h3>
 <p class="">
 <strong>质量等级区分不够细。</strong>
 <a href="#blue-bin-case">蓝桶案例</a>中的成功和次优执行都得到满分。</p>
@@ -2076,7 +2077,7 @@
 <a href="#progress-icl">开瓶案例</a>中，五个评分位置的整体相关性提高，但成功终点只得到 0.35。</p>
 <p class="">
 <strong>失败原因可能判断不准。</strong>
-<a href="#robo-case-33">拿刀案例</a>中，零样本只指出未抓住刀，五示例回答才指出拿到的是勺子，与参考的对象错误对应。</p>
+<a href="#robo-case-33">拿刀案例</a>中，零样本只指出未抓住刀，ICL 回答才指出拿到的是勺子，与参考的对象错误对应。</p>
 <p class="">
 <strong>示例条件下仍有排序错误和失败漏检。</strong>轨迹排序中的平分增多，τa 从 0.8166 降至 0.7953；RoboFail 的失败漏检从 2 个增至 6 个。</p>
 <h3 id="limitations" data-toc>3.3 局限与未来工作</h3>
@@ -2172,7 +2173,7 @@
 <a href="#ref-aha" aria-label="AHA">[8]</a>
 </sup>，在本研究记录的 57 个问题上评估；该问题集合不等同于原始数据集的全部内容，也不假定与其他文献的评测子集完全一致。</p>
 <p class="">
-<strong>上下文示例。</strong> Astra 的示例条件按评价任务分别设置：</p>
+<strong>上下文示例。</strong> gpt-6-astra 的示例条件按评价任务分别设置：</p>
 <ul>
 <li>
 <strong>进度估计：</strong>一条相同或相近任务的训练轨迹，附六个阶段评分。</li>
@@ -2183,12 +2184,12 @@
 </ul>
 <p class="method-note">直接偏好仅评估零样本。</p>
 <p class="">
-<strong>观测遮蔽。</strong>两个 RoboFail 案例分别使用前 1 帧、前 2 帧与全部观测，在零样本和五示例条件下各请求一次，共 12 次。少帧条件没有时间级真值，只比较模型回答。</p>
+<strong>观测遮蔽。</strong>两个 RoboFail 案例分别使用前 1 帧、前 2 帧与全部观测，在零样本和使用五个示例的 ICL 条件下各请求一次，共 12 次。少帧条件没有时间级真值，只比较模型回答。</p>
 <p class="">
 <strong>结果来源。</strong>图中 [S] 为本研究，[P]、[W]、[R]、[A] 分别为 Robometer 论文、项目网站、RynnValue 与 AHA。RBM 排序与“不同质量”偏好沿用官方采样和指标规则；随机种子、模型接口与引用版本见 2.1 的折叠说明。RoboFail 的文献对照使用不同问题集合，范围见 2.3。</p>
 <div id="positive-case-protocol">
 <p class="">
-<strong>案例对照。</strong>四组正例为评测后的说明性选例，不用于估计整体错误率。Astra 与 DeepSeek 使用相同任务、轨迹、提示和输入图像，不接收参考质量标签；偏好案例保留实际 A/B 顺序。两者推理配置与计算预算未匹配：Astra 为 low、输出上限 512 token，DeepSeek 为 max、上限 32768 token。未进行 A/B 交换复测，也没有匹配的 Robometer 逐条输出。</p>
+<strong>案例对照。</strong>四组正例为评测后的说明性选例，不用于估计整体错误率。gpt-6-astra 与 DeepSeek 使用相同任务、轨迹、提示和输入图像，不接收参考质量标签；偏好案例保留实际 A/B 顺序。两者推理配置与计算预算未匹配：gpt-6-astra 为 low、输出上限 512 token，DeepSeek 为 max、上限 32768 token。未进行 A/B 交换复测，也没有匹配的 Robometer 逐条输出。</p>
 </div>
 <p class="">
 <strong>回放与曲线。</strong>2.1 的排序与偏好案例回放各轨迹的 8 张模型输入图像，每秒 1 张，封面取最后一张；新增正例在 32 张保存帧中的采样位置为 0 / 4 / 9 / 13 / 18 / 22 / 27 / 31。2.2 的进度案例将 32 张保存帧按每秒 4 帧回放，评分位置为 0 / 7 / 15 / 23 / 31；起点由协议设为 0，其余四点为模型预测。以上回放均非原速视频，采样位置不是秒数。曲线连线仅辅助阅读，中间位置没有额外预测或人工标注。</p>
@@ -2281,7 +2282,7 @@
 <p class="">引用本文：</p>
 <pre class="citation-block" tabindex="0" aria-label="BibTeX">
 <code>@misc{zhang2026beyondthescore,
-  title        = {Beyond the Score: Early Evaluations of {GPT-6 Astra} as a Robot Critic},
+  title        = {Beyond the Score: Early Evaluations of {gpt-6-astra} as a Robot Critic},
   author       = {Zhang, Jinhao and Zhang, Yuwei and Zhou, Weitao and others},
   year         = {2026},
   month        = oct,

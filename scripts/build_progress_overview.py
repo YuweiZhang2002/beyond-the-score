@@ -4,7 +4,7 @@ import json, os, shutil, struct, subprocess, tempfile
 ROOT = Path(__file__).resolve().parents[1]
 rows = json.loads((ROOT / 'data/report.json').read_text())['table2_rbm']['rows']
 names = {
-    'GPT-6 Astra low (zero-shot)': 'GPT-6 Astra',
+    'gpt-6-astra low (zero-shot)': 'gpt-6-astra',
     'GPT-5.6-sol low': 'GPT-5.6-sol',
     'DpskV4.1-flash max': 'DeepSeek-V4.1-Flash',
     'Robometer / RBM-1M (paper v1)': 'Robometer / RBM-1M [P]',
@@ -27,7 +27,7 @@ s += r'''\fill[cardbg,rounded corners=7pt] (-.4,2) rectangle (18.15,-12.15);
 \node[anchor=west,font=\sffamily\bfseries\small] at (0,.1) {General-purpose multimodal models | This study};
 '''
 def bar(row,y,group):
-    color='astrabar' if row[0].startswith('GPT-6 Astra') else 'studybar' if group=='study' else 'mutedbar'
+    color='astrabar' if row[0].startswith('gpt-6-astra') else 'studybar' if group=='study' else 'mutedbar'
     return '\n'.join([
         rf'\node[anchor=west,font=\sffamily\small] at (0,{y:.2f}) {{{names[row[0]]}}};',
         rf'\fill[trackbg] (7.25,{y-.19:.2f}) rectangle (16.8,{y+.19:.2f});',
