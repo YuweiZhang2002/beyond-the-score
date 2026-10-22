@@ -132,7 +132,8 @@ for name,text in pages.items():
         else:
             for t in case['trajectories']:
                 assert ('参考标签：' if lang=='zh' else 'Reference label: ')+labels[lang][t['quality_label']] in block
-        assert ('模型输入的 8 帧回放。' if lang == 'zh' else 'Replay of the eight model-input frames.') in block
+        assert 'aria-describedby="rbm-replay-note"' in block
+        assert 'id="rbm-replay-note"' in text
     assert all(x in text for x in ['positive-case-protocol','32768','512','0 / 4 / 9 / 13 / 18 / 22 / 27 / 31'])
     assert 'data/rbm-positive-cases.json' not in text
     assert 'positive-case-protocol' not in text.split('<section id="quality-results"', 1)[1].split('<section id="progress-results"', 1)[0]

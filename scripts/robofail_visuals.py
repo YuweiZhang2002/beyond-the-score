@@ -12,17 +12,17 @@ def outcome(case, response, t):
 def expanded_cases(cases, t, ids, fold=True):
     notes = {
         55: ('抓取炉灶旋钮', 'Grasping the stove knob',
-             '参考答案为失败：夹爪未闭合。零样本判为失败，理由是抓取位置不对；使用五个示例的 ICL 条件判为成功。',
-             'The reference identifies failure because the gripper does not close. Zero-shot predicts failure but cites grasp location; the five-example ICL condition predicts success.'),
+             '参考答案为失败：夹爪未闭合。零样本判为失败，理由是抓取位置不对；ICL 条件判为成功。',
+             'The reference identifies failure because the gripper does not close. Zero-shot predicts failure but cites grasp location; the ICL condition predicts success.'),
         36: ('切胡萝卜', 'Slicing a carrot',
-             '参考答案为成功；零样本和使用五个示例的 ICL 条件均因未看到分离的切片而判为失败。',
-             'The reference labels success; both zero-shot and five-example ICL conditions predict failure because no separated slice is visible.'),
+             '参考答案为成功；零样本和 ICL 条件均因未看到分离的切片而判为失败。',
+             'The reference labels success; both zero-shot and ICL conditions predict failure because no separated slice is visible.'),
         50: ('按咖啡机按钮', 'Pressing the coffee-machine button',
              '零样本因未看到激活迹象而判为失败，ICL 回答则与成功标签一致。',
              'Zero-shot predicts failure because activation is not visible; the five-example ICL response matches the success label.'),
         33: ('拿刀时的对象错误', 'Picking up a knife: identifying the wrong object',
-             '参考答案将这次失败归因于操作对象错误。',
-             'The reference attributes this failure to manipulating the wrong object.'),
+             '两种条件都判为失败：零样本回答“没有抓住刀”，ICL 回答进一步指出“拿到的是勺子”，与参考的对象错误一致。',
+             'Both conditions predict failure: zero-shot says the knife was not grasped, while ICL identifies a spoon, matching the reference’s wrong-object diagnosis.'),
         2: ('抓取苹果', 'Picking up an apple',
             '两种条件都正确识别了抓取成功。',
             'Both conditions correctly recognize a successful grasp.'),
@@ -55,9 +55,8 @@ def expanded_cases(cases, t, ids, fold=True):
 def visibility_experiment(data, cases, t):
     if not data or data['completed'] != data['planned']:
         return ''
-    out = '<div class="visibility-study"><h3 id="robofail-visibility" data-toc>' + t('2.3.3 上下文学习（ICL）', '2.3.3 In-context learning (ICL)') + '</h3>'
-    out += '<p>' + t('我们使用评测中固定的五个外部示例进行上下文学习（ICL）。每个示例包含图像、子任务问题和参考答案，与待评子任务一同输入模型；模型随后输出待评子任务的成败判断及文字解释。零样本条件不提供示例。', 'We use the evaluation’s fixed set of five external demonstrations for in-context learning (ICL). Each contains an image, a subtask question, and a reference answer and is supplied before the test subtask. The model then judges the test subtask’s success or failure and provides a textual explanation; zero-shot prompting omits the demonstrations.') + '</p>'
-    out += '<p><strong>' + t('使用五个示例的 ICL 条件减少了成功误报，但仍会漏掉失败。', 'The five-example ICL condition produces fewer false alarms but still misses failures.') + '</strong>' + t('成功误报由 18 个降至 2 个，失败漏检由 2 个增至 6 个。旋钮和切片两例还比较了前 1 帧、前 2 帧与全部观测，每个条件请求一次。', 'False alarms fall from 18 to 2, while missed failures rise from 2 to 6. The knob and slicing cases also compare the first frame, first two frames, and all observations, with one request per condition.') + '</p>'
+    out = '<div class="visibility-study"><h3 id="robofail-visibility" data-toc>' + t('2.3.3 上下文示例与观测信息', '2.3.3 In-context examples and visual observations') + '</h3>'
+    out += '<p><strong>' + t('旋钮案例中，增加观测改变了 ICL 判断，零样本判断则保持不变。', 'In the knob case, additional observations change the ICL judgment while the zero-shot judgment stays unchanged.') + '</strong> ' + t('旋钮和切片两例分别比较前 1 帧、前 2 帧与全部输入帧；每个条件请求一次，用于观察回答对可见信息的反应。', 'The knob and slicing cases compare the first frame, first two frames, and all supplied frames, with one request per condition to examine response sensitivity to visual information.') + '</p>'
     for idx in data['protocol']['case_ids']:
         case = next(c for c in cases if c['id'] == idx)
         rows = [r for r in data['results'] if r['case_id'] == idx]
@@ -73,7 +72,7 @@ def visibility_experiment(data, cases, t):
                 out += f'<span class="visibility-label {r["label"]}">' + (t('成功','Success') if r['label']=='yes' else t('失败','Failure') if r['label']=='no' else t('未解析','Unparsed')) + '</span>'
         out += '</div>'
         if idx==55:
-            out += '<p>' + t('ICL 回答在前 1、2 帧时均为失败，看到全部 4 帧后改为成功；零样本在三种观测条件下均回答失败。', 'With five examples, the response changes from failure with one or two frames to success with all four. Zero-shot predicts failure at all three observation levels.') + '</p>'
+            out += '<p>' + t('ICL 回答在前 1、2 帧时均为失败，看到全部 4 帧后改为成功；零样本在三种观测条件下均回答失败。', 'With ICL, the response changes from failure with one or two frames to success with all four. Zero-shot predicts failure at all three observation levels.') + '</p>'
         else:
             out += '<p>' + t('从 1 帧到全部 3 帧，两种条件始终回答失败，与成功标签不符。', 'From one frame to all three, both conditions consistently predict failure, disagreeing with the success label.') + '</p>'
         out += '<details class="research-detail visibility-response"><summary>' + t('查看不同帧数下的输入与回答','View inputs and responses at each frame count') + '</summary>'
