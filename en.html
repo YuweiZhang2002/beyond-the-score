@@ -307,7 +307,151 @@
 <figcaption>Figure 1. Zero-shot trajectory quality ranking. Top: three general-purpose multimodal models evaluated in this study. Bottom: published reference values for two specialized models. Higher Kendall τa is better; literature samples and input protocols are not fully aligned with this study.<span class="zoom-label" aria-hidden="true">Enlarge ↗</span>
 </figcaption>
 </figure>
-<p>We next examine individual judgments using Astra’s independent scoring records. Strong aggregate ranking does not mean that every difference in execution quality is correctly recognized.</p>
+<p>The following positive examples and error analyses examine how the models judge execution quality.</p>
+<details class="method-detail" id="positive-case-protocol">
+<summary>Scope and limits of the matched-case comparisons</summary>
+<p>The comparison uses identical tasks, trajectories, and offline reference labels. Astra and DeepSeek receive the same verbatim prompts and encoded input images, without quality labels. Preference pairs also use the same verified A/B order. All 12 request hashes for these four cases were reconstructed from source frames and checked against raw responses. Independent trajectory scores and actual pairwise choices are presented separately.</p>
+<p>Astra requests gpt-6-astra-ca and returns gpt-6-astra, with low effort and a 512-token output limit. DeepSeek requests and these receipts return deepseek-v4.1-flash, with max effort and a 32768-token limit. The interfaces are Responses and Chat Completions, respectively; compute budgets are not matched. Returned names are provider-reported, not independently authenticated. No swapped-order preference repeat or matched per-example Robometer output is available, so these cases do not establish Robometer’s individual performance.</p>
+<p>
+<a href="data/rbm-positive-cases.json" download>Download positive-case evidence (source files, record locations, original outputs, and input hashes)</a>
+</p>
+</details>
+<div class="positive-case" data-positive-case="ranking-drawer">
+<h5 class="case-title" id="ranking-drawer-case">Case Study: distinguishing a closed drawer from one left open</h5>
+<p>In this xArm drawer-closing task, A is labeled successful and B failed. Astra assigns <strong>1.00 and 0.00</strong>, respectively, correctly ordering the trajectories. DeepSeek assigns <strong>0.20 and 0.30</strong>, reversing the reference order.</p>
+<div class="table-scroll" role="region" tabindex="0">
+<table class="case-table">
+<caption>Table 3. Independent scores for the same task, on a 0–1 scale. A/B distinguish trajectories in this article; each scoring request contains one video.</caption>
+<thead>
+<tr>
+<th scope="col">Trajectory / reference label</th>
+<th scope="col">Astra</th>
+<th scope="col">DeepSeek-V4.1-Flash</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">A · success</th>
+<td>1.00</td>
+<td>0.20</td>
+</tr>
+<tr>
+<th scope="row">B · failure</th>
+<td>0.00</td>
+<td>0.30</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="case-video-grid case-replay-grid" role="group" aria-labelledby="ranking-drawer-case" aria-describedby="ranking-drawer-note">
+<figure>
+<video controls playsinline preload="none" poster="assets/case-studies/ranking-drawer-a.jpg" aria-label="A · Close the drawer · Reference label: success" aria-describedby="ranking-drawer-a-caption">
+<source src="assets/case-studies/ranking-drawer-a.mp4" type="video/mp4">Your browser does not support video playback.<a href="assets/case-studies/ranking-drawer-a.mp4">Open the input-frame replay</a>
+</video>
+<figcaption id="ranking-drawer-a-caption">
+<strong>A · Close the drawer</strong>Reference label: success</figcaption>
+</figure>
+<figure>
+<video controls playsinline preload="none" poster="assets/case-studies/ranking-drawer-b.jpg" aria-label="B · Close the drawer · Reference label: failure" aria-describedby="ranking-drawer-b-caption">
+<source src="assets/case-studies/ranking-drawer-b.mp4" type="video/mp4">Your browser does not support video playback.<a href="assets/case-studies/ranking-drawer-b.mp4">Open the input-frame replay</a>
+</video>
+<figcaption id="ranking-drawer-b-caption">
+<strong>B · Close the drawer</strong>Reference label: failure</figcaption>
+</figure>
+</div>
+<p class="case-replay-note" id="ranking-drawer-note">Each replay shows the same eight images actually supplied to both models, sampled at stored positions 0 / 4 / 9 / 13 / 18 / 22 / 27 / 31 from 32 saved frames, at one image per second. The poster is the last input image. This is not continuous video at its original speed; stored positions are not seconds.</p>
+<p>In the input frames, A pushes the drawer front back until its interior is no longer exposed; B ends with the drawer visibly open. Astra’s reasons identify this final-state difference. DeepSeek instead describes A as remaining in its initial open position. This is a result for this pair, not a new Kendall statistic.</p>
+<details class="method-detail">
+<summary>Read both models’ original reasons</summary>
+<dl class="model-quotes">
+<div>
+<dt>Astra · A · 1.00</dt>
+<dd lang="en">The robot pushes the protruding drawer inward until its front is flush with the cabinet frame and the open top is no longer visible. The final frames show the drawer closed.</dd>
+</div>
+<div>
+<dt>Astra · B · 0.00</dt>
+<dd lang="en">The drawer remains extended with its open interior clearly visible in the final frames. The robot gripper enters the drawer, but no sustained closing motion or closed final state is shown.</dd>
+</div>
+<div>
+<dt>DeepSeek-V4.1-Flash · A · 0.20</dt>
+<dd lang="en">The robot arm approaches and may contact the drawer handle, but the drawer remains in its initial open position; no visible closing motion or flush final state is achieved.</dd>
+</div>
+<div>
+<dt>DeepSeek-V4.1-Flash · B · 0.30</dt>
+<dd lang="en">Drawer moves slightly toward closed after initial handle contact, but remains visibly open in the final frame; no complete closure achieved.</dd>
+</div>
+</dl>
+</details>
+</div>
+<!-- /positive-case -->
+<div class="positive-case" data-positive-case="ranking-banana">
+<h5 class="case-title" id="ranking-banana-case">Case Study: transferring the banana or the orange object</h5>
+<p>The MIT Franka task asks for the banana to be moved from the blue plate to the green plate. A is labeled successful and B suboptimal. Astra’s independent scores, <strong>A 1.00 > B 0.00</strong>, match that order; DeepSeek’s <strong>A 0.50 < B 1.00</strong> reverse it.</p>
+<div class="table-scroll" role="region" tabindex="0">
+<table class="case-table">
+<caption>Table 4. Independent scores for the same task, on a 0–1 scale. A/B distinguish trajectories in this article; each scoring request contains one video.</caption>
+<thead>
+<tr>
+<th scope="col">Trajectory / reference label</th>
+<th scope="col">Astra</th>
+<th scope="col">DeepSeek-V4.1-Flash</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">A · success</th>
+<td>1.00</td>
+<td>0.50</td>
+</tr>
+<tr>
+<th scope="row">B · suboptimal</th>
+<td>0.00</td>
+<td>1.00</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="case-video-grid case-replay-grid" role="group" aria-labelledby="ranking-banana-case" aria-describedby="ranking-banana-note">
+<figure>
+<video controls playsinline preload="none" poster="assets/case-studies/ranking-banana-a.jpg" aria-label="A · Banana from blue to green plate · Reference label: success" aria-describedby="ranking-banana-a-caption">
+<source src="assets/case-studies/ranking-banana-a.mp4" type="video/mp4">Your browser does not support video playback.<a href="assets/case-studies/ranking-banana-a.mp4">Open the input-frame replay</a>
+</video>
+<figcaption id="ranking-banana-a-caption">
+<strong>A · Banana from blue to green plate</strong>Reference label: success</figcaption>
+</figure>
+<figure>
+<video controls playsinline preload="none" poster="assets/case-studies/ranking-banana-b.jpg" aria-label="B · Banana from blue to green plate · Reference label: suboptimal" aria-describedby="ranking-banana-b-caption">
+<source src="assets/case-studies/ranking-banana-b.mp4" type="video/mp4">Your browser does not support video playback.<a href="assets/case-studies/ranking-banana-b.mp4">Open the input-frame replay</a>
+</video>
+<figcaption id="ranking-banana-b-caption">
+<strong>B · Banana from blue to green plate</strong>Reference label: suboptimal</figcaption>
+</figure>
+</div>
+<p class="case-replay-note" id="ranking-banana-note">Each replay shows the same eight images actually supplied to both models, sampled at stored positions 0 / 4 / 9 / 13 / 18 / 22 / 27 / 31 from 32 saved frames, at one image per second. The poster is the last input image. This is not continuous video at its original speed; stored positions are not seconds.</p>
+<p>A’s final input image shows the banana at the green plate’s rim. B transfers the orange object while the banana stays on the blue plate. Astra distinguishes the target object; DeepSeek’s original reason for B instead describes a banana transfer. Sparse final frames still limit confirmation of A’s release and stable placement, so the supported claims concern label order and object identity; 1.00 is not independent certification of physical success. B retains its reference label of suboptimal despite its 0.00 score.</p>
+<details class="method-detail">
+<summary>Read both models’ original reasons</summary>
+<dl class="model-quotes">
+<div>
+<dt>Astra · A · 1.00</dt>
+<dd lang="en">The robot grasps the banana from the blue plate, carries it to the green plate, and opens its gripper. The final frame shows the banana resting on the green plate near its rim, with the carrot left behind.</dd>
+</div>
+<div>
+<dt>Astra · B · 0.00</dt>
+<dd lang="en">The robot grasps and releases the orange object onto the green plate, not the banana. The yellow banana remains on the blue plate in the final frame, so the requested transfer is not completed.</dd>
+</div>
+<div>
+<dt>DeepSeek-V4.1-Flash · A · 0.50</dt>
+<dd lang="en">The robot correctly picks the banana (not the carrot) from the blue plate and moves it toward the green plate. However, the final frame shows the banana still held/at the green plate edge rather than clearly released and resting on the green plate; placement is incomplete.</dd>
+</div>
+<div>
+<dt>DeepSeek-V4.1-Flash · B · 1.00</dt>
+<dd lang="en">The robot grasps the banana from the blue plate, lifts it, and releases it onto the green plate; the final frame shows the banana resting on the green plate.</dd>
+</div>
+</dl>
+</details>
+</div>
+<!-- /positive-case -->
 <h5 class="case-title">Understanding the errors</h5>
 <p>Ranking loses credit in two ways: different incomplete behaviors can be ordered opposite to the reference, and trajectories with different reference quality can receive the same high score. Astra can identify problems in an execution while still struggling to distinguish the relative quality of different incomplete behaviors.</p>
 <h5 class="case-title" id="banana-case">Case Study: moving the wrong object and tilting the plate</h5>
@@ -331,7 +475,7 @@
 <p class="case-replay-note" id="banana-case-note">Each replay shows the eight input images actually seen by the model, played at one frame per second. This is a sampled-frame replay, not continuous video at its original speed. The poster is the last input image.</p>
 <div class="table-scroll" role="region" tabindex="0">
 <table class="case-table">
-<caption>Table 3. Independent scores for executions of the same task</caption>
+<caption>Table 5. Independent scores for executions of the same task</caption>
 <thead>
 <tr>
 <th scope="col">Trajectory</th>
@@ -411,6 +555,79 @@
 <span class="zoom-label" aria-hidden="true">Enlarge ↗</span>
 </figcaption>
 </figure>
+<p>Two correctly selected pairs precede the existing error analyses. Inputs and display order were checked record by record; see the <a href="#positive-case-protocol">comparison scope</a> for configuration differences and selection limits. A/B below retain the actual evaluation order; preferences are not inferred from independent scores.</p>
+<div class="positive-case" data-positive-case="preference-button">
+<h5 class="case-title" id="preference-button-case">Case Study: button activation matters more than lingering contact</h5>
+<p>For this SO101 button-press pair, the actual input order is <strong>A: suboptimal; B: successful; reference preference: B</strong>. Astra actually chooses B and DeepSeek actually chooses A. These are the recorded choices from comparing both videos in one request.</p>
+<div class="case-video-grid case-replay-grid" role="group" aria-labelledby="preference-button-case" aria-describedby="preference-button-note">
+<figure>
+<video controls playsinline preload="none" poster="assets/case-studies/preference-button-a.jpg" aria-label="A · Press the button · Reference label: suboptimal · Reference and Astra choose B; DeepSeek chooses A" aria-describedby="preference-button-a-caption">
+<source src="assets/case-studies/preference-button-a.mp4" type="video/mp4">Your browser does not support video playback.<a href="assets/case-studies/preference-button-a.mp4">Open the input-frame replay</a>
+</video>
+<figcaption id="preference-button-a-caption">
+<strong>A · Press the button</strong>Reference label: suboptimal · Reference and Astra choose B; DeepSeek chooses A</figcaption>
+</figure>
+<figure>
+<video controls playsinline preload="none" poster="assets/case-studies/preference-button-b.jpg" aria-label="B · Press the button · Reference label: success · Reference and Astra choose B; DeepSeek chooses A" aria-describedby="preference-button-b-caption">
+<source src="assets/case-studies/preference-button-b.mp4" type="video/mp4">Your browser does not support video playback.<a href="assets/case-studies/preference-button-b.mp4">Open the input-frame replay</a>
+</video>
+<figcaption id="preference-button-b-caption">
+<strong>B · Press the button</strong>Reference label: success · Reference and Astra choose B; DeepSeek chooses A</figcaption>
+</figure>
+</div>
+<p class="case-replay-note" id="preference-button-note">Each replay shows the same eight images actually supplied to both models, sampled at stored positions 0 / 4 / 9 / 13 / 18 / 22 / 27 / 31 from 32 saved frames, at one image per second. The poster is the last input image. This is not continuous video at its original speed; stored positions are not seconds.</p>
+<p>B’s input frames show the button lighting up after the gripper presses it, followed by retraction. A stays near the button without equally clear activation evidence. Astra selects B based on that state change. DeepSeek instead emphasizes A’s contact in the final frame and B’s retraction, choosing the opposite execution. Here, evidence of the resulting state supports the correct preference; this does not establish reliability on all button-press tasks.</p>
+<details class="method-detail">
+<summary>Read both models’ original reasons</summary>
+<dl class="model-quotes">
+<div>
+<dt>Astra · Actual choice B</dt>
+<dd lang="en">B lowers its gripper onto the button, which visibly lights up, then retracts. A approaches the button but shows no clear depression or activation.</dd>
+</div>
+<div>
+<dt>DeepSeek-V4.1-Flash · Actual choice A</dt>
+<dd lang="en">In A, the gripper descends onto the button and remains in contact with it at the final frame, indicating a press. In B, the gripper approaches the button but then retracts, leaving the button without clear sustained contact/pressing at the end.</dd>
+</div>
+</dl>
+</details>
+</div>
+<!-- /positive-case -->
+<div class="positive-case" data-positive-case="preference-red-bin">
+<h5 class="case-title" id="preference-red-bin-case">Case Study: opening a lid is not the same as leaving it open</h5>
+<p>For this Koch red-bin pair, the actual input order is <strong>A: failed; B: successful; reference preference: B</strong>. Astra selects B, matching the reference; DeepSeek selects A, disagreeing with it.</p>
+<div class="case-video-grid case-replay-grid" role="group" aria-labelledby="preference-red-bin-case" aria-describedby="preference-red-bin-note">
+<figure>
+<video controls playsinline preload="none" poster="assets/case-studies/preference-red-bin-a.jpg" aria-label="A · Open the red trash bin · Reference label: failure · Reference and Astra choose B; DeepSeek chooses A" aria-describedby="preference-red-bin-a-caption">
+<source src="assets/case-studies/preference-red-bin-a.mp4" type="video/mp4">Your browser does not support video playback.<a href="assets/case-studies/preference-red-bin-a.mp4">Open the input-frame replay</a>
+</video>
+<figcaption id="preference-red-bin-a-caption">
+<strong>A · Open the red trash bin</strong>Reference label: failure · Reference and Astra choose B; DeepSeek chooses A</figcaption>
+</figure>
+<figure>
+<video controls playsinline preload="none" poster="assets/case-studies/preference-red-bin-b.jpg" aria-label="B · Open the red trash bin · Reference label: success · Reference and Astra choose B; DeepSeek chooses A" aria-describedby="preference-red-bin-b-caption">
+<source src="assets/case-studies/preference-red-bin-b.mp4" type="video/mp4">Your browser does not support video playback.<a href="assets/case-studies/preference-red-bin-b.mp4">Open the input-frame replay</a>
+</video>
+<figcaption id="preference-red-bin-b-caption">
+<strong>B · Open the red trash bin</strong>Reference label: success · Reference and Astra choose B; DeepSeek chooses A</figcaption>
+</figure>
+</div>
+<p class="case-replay-note" id="preference-red-bin-note">Each replay shows the same eight images actually supplied to both models, sampled at stored positions 0 / 4 / 9 / 13 / 18 / 22 / 27 / 31 from 32 saved frames, at one image per second. The poster is the last input image. This is not continuous video at its original speed; stored positions are not seconds.</p>
+<p>Both inputs show the lid being lifted, but A changes from open in the penultimate sampled image to closed in the final image. B ends with the lid raised and the interior exposed. Astra explicitly notes A’s lid falling closed. DeepSeek instead describes A as remaining open and discounts B because its gripper remains near the opening. This correct judgment coexists with the green-bin error below: similar tasks can still yield judgments of different quality.</p>
+<details class="method-detail">
+<summary>Read both models’ original reasons</summary>
+<dl class="model-quotes">
+<div>
+<dt>Astra · Actual choice B</dt>
+<dd lang="en">Both executions lift the correct red bin&#x27;s lid, but A&#x27;s lid falls closed again in its final frame. B ends with the lid raised and the bin interior visibly exposed, achieving the requested open state.</dd>
+</div>
+<div>
+<dt>DeepSeek-V4.1-Flash · Actual choice A</dt>
+<dd lang="en">A&#x27;s right arm lifts the red bin lid and retracts, leaving the red bin visibly open; B reaches the red bin but its gripper remains at/in the opening at the final frame, so the release/open state is less complete.</dd>
+</div>
+</dl>
+</details>
+</div>
+<!-- /positive-case -->
 <p>When Astra selects an execution with lower reference quality, its explanation helps reveal the basis for that choice.</p>
 <h5 class="case-title">Understanding the errors</h5>
 <p>These cases show a gap between local visual cues and the assessment of overall execution quality. Astra can describe actions and object states, but these observations may not support a reliable preference. Sometimes its reason emphasizes a salient cue and weighs the evidence differently from the reference quality; in other cases, its interpretation of the task state may itself be mistaken.</p>
@@ -512,27 +729,387 @@
 <h3 id="context">2.2 Task progress estimation</h3>
 <p>Beyond comparing whole executions, we ask whether Astra can estimate how much of a task is complete from its description and observations available up to the current moment. VOC measures correlation between predicted progress and normalized time; a high correlation does not guarantee an accurate final completion judgment. On 105 successful trajectories, Astra achieves <strong>VOC of 93.6</strong>, indicating that it can track execution progress from successive observations.</p>
 <p>Astra’s progress scores can reflect changes in task state rather than simply increase with time.</p>
-<h4 class="case-title">Case Study: progress changes with the execution</h4>
-<p>For the same task of putting the blue cup in the sink, successful placement, a slipping cup, and moving the wrong object produce different score changes.</p>
-<div class="demo" aria-label="Three robot executions of the same task">
-<figure>
-<video controls playsinline muted preload="none" poster="assets/rbm/q0041-poster.jpg" src="assets/rbm/q0041-replay.mp4" aria-label="Successful cup-task trajectory">
+<h4 class="case-title" id="bluecup-case">Case Study: correctly distinguishing completion, slippage, and the wrong object</h4>
+<p>
+<strong>These positive cases show Astra recognizing task-relevant differences in state.</strong> For the same instruction to put the blue cup in the sink, it distinguishes successful placement, a slipping cup, and moving the wrong object, rather than treating all arm motion as progress.</p>
+<div class="progress-compare" data-progress-compare data-progress-indices="0,7,15,23,31" data-progress-values="0.00,0.10,0.20,0.60,1.00" data-progress-fps="4" data-progress-frames="32">
+    <figure class="progress-video">
+<video controls playsinline muted preload="none" poster="assets/rbm/q0041-poster.jpg" src="assets/rbm/q0041-replay.mp4" aria-label="Successfully placed in the sink" aria-describedby="cup-success-playback-note">
 </video>
 <figcaption>Figure 3. Successfully placed in the sink</figcaption>
 </figure>
-<figure>
-<video controls playsinline muted preload="none" poster="assets/rbm/q0039-poster.jpg" src="assets/rbm/q0039-replay.mp4" aria-label="Partially completed cup-task trajectory">
+    <div class="progress-chart">
+<p class="progress-chart-title">Astra predicted progress</p>
+<svg class="progress-svg" viewBox="0 0 440 270" role="img" aria-labelledby="cup-success-chart-title cup-success-chart-desc">
+<title id="cup-success-chart-title">Successfully placed in the sink · Astra predicted progress</title>
+<desc id="cup-success-chart-desc">Stored sample and progress: 0: 0.00；7: 0.10；15: 0.20；23: 0.60；31: 1.00. The initial zero is protocol-set; other points are model predictions. Lines are visual guides only.</desc>
+<text class="progress-axis-title" x="48" y="20">Predicted progress (0–1)</text>
+<line class="progress-grid" x1="48" x2="396" y1="210.00" y2="210.00"/>
+<text class="progress-tick" x="38" y="214.00" text-anchor="end">0</text>
+<line class="progress-grid" x1="48" x2="396" y1="170.00" y2="170.00"/>
+<text class="progress-tick" x="38" y="174.00" text-anchor="end">0.25</text>
+<line class="progress-grid" x1="48" x2="396" y1="130.00" y2="130.00"/>
+<text class="progress-tick" x="38" y="134.00" text-anchor="end">0.5</text>
+<line class="progress-grid" x1="48" x2="396" y1="90.00" y2="90.00"/>
+<text class="progress-tick" x="38" y="94.00" text-anchor="end">0.75</text>
+<line class="progress-grid" x1="48" x2="396" y1="50.00" y2="50.00"/>
+<text class="progress-tick" x="38" y="54.00" text-anchor="end">1</text>
+<line class="progress-baseline" x1="48" x2="396" y1="210" y2="210"/>
+<text class="progress-tick" x="48.00" y="231" text-anchor="middle">0</text>
+<text class="progress-tick" x="126.58" y="231" text-anchor="middle">7</text>
+<text class="progress-tick" x="216.39" y="231" text-anchor="middle">15</text>
+<text class="progress-tick" x="306.19" y="231" text-anchor="middle">23</text>
+<text class="progress-tick" x="396.00" y="231" text-anchor="middle">31</text>
+<text class="progress-axis-title" x="222" y="257" text-anchor="middle">Stored sample index (not seconds)</text>
+<polyline class="progress-line" points="48.00,210.00 126.58,194.00 216.39,178.00 306.19,114.00 396.00,50.00"/>
+<line class="progress-playhead" data-progress-cursor x1="48" x2="48" y1="39" y2="210"/>
+<g data-progress-point="0" class="progress-point is-active">
+<circle class="progress-halo" cx="48.00" cy="210.00" r="10"/>
+<circle class="progress-dot is-fixed" cx="48.00" cy="210.00" r="4.5"/>
+<text class="progress-value" x="48.00" y="197.00" text-anchor="middle">0.00</text>
+</g>
+<g data-progress-point="7" class="progress-point">
+<circle class="progress-halo" cx="126.58" cy="194.00" r="10"/>
+<circle class="progress-dot" cx="126.58" cy="194.00" r="4.5"/>
+<text class="progress-value" x="126.58" y="181.00" text-anchor="middle">0.10</text>
+</g>
+<g data-progress-point="15" class="progress-point">
+<circle class="progress-halo" cx="216.39" cy="178.00" r="10"/>
+<circle class="progress-dot" cx="216.39" cy="178.00" r="4.5"/>
+<text class="progress-value" x="216.39" y="165.00" text-anchor="middle">0.20</text>
+</g>
+<g data-progress-point="23" class="progress-point">
+<circle class="progress-halo" cx="306.19" cy="114.00" r="10"/>
+<circle class="progress-dot" cx="306.19" cy="114.00" r="4.5"/>
+<text class="progress-value" x="306.19" y="101.00" text-anchor="middle">0.60</text>
+</g>
+<g data-progress-point="31" class="progress-point">
+<circle class="progress-halo" cx="396.00" cy="50.00" r="10"/>
+<circle class="progress-dot" cx="396.00" cy="50.00" r="4.5"/>
+<text class="progress-value" x="396.00" y="37.00" text-anchor="middle">1.00</text>
+</g>
+</svg>
+<div class="progress-samples" role="group" aria-label="Seek to a sampled observation">
+<button type="button" data-progress-seek="0" aria-label="Seek to stored sample 0: Initial, progress 0.00" aria-pressed="true">
+<span>0 · 0.00</span>
+<small>Initial</small>
+</button>
+<button type="button" data-progress-seek="7" aria-label="Seek to stored sample 7: Approach cup, progress 0.10" aria-pressed="false">
+<span>7 · 0.10</span>
+<small>Approach cup</small>
+</button>
+<button type="button" data-progress-seek="15" aria-label="Seek to stored sample 15: Contact rim, progress 0.20" aria-pressed="false">
+<span>15 · 0.20</span>
+<small>Contact rim</small>
+</button>
+<button type="button" data-progress-seek="23" aria-label="Seek to stored sample 23: Lift to sink edge, progress 0.60" aria-pressed="false">
+<span>23 · 0.60</span>
+<small>Lift to sink edge</small>
+</button>
+<button type="button" data-progress-seek="31" aria-label="Seek to stored sample 31: Place and release, progress 1.00" aria-pressed="false">
+<span>31 · 1.00</span>
+<small>Place and release</small>
+</button>
+</div>
+<p class="progress-playback-status" data-progress-status>Replay frame 0 · Nearest sample 0 · Protocol initial value 0.00</p>
+<p class="progress-chart-note" id="cup-success-playback-note">Select a sample below to seek the video; the orange cursor follows replay. The hollow initial point is protocol-set, not predicted. Lines guide the eye; they do not add predictions or human annotations between samples.</p>
+</div>
+</div>
+<div class="progress-compare" data-progress-compare data-progress-indices="0,7,15,23,31" data-progress-values="0.00,0.08,0.22,0.55,0.40" data-progress-fps="4" data-progress-frames="32">
+    <figure class="progress-video">
+<video controls playsinline muted preload="none" poster="assets/rbm/q0039-poster.jpg" src="assets/rbm/q0039-replay.mp4" aria-label="Cup slips outside the sink" aria-describedby="cup-slip-playback-note">
 </video>
 <figcaption>Figure 4. Cup slips outside the sink</figcaption>
 </figure>
-<figure>
-<video controls playsinline muted preload="none" poster="assets/rbm/q0037-poster.jpg" src="assets/rbm/q0037-replay.mp4" aria-label="Wrong-object cup-task trajectory">
+    <div class="progress-chart">
+<p class="progress-chart-title">Astra predicted progress</p>
+<svg class="progress-svg" viewBox="0 0 440 270" role="img" aria-labelledby="cup-slip-chart-title cup-slip-chart-desc">
+<title id="cup-slip-chart-title">Cup slips outside the sink · Astra predicted progress</title>
+<desc id="cup-slip-chart-desc">Stored sample and progress: 0: 0.00；7: 0.08；15: 0.22；23: 0.55；31: 0.40. The initial zero is protocol-set; other points are model predictions. Lines are visual guides only.</desc>
+<text class="progress-axis-title" x="48" y="20">Predicted progress (0–1)</text>
+<line class="progress-grid" x1="48" x2="396" y1="210.00" y2="210.00"/>
+<text class="progress-tick" x="38" y="214.00" text-anchor="end">0</text>
+<line class="progress-grid" x1="48" x2="396" y1="170.00" y2="170.00"/>
+<text class="progress-tick" x="38" y="174.00" text-anchor="end">0.25</text>
+<line class="progress-grid" x1="48" x2="396" y1="130.00" y2="130.00"/>
+<text class="progress-tick" x="38" y="134.00" text-anchor="end">0.5</text>
+<line class="progress-grid" x1="48" x2="396" y1="90.00" y2="90.00"/>
+<text class="progress-tick" x="38" y="94.00" text-anchor="end">0.75</text>
+<line class="progress-grid" x1="48" x2="396" y1="50.00" y2="50.00"/>
+<text class="progress-tick" x="38" y="54.00" text-anchor="end">1</text>
+<line class="progress-baseline" x1="48" x2="396" y1="210" y2="210"/>
+<text class="progress-tick" x="48.00" y="231" text-anchor="middle">0</text>
+<text class="progress-tick" x="126.58" y="231" text-anchor="middle">7</text>
+<text class="progress-tick" x="216.39" y="231" text-anchor="middle">15</text>
+<text class="progress-tick" x="306.19" y="231" text-anchor="middle">23</text>
+<text class="progress-tick" x="396.00" y="231" text-anchor="middle">31</text>
+<text class="progress-axis-title" x="222" y="257" text-anchor="middle">Stored sample index (not seconds)</text>
+<polyline class="progress-line" points="48.00,210.00 126.58,197.20 216.39,174.80 306.19,122.00 396.00,146.00"/>
+<line class="progress-playhead" data-progress-cursor x1="48" x2="48" y1="39" y2="210"/>
+<g data-progress-point="0" class="progress-point is-active">
+<circle class="progress-halo" cx="48.00" cy="210.00" r="10"/>
+<circle class="progress-dot is-fixed" cx="48.00" cy="210.00" r="4.5"/>
+<text class="progress-value" x="48.00" y="197.00" text-anchor="middle">0.00</text>
+</g>
+<g data-progress-point="7" class="progress-point">
+<circle class="progress-halo" cx="126.58" cy="197.20" r="10"/>
+<circle class="progress-dot" cx="126.58" cy="197.20" r="4.5"/>
+<text class="progress-value" x="126.58" y="184.20" text-anchor="middle">0.08</text>
+</g>
+<g data-progress-point="15" class="progress-point">
+<circle class="progress-halo" cx="216.39" cy="174.80" r="10"/>
+<circle class="progress-dot" cx="216.39" cy="174.80" r="4.5"/>
+<text class="progress-value" x="216.39" y="161.80" text-anchor="middle">0.22</text>
+</g>
+<g data-progress-point="23" class="progress-point">
+<circle class="progress-halo" cx="306.19" cy="122.00" r="10"/>
+<circle class="progress-dot" cx="306.19" cy="122.00" r="4.5"/>
+<text class="progress-value" x="306.19" y="109.00" text-anchor="middle">0.55</text>
+</g>
+<g data-progress-point="31" class="progress-point">
+<circle class="progress-halo" cx="396.00" cy="146.00" r="10"/>
+<circle class="progress-dot" cx="396.00" cy="146.00" r="4.5"/>
+<text class="progress-value" x="396.00" y="133.00" text-anchor="middle">0.40</text>
+</g>
+</svg>
+<div class="progress-samples" role="group" aria-label="Seek to a sampled observation">
+<button type="button" data-progress-seek="0" aria-label="Seek to stored sample 0: Initial, progress 0.00" aria-pressed="true">
+<span>0 · 0.00</span>
+<small>Initial</small>
+</button>
+<button type="button" data-progress-seek="7" aria-label="Seek to stored sample 7: Approach, progress 0.08" aria-pressed="false">
+<span>7 · 0.08</span>
+<small>Approach</small>
+</button>
+<button type="button" data-progress-seek="15" aria-label="Seek to stored sample 15: Grasp position, progress 0.22" aria-pressed="false">
+<span>15 · 0.22</span>
+<small>Grasp position</small>
+</button>
+<button type="button" data-progress-seek="23" aria-label="Seek to stored sample 23: Move to sink edge, progress 0.55" aria-pressed="false">
+<span>23 · 0.55</span>
+<small>Move to sink edge</small>
+</button>
+<button type="button" data-progress-seek="31" aria-label="Seek to stored sample 31: Slip outside sink, progress 0.40" aria-pressed="false">
+<span>31 · 0.40</span>
+<small>Slip outside sink</small>
+</button>
+</div>
+<p class="progress-playback-status" data-progress-status>Replay frame 0 · Nearest sample 0 · Protocol initial value 0.00</p>
+<p class="progress-chart-note" id="cup-slip-playback-note">Select a sample below to seek the video; the orange cursor follows replay. The hollow initial point is protocol-set, not predicted. Lines guide the eye; they do not add predictions or human annotations between samples.</p>
+</div>
+</div>
+<div class="progress-compare" data-progress-compare data-progress-indices="0,7,15,23,31" data-progress-values="0.00,0.05,0.05,0.00,0.00" data-progress-fps="4" data-progress-frames="32">
+    <figure class="progress-video">
+<video controls playsinline muted preload="none" poster="assets/rbm/q0037-poster.jpg" src="assets/rbm/q0037-replay.mp4" aria-label="The wrong object is moved" aria-describedby="wrong-object-playback-note">
 </video>
 <figcaption>Figure 5. The wrong object is moved</figcaption>
 </figure>
+    <div class="progress-chart">
+<p class="progress-chart-title">Astra predicted progress</p>
+<svg class="progress-svg" viewBox="0 0 440 270" role="img" aria-labelledby="wrong-object-chart-title wrong-object-chart-desc">
+<title id="wrong-object-chart-title">The wrong object is moved · Astra predicted progress</title>
+<desc id="wrong-object-chart-desc">Stored sample and progress: 0: 0.00；7: 0.05；15: 0.05；23: 0.00；31: 0.00. The initial zero is protocol-set; other points are model predictions. Lines are visual guides only.</desc>
+<text class="progress-axis-title" x="48" y="20">Predicted progress (0–1)</text>
+<line class="progress-grid" x1="48" x2="396" y1="210.00" y2="210.00"/>
+<text class="progress-tick" x="38" y="214.00" text-anchor="end">0</text>
+<line class="progress-grid" x1="48" x2="396" y1="170.00" y2="170.00"/>
+<text class="progress-tick" x="38" y="174.00" text-anchor="end">0.25</text>
+<line class="progress-grid" x1="48" x2="396" y1="130.00" y2="130.00"/>
+<text class="progress-tick" x="38" y="134.00" text-anchor="end">0.5</text>
+<line class="progress-grid" x1="48" x2="396" y1="90.00" y2="90.00"/>
+<text class="progress-tick" x="38" y="94.00" text-anchor="end">0.75</text>
+<line class="progress-grid" x1="48" x2="396" y1="50.00" y2="50.00"/>
+<text class="progress-tick" x="38" y="54.00" text-anchor="end">1</text>
+<line class="progress-baseline" x1="48" x2="396" y1="210" y2="210"/>
+<text class="progress-tick" x="48.00" y="231" text-anchor="middle">0</text>
+<text class="progress-tick" x="126.58" y="231" text-anchor="middle">7</text>
+<text class="progress-tick" x="216.39" y="231" text-anchor="middle">15</text>
+<text class="progress-tick" x="306.19" y="231" text-anchor="middle">23</text>
+<text class="progress-tick" x="396.00" y="231" text-anchor="middle">31</text>
+<text class="progress-axis-title" x="222" y="257" text-anchor="middle">Stored sample index (not seconds)</text>
+<polyline class="progress-line" points="48.00,210.00 126.58,202.00 216.39,202.00 306.19,210.00 396.00,210.00"/>
+<line class="progress-playhead" data-progress-cursor x1="48" x2="48" y1="39" y2="210"/>
+<g data-progress-point="0" class="progress-point is-active">
+<circle class="progress-halo" cx="48.00" cy="210.00" r="10"/>
+<circle class="progress-dot is-fixed" cx="48.00" cy="210.00" r="4.5"/>
+<text class="progress-value" x="48.00" y="197.00" text-anchor="middle">0.00</text>
+</g>
+<g data-progress-point="7" class="progress-point">
+<circle class="progress-halo" cx="126.58" cy="202.00" r="10"/>
+<circle class="progress-dot" cx="126.58" cy="202.00" r="4.5"/>
+<text class="progress-value" x="126.58" y="189.00" text-anchor="middle">0.05</text>
+</g>
+<g data-progress-point="15" class="progress-point">
+<circle class="progress-halo" cx="216.39" cy="202.00" r="10"/>
+<circle class="progress-dot" cx="216.39" cy="202.00" r="4.5"/>
+<text class="progress-value" x="216.39" y="189.00" text-anchor="middle">0.05</text>
+</g>
+<g data-progress-point="23" class="progress-point">
+<circle class="progress-halo" cx="306.19" cy="210.00" r="10"/>
+<circle class="progress-dot" cx="306.19" cy="210.00" r="4.5"/>
+<text class="progress-value" x="306.19" y="197.00" text-anchor="middle">0.00</text>
+</g>
+<g data-progress-point="31" class="progress-point">
+<circle class="progress-halo" cx="396.00" cy="210.00" r="10"/>
+<circle class="progress-dot" cx="396.00" cy="210.00" r="4.5"/>
+<text class="progress-value" x="396.00" y="197.00" text-anchor="middle">0.00</text>
+</g>
+</svg>
+<div class="progress-samples" role="group" aria-label="Seek to a sampled observation">
+<button type="button" data-progress-seek="0" aria-label="Seek to stored sample 0: Initial, progress 0.00" aria-pressed="true">
+<span>0 · 0.00</span>
+<small>Initial</small>
+</button>
+<button type="button" data-progress-seek="7" aria-label="Seek to stored sample 7: Approach workspace, progress 0.05" aria-pressed="false">
+<span>7 · 0.05</span>
+<small>Approach workspace</small>
+</button>
+<button type="button" data-progress-seek="15" aria-label="Seek to stored sample 15: Blue cup unmoved, progress 0.05" aria-pressed="false">
+<span>15 · 0.05</span>
+<small>Blue cup unmoved</small>
+</button>
+<button type="button" data-progress-seek="23" aria-label="Seek to stored sample 23: Lift wrong object, progress 0.00" aria-pressed="false">
+<span>23 · 0.00</span>
+<small>Lift wrong object</small>
+</button>
+<button type="button" data-progress-seek="31" aria-label="Seek to stored sample 31: Blue cup still unmoved, progress 0.00" aria-pressed="false">
+<span>31 · 0.00</span>
+<small>Blue cup still unmoved</small>
+</button>
+</div>
+<p class="progress-playback-status" data-progress-status>Replay frame 0 · Nearest sample 0 · Protocol initial value 0.00</p>
+<p class="progress-chart-note" id="wrong-object-playback-note">Select a sample below to seek the video; the orange cursor follows replay. The hollow initial point is protocol-set, not predicted. Lines guide the eye; they do not add predictions or human annotations between samples.</p>
+</div>
 </div>
 <p class="fine">These videos replay sampled frames, not continuous video at its original speed. During evaluation, the model sees only sampled observations available up to each moment.</p>
 <p>In the successful execution, Astra gives 0.60 while the blue cup is still suspended outside the sink, then raises it to 1.00 after placement and release. In the slipping execution, the score is 0.55 near the sink and falls to 0.40 after the cup slips outside. When the wrong object is moved, the blue cup never moves and the final progress returns to 0.00. These rises and falls correspond to progress toward or setbacks from the task goal, rather than time passing alone.</p>
+<details class="method-detail">
+<summary>Read the three original final-step responses</summary>
+<dl class="model-quotes">
+<div>
+<dt>Successful placement · 1.00</dt>
+<dd lang="en">The blue cup is now upright inside the sink basin, and the gripper has withdrawn above it. The instructed placement is complete.</dd>
+</div>
+<div>
+<dt>Slippage outside the sink · 0.40</dt>
+<dd lang="en">The cup has moved next to the sink but appears to have slipped from the gripper and is tilted outside the basin. It is closer to the destination, but must be grasped again and placed inside.</dd>
+</div>
+<div>
+<dt>Wrong object · 0.00</dt>
+<dd lang="en">The robot has moved the pale object into the sink, not the blue cup. The blue cup remains unmoved at its initial position on the counter.</dd>
+</div>
+</dl>
+</details>
+<h4 class="case-title" id="banana-retry-case">Case Study: recognizing a setback, a retry, and completion</h4>
+<p>The task is to move the banana from the blue plate to the green plate. Its public quality label is successful. After the first approach, the banana remains on the blue plate and the arm withdraws, so Astra reduces progress from 0.15 to 0.00. It returns to 0.15 on the renewed approach and reaches 1.00 only at the final sampled observation, when the banana rests on the green plate and the gripper has moved away. <strong>The model distinguishes the temporary setback from the eventual outcome, without treating a renewed approach as completion.</strong>
+</p>
+<div class="progress-compare" data-progress-compare data-progress-indices="0,7,15,23,31" data-progress-values="0.00,0.15,0.00,0.15,1.00" data-progress-fps="4" data-progress-frames="32">
+    <figure class="progress-video">
+<video controls playsinline muted preload="none" poster="assets/rbm/t011-poster.jpg" src="assets/rbm/t011-replay.mp4" aria-label="Successful retry after a setback" aria-describedby="banana-retry-playback-note">
+</video>
+<figcaption id="banana-retry-caption">MIT Franka · Banana transfer · Public label: successful. Replay of 32 stored frames at 4 fps, not the original execution timing; each prediction uses only observations available up to that point.</figcaption>
+</figure>
+    <div class="progress-chart">
+<p class="progress-chart-title">Astra predicted progress</p>
+<svg class="progress-svg" viewBox="0 0 440 270" role="img" aria-labelledby="banana-retry-chart-title banana-retry-chart-desc">
+<title id="banana-retry-chart-title">Successful retry after a setback · Astra predicted progress</title>
+<desc id="banana-retry-chart-desc">Stored sample and progress: 0: 0.00；7: 0.15；15: 0.00；23: 0.15；31: 1.00. The initial zero is protocol-set; other points are model predictions. Lines are visual guides only.</desc>
+<text class="progress-axis-title" x="48" y="20">Predicted progress (0–1)</text>
+<line class="progress-grid" x1="48" x2="396" y1="210.00" y2="210.00"/>
+<text class="progress-tick" x="38" y="214.00" text-anchor="end">0</text>
+<line class="progress-grid" x1="48" x2="396" y1="170.00" y2="170.00"/>
+<text class="progress-tick" x="38" y="174.00" text-anchor="end">0.25</text>
+<line class="progress-grid" x1="48" x2="396" y1="130.00" y2="130.00"/>
+<text class="progress-tick" x="38" y="134.00" text-anchor="end">0.5</text>
+<line class="progress-grid" x1="48" x2="396" y1="90.00" y2="90.00"/>
+<text class="progress-tick" x="38" y="94.00" text-anchor="end">0.75</text>
+<line class="progress-grid" x1="48" x2="396" y1="50.00" y2="50.00"/>
+<text class="progress-tick" x="38" y="54.00" text-anchor="end">1</text>
+<line class="progress-baseline" x1="48" x2="396" y1="210" y2="210"/>
+<text class="progress-tick" x="48.00" y="231" text-anchor="middle">0</text>
+<text class="progress-tick" x="126.58" y="231" text-anchor="middle">7</text>
+<text class="progress-tick" x="216.39" y="231" text-anchor="middle">15</text>
+<text class="progress-tick" x="306.19" y="231" text-anchor="middle">23</text>
+<text class="progress-tick" x="396.00" y="231" text-anchor="middle">31</text>
+<text class="progress-axis-title" x="222" y="257" text-anchor="middle">Stored sample index (not seconds)</text>
+<polyline class="progress-line" points="48.00,210.00 126.58,186.00 216.39,210.00 306.19,186.00 396.00,50.00"/>
+<line class="progress-playhead" data-progress-cursor x1="48" x2="48" y1="39" y2="210"/>
+<g data-progress-point="0" class="progress-point is-active">
+<circle class="progress-halo" cx="48.00" cy="210.00" r="10"/>
+<circle class="progress-dot is-fixed" cx="48.00" cy="210.00" r="4.5"/>
+<text class="progress-value" x="48.00" y="197.00" text-anchor="middle">0.00</text>
+</g>
+<g data-progress-point="7" class="progress-point">
+<circle class="progress-halo" cx="126.58" cy="186.00" r="10"/>
+<circle class="progress-dot" cx="126.58" cy="186.00" r="4.5"/>
+<text class="progress-value" x="126.58" y="173.00" text-anchor="middle">0.15</text>
+</g>
+<g data-progress-point="15" class="progress-point">
+<circle class="progress-halo" cx="216.39" cy="210.00" r="10"/>
+<circle class="progress-dot" cx="216.39" cy="210.00" r="4.5"/>
+<text class="progress-value" x="216.39" y="197.00" text-anchor="middle">0.00</text>
+</g>
+<g data-progress-point="23" class="progress-point">
+<circle class="progress-halo" cx="306.19" cy="186.00" r="10"/>
+<circle class="progress-dot" cx="306.19" cy="186.00" r="4.5"/>
+<text class="progress-value" x="306.19" y="173.00" text-anchor="middle">0.15</text>
+</g>
+<g data-progress-point="31" class="progress-point">
+<circle class="progress-halo" cx="396.00" cy="50.00" r="10"/>
+<circle class="progress-dot" cx="396.00" cy="50.00" r="4.5"/>
+<text class="progress-value" x="396.00" y="37.00" text-anchor="middle">1.00</text>
+</g>
+</svg>
+<div class="progress-samples" role="group" aria-label="Seek to a sampled observation">
+<button type="button" data-progress-seek="0" aria-label="Seek to stored sample 0: Initial, progress 0.00" aria-pressed="true">
+<span>0 · 0.00</span>
+<small>Initial</small>
+</button>
+<button type="button" data-progress-seek="7" aria-label="Seek to stored sample 7: First approach, progress 0.15" aria-pressed="false">
+<span>7 · 0.15</span>
+<small>First approach</small>
+</button>
+<button type="button" data-progress-seek="15" aria-label="Seek to stored sample 15: Withdraw without pickup, progress 0.00" aria-pressed="false">
+<span>15 · 0.00</span>
+<small>Withdraw without pickup</small>
+</button>
+<button type="button" data-progress-seek="23" aria-label="Seek to stored sample 23: Approach again, progress 0.15" aria-pressed="false">
+<span>23 · 0.15</span>
+<small>Approach again</small>
+</button>
+<button type="button" data-progress-seek="31" aria-label="Seek to stored sample 31: Banana on green plate, progress 1.00" aria-pressed="false">
+<span>31 · 1.00</span>
+<small>Banana on green plate</small>
+</button>
+</div>
+<p class="progress-playback-status" data-progress-status>Replay frame 0 · Nearest sample 0 · Protocol initial value 0.00</p>
+<p class="progress-chart-note" id="banana-retry-playback-note">Select a sample below to seek the video; the orange cursor follows replay. The hollow initial point is protocol-set, not predicted. Lines guide the eye; they do not add predictions or human annotations between samples.</p>
+</div>
+</div>
+<p class="method-note">
+<strong>Stored sample indices 0 / 7 / 15 / 23 / 31:</strong> 0.00 → 0.15 → 0.00 → 0.15 → 1.00. The initial 0.00 is fixed by the protocol; the remaining four values are model predictions. Sample indices are not timestamps.</p>
+<details class="method-detail">
+<summary>Read the four original prediction rationales</summary>
+<dl class="model-quotes">
+<div>
+<dt>Stored sample 7 · Progress 0.15</dt>
+<dd lang="en">The gripper is positioned close above the banana, but the banana remains on the blue plate after the plate was disturbed. No secure pickup or transfer to the empty green plate is visible.</dd>
+</div>
+<div>
+<dt>Stored sample 15 · Progress 0.00</dt>
+<dd lang="en">The arm has withdrawn from the blue plate, losing the earlier close grasping position. The banana remains on the blue plate and the green plate is empty; no pickup or transfer has been achieved.</dd>
+</div>
+<div>
+<dt>Stored sample 23 · Progress 0.15</dt>
+<dd lang="en">The gripper has returned to the banana at the blue plate&#x27;s edge, providing a close pickup position. The banana is not visibly lifted clear of the plate, and the green plate remains empty.</dd>
+</div>
+<div>
+<dt>Stored sample 31 · Progress 1.00</dt>
+<dd lang="en">The banana is now resting on the green plate, and the gripper has lifted away. The banana is no longer on the blue plate, completing the requested transfer.</dd>
+</div>
+</dl>
+</details>
+<p class="fine">These positive cases are selected post hoc from saved evaluation records, with no new inference. Progress scores are neither human-annotated completion percentages nor independent-ranking or direct-preference results. No matched DeepSeek or Robometer predictions are available for these trajectories in the public materials, so the cases do not establish wins over those models.</p>
 <a class="inline-link" href="evidence.html#trajectories">Explore per-step predictions and original responses ↗</a>
 </section>
 <section id="progress-icl" class="result-topic" data-toc>
@@ -569,7 +1146,7 @@
 <p>The reference terminal label is success. The zero-shot response says the cap has separated from the bottle mouth and gives final progress of 1.00. With an example, the response instead says that the cap appears to remain seated with no clear removal, and final progress falls to 0.35. The table places final progress alongside time correlation (VOC) and error (MSE) for the complete score sequence to show how these assessments differ.</p>
 <div class="table-scroll" role="region" tabindex="0">
 <table class="case-table">
-<caption>Table 4. Two evaluation conditions for the same bottle-opening trajectory</caption>
+<caption>Table 6. Two evaluation conditions for the same bottle-opening trajectory</caption>
 <thead>
 <tr>
 <th scope="col">Condition</th>
@@ -657,7 +1234,7 @@
 <summary>Complete result values and sources</summary>
 <div class="table-scroll" role="region" aria-label="Full RBM results, retaining sources, versions, and context conditions." tabindex="0">
 <table>
-<caption>Table 5. Full RBM results, retaining sources, versions, and context conditions.</caption>
+<caption>Table 7. Full RBM results, retaining sources, versions, and context conditions.</caption>
 <thead>
 <tr>
 <th scope="col">Configuration</th>
@@ -915,7 +1492,7 @@
 <summary>Full results and distinct RoboFail adaptations</summary>
 <div class="table-scroll" role="region" aria-label="This study and published AHA records; exact question alignment is unverified." tabindex="0">
 <table>
-<caption>Table 6. This study and published AHA records; exact question alignment is unverified.</caption>
+<caption>Table 8. This study and published AHA records; exact question alignment is unverified.</caption>
 <thead>
 <tr>
 <th scope="col">Configuration</th>
@@ -1029,7 +1606,7 @@
 </sup> uses 100 Cosmos-curated examples. These supports differ from ours, and no Astra result is available on either. The literature records below remain separate from our 85.96% result.</p>
 <div class="table-scroll" role="region" aria-label="Guardian v4, Tables 1/2. +GF denotes training on GuardianFail-36k." tabindex="0">
 <table>
-<caption>Table 7. Guardian v4, Tables 1/2. +GF denotes training on GuardianFail-36k.</caption>
+<caption>Table 9. Guardian v4, Tables 1/2. +GF denotes training on GuardianFail-36k.</caption>
 <thead>
 <tr>
 <th scope="col">Configuration</th>
@@ -1088,7 +1665,7 @@
 </div>
 <div class="table-scroll" role="region" aria-label="PRIMO, Table 3 / Appendix A.3." tabindex="0">
 <table>
-<caption>Table 8. PRIMO, Table 3 / Appendix A.3.</caption>
+<caption>Table 10. PRIMO, Table 3 / Appendix A.3.</caption>
 <thead>
 <tr>
 <th scope="col">Configuration</th>

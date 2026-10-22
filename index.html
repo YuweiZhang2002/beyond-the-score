@@ -308,7 +308,151 @@
 <figcaption>图 1. 零样本轨迹质量排序。上：本研究的三种通用多模态模型；下：两种专用模型的文献参照。Kendall τa 越高越好；文献评测的样本与输入协议未与本研究完全对齐。<span class="zoom-label" aria-hidden="true">放大 ↗</span>
 </figcaption>
 </figure>
-<p>以下以 Astra 的独立评分记录检查具体判断。总体排序较强，并不意味着每一种执行质量差异都能被正确识别。</p>
+<p>下面结合正向案例与失败分析，观察模型如何判断执行质量。</p>
+<details class="method-detail" id="positive-case-protocol">
+<summary>同案例对照的范围与限制</summary>
+<p>Astra 与 DeepSeek 的对照使用相同任务、轨迹和离线参考标签；模型接收相同的逐字提示和编码后的输入图像，不接收质量标签。偏好配对还核对实际 A/B 顺序。已从源帧重建这四组案例的 12 个请求哈希，并回查原始响应。排序是各轨迹独立打分，偏好是实际 A/B 选择，两者分开呈现。</p>
+<p>Astra 请求 gpt-6-astra-ca，返回 gpt-6-astra，推理等级 low，输出上限 512；DeepSeek 请求及这些回执返回 deepseek-v4.1-flash，等级 max，输出上限 32768。接口分别为 Responses 与 Chat Completions，计算预算未匹配；返回名称是服务端报告，未独立认证。未对同一偏好对交换 A/B 后复测，也没有这些案例的 Robometer 逐条对照，不能外推到它的个案表现。</p>
+<p>
+<a href="data/rbm-positive-cases.json" download>下载正例证据清单（源文件、记录位置、原文与输入哈希）</a>
+</p>
+</details>
+<div class="positive-case" data-positive-case="ranking-drawer">
+<h5 class="case-title" id="ranking-drawer-case">Case Study：区分抽屉关合与仍然敞开</h5>
+<p>xArm 的关抽屉任务中，A 的参考标签为成功，B 为失败。Astra 分别给出 <strong>1.00 和 0.00</strong>，正确区分了两条轨迹；DeepSeek 的对应分数为 <strong>0.20 和 0.30</strong>，顺序与参考相反。</p>
+<div class="table-scroll" role="region" tabindex="0">
+<table class="case-table">
+<caption>表 3. 同任务的独立评分；分数范围 0–1。A/B 仅用于本文区分轨迹，模型每次单独看一段。</caption>
+<thead>
+<tr>
+<th scope="col">轨迹 / 参考标签</th>
+<th scope="col">Astra</th>
+<th scope="col">DeepSeek-V4.1-Flash</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">A · 成功</th>
+<td>1.00</td>
+<td>0.20</td>
+</tr>
+<tr>
+<th scope="row">B · 失败</th>
+<td>0.00</td>
+<td>0.30</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="case-video-grid case-replay-grid" role="group" aria-labelledby="ranking-drawer-case" aria-describedby="ranking-drawer-note">
+<figure>
+<video controls playsinline preload="none" poster="assets/case-studies/ranking-drawer-a.jpg" aria-label="A · 关抽屉 · 参考标签：成功" aria-describedby="ranking-drawer-a-caption">
+<source src="assets/case-studies/ranking-drawer-a.mp4" type="video/mp4">浏览器不支持视频播放。<a href="assets/case-studies/ranking-drawer-a.mp4">打开输入帧回放</a>
+</video>
+<figcaption id="ranking-drawer-a-caption">
+<strong>A · 关抽屉</strong>参考标签：成功</figcaption>
+</figure>
+<figure>
+<video controls playsinline preload="none" poster="assets/case-studies/ranking-drawer-b.jpg" aria-label="B · 关抽屉 · 参考标签：失败" aria-describedby="ranking-drawer-b-caption">
+<source src="assets/case-studies/ranking-drawer-b.mp4" type="video/mp4">浏览器不支持视频播放。<a href="assets/case-studies/ranking-drawer-b.mp4">打开输入帧回放</a>
+</video>
+<figcaption id="ranking-drawer-b-caption">
+<strong>B · 关抽屉</strong>参考标签：失败</figcaption>
+</figure>
+</div>
+<p class="case-replay-note" id="ranking-drawer-note">每段展示两模型实际接收的同一组 8 张图像，来自 32 张已保存帧中的位置 0 / 4 / 9 / 13 / 18 / 22 / 27 / 31，按每秒 1 张回放。封面为最后一张输入图；不是连续原速视频，采样位置不是秒数。</p>
+<p>输入帧中，A 的抽屉前面板被推回，最后不再露出抽屉内部；B 最后仍明显敞开。Astra 的理由指出了这一最终状态差异。DeepSeek 对 A 的理由却称抽屉仍处于初始打开位置。这是此对轨迹上的排序差异，不是新增的 Kendall 统计。</p>
+<details class="method-detail">
+<summary>查看两模型的逐字理由</summary>
+<dl class="model-quotes">
+<div>
+<dt>Astra · A · 1.00</dt>
+<dd lang="en">The robot pushes the protruding drawer inward until its front is flush with the cabinet frame and the open top is no longer visible. The final frames show the drawer closed.</dd>
+</div>
+<div>
+<dt>Astra · B · 0.00</dt>
+<dd lang="en">The drawer remains extended with its open interior clearly visible in the final frames. The robot gripper enters the drawer, but no sustained closing motion or closed final state is shown.</dd>
+</div>
+<div>
+<dt>DeepSeek-V4.1-Flash · A · 0.20</dt>
+<dd lang="en">The robot arm approaches and may contact the drawer handle, but the drawer remains in its initial open position; no visible closing motion or flush final state is achieved.</dd>
+</div>
+<div>
+<dt>DeepSeek-V4.1-Flash · B · 0.30</dt>
+<dd lang="en">Drawer moves slightly toward closed after initial handle contact, but remains visibly open in the final frame; no complete closure achieved.</dd>
+</div>
+</dl>
+</details>
+</div>
+<!-- /positive-case -->
+<div class="positive-case" data-positive-case="ranking-banana">
+<h5 class="case-title" id="ranking-banana-case">Case Study：搬的是香蕉，还是橙色物体</h5>
+<p>MIT Franka 的任务要求把香蕉从蓝盘移到绿盘。A 的参考标签为成功，B 为次优；Astra 的独立分数是 <strong>A 1.00 > B 0.00</strong>，符合参考顺序。DeepSeek 给出 <strong>A 0.50 < B 1.00</strong>，形成反序。</p>
+<div class="table-scroll" role="region" tabindex="0">
+<table class="case-table">
+<caption>表 4. 同任务的独立评分；分数范围 0–1。A/B 仅用于本文区分轨迹，模型每次单独看一段。</caption>
+<thead>
+<tr>
+<th scope="col">轨迹 / 参考标签</th>
+<th scope="col">Astra</th>
+<th scope="col">DeepSeek-V4.1-Flash</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">A · 成功</th>
+<td>1.00</td>
+<td>0.50</td>
+</tr>
+<tr>
+<th scope="row">B · 次优</th>
+<td>0.00</td>
+<td>1.00</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="case-video-grid case-replay-grid" role="group" aria-labelledby="ranking-banana-case" aria-describedby="ranking-banana-note">
+<figure>
+<video controls playsinline preload="none" poster="assets/case-studies/ranking-banana-a.jpg" aria-label="A · 香蕉从蓝盘到绿盘 · 参考标签：成功" aria-describedby="ranking-banana-a-caption">
+<source src="assets/case-studies/ranking-banana-a.mp4" type="video/mp4">浏览器不支持视频播放。<a href="assets/case-studies/ranking-banana-a.mp4">打开输入帧回放</a>
+</video>
+<figcaption id="ranking-banana-a-caption">
+<strong>A · 香蕉从蓝盘到绿盘</strong>参考标签：成功</figcaption>
+</figure>
+<figure>
+<video controls playsinline preload="none" poster="assets/case-studies/ranking-banana-b.jpg" aria-label="B · 香蕉从蓝盘到绿盘 · 参考标签：次优" aria-describedby="ranking-banana-b-caption">
+<source src="assets/case-studies/ranking-banana-b.mp4" type="video/mp4">浏览器不支持视频播放。<a href="assets/case-studies/ranking-banana-b.mp4">打开输入帧回放</a>
+</video>
+<figcaption id="ranking-banana-b-caption">
+<strong>B · 香蕉从蓝盘到绿盘</strong>参考标签：次优</figcaption>
+</figure>
+</div>
+<p class="case-replay-note" id="ranking-banana-note">每段展示两模型实际接收的同一组 8 张图像，来自 32 张已保存帧中的位置 0 / 4 / 9 / 13 / 18 / 22 / 27 / 31，按每秒 1 张回放。封面为最后一张输入图；不是连续原速视频，采样位置不是秒数。</p>
+<p>A 的末帧显示香蕉已到绿盘边缘，B 搬到绿盘的则是橙色物体，香蕉仍留在蓝盘。Astra 的理由区分了目标物体；DeepSeek 对 B 的原文却说搬运的是香蕉。A 的释放与稳定放置细节在稀疏末帧中仍有限，因此这里确认的是标签顺序及物体区分，不把 1.00 当成独立的物理成功认证。B 的“次优”是数据标签，不因模型给 0.00 而改为“失败”。</p>
+<details class="method-detail">
+<summary>查看两模型的逐字理由</summary>
+<dl class="model-quotes">
+<div>
+<dt>Astra · A · 1.00</dt>
+<dd lang="en">The robot grasps the banana from the blue plate, carries it to the green plate, and opens its gripper. The final frame shows the banana resting on the green plate near its rim, with the carrot left behind.</dd>
+</div>
+<div>
+<dt>Astra · B · 0.00</dt>
+<dd lang="en">The robot grasps and releases the orange object onto the green plate, not the banana. The yellow banana remains on the blue plate in the final frame, so the requested transfer is not completed.</dd>
+</div>
+<div>
+<dt>DeepSeek-V4.1-Flash · A · 0.50</dt>
+<dd lang="en">The robot correctly picks the banana (not the carrot) from the blue plate and moves it toward the green plate. However, the final frame shows the banana still held/at the green plate edge rather than clearly released and resting on the green plate; placement is incomplete.</dd>
+</div>
+<div>
+<dt>DeepSeek-V4.1-Flash · B · 1.00</dt>
+<dd lang="en">The robot grasps the banana from the blue plate, lifts it, and releases it onto the green plate; the final frame shows the banana resting on the green plate.</dd>
+</div>
+</dl>
+</details>
+</div>
+<!-- /positive-case -->
 <h5 class="case-title">失败原因分析</h5>
 <p>排序会在两处失分：不同未完成行为的分数顺序与参考相反；参考等级不同的轨迹又可能被打成相同高分。Astra 虽然能指出执行中的问题，但对不同未完成行为的质量区分能力仍显不足。</p>
 <h5 class="case-title" id="banana-case">Case Study：搬错物体与抬盘失误</h5>
@@ -332,7 +476,7 @@
 <p class="case-replay-note" id="banana-case-note">每条回放展示模型实际看到的 8 张输入图像，按每秒 1 帧播放；这是采样帧回放，并非连续原速视频。封面为最后一张输入图像。</p>
 <div class="table-scroll" role="region" tabindex="0">
 <table class="case-table">
-<caption>表 3. 同一任务下的独立轨迹评分</caption>
+<caption>表 5. 同一任务下的独立轨迹评分</caption>
 <thead>
 <tr>
 <th scope="col">轨迹</th>
@@ -412,6 +556,79 @@
 <span class="zoom-label" aria-hidden="true">放大 ↗</span>
 </figcaption>
 </figure>
+<p>先看两组实际选择正确的配对，再保留原有失败分析。两模型的输入和顺序已逐条核验；配置差异及选例限制见<a href="#positive-case-protocol">同案例对照说明</a>。下文 A/B 均沿用评测时的真实显示顺序，不由独立分数推导偏好。</p>
+<div class="positive-case" data-positive-case="preference-button">
+<h5 class="case-title" id="preference-button-case">Case Study：按键亮起，比末帧停留更有说服力</h5>
+<p>SO101 的按按钮配对中，实际输入 <strong>A 为次优，B 为成功，参考偏好为 B</strong>。Astra 实际选择 B，DeepSeek 实际选择 A；这里使用的是同次比较两段视频的原始选择。</p>
+<div class="case-video-grid case-replay-grid" role="group" aria-labelledby="preference-button-case" aria-describedby="preference-button-note">
+<figure>
+<video controls playsinline preload="none" poster="assets/case-studies/preference-button-a.jpg" aria-label="A · 按按钮 · 参考标签：次优 · 参考与 Astra 选 B；DeepSeek 选 A" aria-describedby="preference-button-a-caption">
+<source src="assets/case-studies/preference-button-a.mp4" type="video/mp4">浏览器不支持视频播放。<a href="assets/case-studies/preference-button-a.mp4">打开输入帧回放</a>
+</video>
+<figcaption id="preference-button-a-caption">
+<strong>A · 按按钮</strong>参考标签：次优 · 参考与 Astra 选 B；DeepSeek 选 A</figcaption>
+</figure>
+<figure>
+<video controls playsinline preload="none" poster="assets/case-studies/preference-button-b.jpg" aria-label="B · 按按钮 · 参考标签：成功 · 参考与 Astra 选 B；DeepSeek 选 A" aria-describedby="preference-button-b-caption">
+<source src="assets/case-studies/preference-button-b.mp4" type="video/mp4">浏览器不支持视频播放。<a href="assets/case-studies/preference-button-b.mp4">打开输入帧回放</a>
+</video>
+<figcaption id="preference-button-b-caption">
+<strong>B · 按按钮</strong>参考标签：成功 · 参考与 Astra 选 B；DeepSeek 选 A</figcaption>
+</figure>
+</div>
+<p class="case-replay-note" id="preference-button-note">每段展示两模型实际接收的同一组 8 张图像，来自 32 张已保存帧中的位置 0 / 4 / 9 / 13 / 18 / 22 / 27 / 31，按每秒 1 张回放。封面为最后一张输入图；不是连续原速视频，采样位置不是秒数。</p>
+<p>B 的输入帧显示夹爪下压后按钮亮起，随后撤回；A 在按钮附近停留，但没有同样清晰的亮起证据。Astra 依据激活状态选择 B。DeepSeek 的理由更强调 A 在末帧仍接触按钮、B 已撤回，因此选择相反。此例中，动作后的状态证据支持了正确偏好；它不证明模型在所有按键任务中都可靠。</p>
+<details class="method-detail">
+<summary>查看两模型的逐字理由</summary>
+<dl class="model-quotes">
+<div>
+<dt>Astra · 实际选择 B</dt>
+<dd lang="en">B lowers its gripper onto the button, which visibly lights up, then retracts. A approaches the button but shows no clear depression or activation.</dd>
+</div>
+<div>
+<dt>DeepSeek-V4.1-Flash · 实际选择 A</dt>
+<dd lang="en">In A, the gripper descends onto the button and remains in contact with it at the final frame, indicating a press. In B, the gripper approaches the button but then retracts, leaving the button without clear sustained contact/pressing at the end.</dd>
+</div>
+</dl>
+</details>
+</div>
+<!-- /positive-case -->
+<div class="positive-case" data-positive-case="preference-red-bin">
+<h5 class="case-title" id="preference-red-bin-case">Case Study：打开过桶盖，不等于最后仍然打开</h5>
+<p>Koch 的打开红色垃圾桶配对中，实际输入 <strong>A 为失败，B 为成功，参考偏好为 B</strong>。Astra 选择 B，符合参考；DeepSeek 选择 A，与参考相反。</p>
+<div class="case-video-grid case-replay-grid" role="group" aria-labelledby="preference-red-bin-case" aria-describedby="preference-red-bin-note">
+<figure>
+<video controls playsinline preload="none" poster="assets/case-studies/preference-red-bin-a.jpg" aria-label="A · 打开红色垃圾桶 · 参考标签：失败 · 参考与 Astra 选 B；DeepSeek 选 A" aria-describedby="preference-red-bin-a-caption">
+<source src="assets/case-studies/preference-red-bin-a.mp4" type="video/mp4">浏览器不支持视频播放。<a href="assets/case-studies/preference-red-bin-a.mp4">打开输入帧回放</a>
+</video>
+<figcaption id="preference-red-bin-a-caption">
+<strong>A · 打开红色垃圾桶</strong>参考标签：失败 · 参考与 Astra 选 B；DeepSeek 选 A</figcaption>
+</figure>
+<figure>
+<video controls playsinline preload="none" poster="assets/case-studies/preference-red-bin-b.jpg" aria-label="B · 打开红色垃圾桶 · 参考标签：成功 · 参考与 Astra 选 B；DeepSeek 选 A" aria-describedby="preference-red-bin-b-caption">
+<source src="assets/case-studies/preference-red-bin-b.mp4" type="video/mp4">浏览器不支持视频播放。<a href="assets/case-studies/preference-red-bin-b.mp4">打开输入帧回放</a>
+</video>
+<figcaption id="preference-red-bin-b-caption">
+<strong>B · 打开红色垃圾桶</strong>参考标签：成功 · 参考与 Astra 选 B；DeepSeek 选 A</figcaption>
+</figure>
+</div>
+<p class="case-replay-note" id="preference-red-bin-note">每段展示两模型实际接收的同一组 8 张图像，来自 32 张已保存帧中的位置 0 / 4 / 9 / 13 / 18 / 22 / 27 / 31，按每秒 1 张回放。封面为最后一张输入图；不是连续原速视频，采样位置不是秒数。</p>
+<p>两段输入都出现抬盖动作，但 A 在倒数第二张采样图中打开后，最后一张又合上；B 的最后一张仍显示桶盖抬起和桶内开口。Astra 的原文明确指出 A 的回落。DeepSeek 则将 A 描述为最终保持打开，并因 B 的夹爪仍在开口附近而降低其评价。这个正确判断与后文绿桶误选并存，说明相似任务也可能得到不同质量的判断。</p>
+<details class="method-detail">
+<summary>查看两模型的逐字理由</summary>
+<dl class="model-quotes">
+<div>
+<dt>Astra · 实际选择 B</dt>
+<dd lang="en">Both executions lift the correct red bin&#x27;s lid, but A&#x27;s lid falls closed again in its final frame. B ends with the lid raised and the bin interior visibly exposed, achieving the requested open state.</dd>
+</div>
+<div>
+<dt>DeepSeek-V4.1-Flash · 实际选择 A</dt>
+<dd lang="en">A&#x27;s right arm lifts the red bin lid and retracts, leaving the red bin visibly open; B reaches the red bin but its gripper remains at/in the opening at the final frame, so the release/open state is less complete.</dd>
+</div>
+</dl>
+</details>
+</div>
+<!-- /positive-case -->
 <p>当 Astra 选中参考质量较差的执行时，它的理由能帮助我们看清这次选择依据了什么。</p>
 <h5 class="case-title">失败原因分析</h5>
 <p>这些案例反映出局部视觉线索与整体执行质量判断之间的偏差。Astra 能描述动作和物体状态，但这些观察未必足以支持可靠的择优判断：有时，它在理由中更强调某个显著线索，对不同证据的取舍与参考质量不一致；有时，对任务状态的解释本身也可能出现偏差。</p>
@@ -513,27 +730,387 @@
 <h3 id="context">2.2 任务进度估计</h3>
 <p>除了比较整段执行的质量，我们还考察 Astra 能否根据任务描述和截至当前时刻的画面，判断任务已经完成到哪一步。我们用 VOC 衡量预测进度与归一化时间的相关性，但较高的相关性并不意味着最终完成判断准确。在 105 条成功轨迹上，Astra 的 <strong>VOC 达到 93.6</strong>，表明 Astra 能够根据连续观测较好地跟踪任务的执行进程。</p>
 <p>Astra 的进度评分能够反映任务状态的变化，而非仅随时间递增。</p>
-<h4 class="case-title">Case Study：进度随执行变化</h4>
-<p>例如，同样是“把蓝杯放进水槽”，成功放置、杯子滑落和搬错物体对应了不同的分数变化。</p>
-<div class="demo" aria-label="同一任务下的三种机器人执行">
-<figure>
-<video controls playsinline muted preload="none" poster="assets/rbm/q0041-poster.jpg" src="assets/rbm/q0041-replay.mp4" aria-label="杯子任务的成功轨迹">
+<h4 class="case-title" id="bluecup-case">Case Study：正向案例，分清完成、滑落与搬错物体</h4>
+<p>
+<strong>这组正向案例展示 Astra 能识别任务相关的状态差异。</strong>同样是“把蓝杯放进水槽”，模型区分了成功放置、杯子滑落和搬错物体，而没有把所有机械臂运动都当作进度。</p>
+<div class="progress-compare" data-progress-compare data-progress-indices="0,7,15,23,31" data-progress-values="0.00,0.10,0.20,0.60,1.00" data-progress-fps="4" data-progress-frames="32">
+    <figure class="progress-video">
+<video controls playsinline muted preload="none" poster="assets/rbm/q0041-poster.jpg" src="assets/rbm/q0041-replay.mp4" aria-label="成功放入水槽" aria-describedby="cup-success-playback-note">
 </video>
 <figcaption>图 3. 成功放入水槽</figcaption>
 </figure>
-<figure>
-<video controls playsinline muted preload="none" poster="assets/rbm/q0039-poster.jpg" src="assets/rbm/q0039-replay.mp4" aria-label="杯子任务的部分完成轨迹">
+    <div class="progress-chart">
+<p class="progress-chart-title">Astra 预测进度</p>
+<svg class="progress-svg" viewBox="0 0 440 270" role="img" aria-labelledby="cup-success-chart-title cup-success-chart-desc">
+<title id="cup-success-chart-title">成功放入水槽 · Astra 预测进度</title>
+<desc id="cup-success-chart-desc">采样位置与进度：0: 0.00；7: 0.10；15: 0.20；23: 0.60；31: 1.00。起点由协议设为 0，其余为模型预测；连线仅辅助阅读。</desc>
+<text class="progress-axis-title" x="48" y="20">预测进度（0–1）</text>
+<line class="progress-grid" x1="48" x2="396" y1="210.00" y2="210.00"/>
+<text class="progress-tick" x="38" y="214.00" text-anchor="end">0</text>
+<line class="progress-grid" x1="48" x2="396" y1="170.00" y2="170.00"/>
+<text class="progress-tick" x="38" y="174.00" text-anchor="end">0.25</text>
+<line class="progress-grid" x1="48" x2="396" y1="130.00" y2="130.00"/>
+<text class="progress-tick" x="38" y="134.00" text-anchor="end">0.5</text>
+<line class="progress-grid" x1="48" x2="396" y1="90.00" y2="90.00"/>
+<text class="progress-tick" x="38" y="94.00" text-anchor="end">0.75</text>
+<line class="progress-grid" x1="48" x2="396" y1="50.00" y2="50.00"/>
+<text class="progress-tick" x="38" y="54.00" text-anchor="end">1</text>
+<line class="progress-baseline" x1="48" x2="396" y1="210" y2="210"/>
+<text class="progress-tick" x="48.00" y="231" text-anchor="middle">0</text>
+<text class="progress-tick" x="126.58" y="231" text-anchor="middle">7</text>
+<text class="progress-tick" x="216.39" y="231" text-anchor="middle">15</text>
+<text class="progress-tick" x="306.19" y="231" text-anchor="middle">23</text>
+<text class="progress-tick" x="396.00" y="231" text-anchor="middle">31</text>
+<text class="progress-axis-title" x="222" y="257" text-anchor="middle">已保存采样位置（非秒）</text>
+<polyline class="progress-line" points="48.00,210.00 126.58,194.00 216.39,178.00 306.19,114.00 396.00,50.00"/>
+<line class="progress-playhead" data-progress-cursor x1="48" x2="48" y1="39" y2="210"/>
+<g data-progress-point="0" class="progress-point is-active">
+<circle class="progress-halo" cx="48.00" cy="210.00" r="10"/>
+<circle class="progress-dot is-fixed" cx="48.00" cy="210.00" r="4.5"/>
+<text class="progress-value" x="48.00" y="197.00" text-anchor="middle">0.00</text>
+</g>
+<g data-progress-point="7" class="progress-point">
+<circle class="progress-halo" cx="126.58" cy="194.00" r="10"/>
+<circle class="progress-dot" cx="126.58" cy="194.00" r="4.5"/>
+<text class="progress-value" x="126.58" y="181.00" text-anchor="middle">0.10</text>
+</g>
+<g data-progress-point="15" class="progress-point">
+<circle class="progress-halo" cx="216.39" cy="178.00" r="10"/>
+<circle class="progress-dot" cx="216.39" cy="178.00" r="4.5"/>
+<text class="progress-value" x="216.39" y="165.00" text-anchor="middle">0.20</text>
+</g>
+<g data-progress-point="23" class="progress-point">
+<circle class="progress-halo" cx="306.19" cy="114.00" r="10"/>
+<circle class="progress-dot" cx="306.19" cy="114.00" r="4.5"/>
+<text class="progress-value" x="306.19" y="101.00" text-anchor="middle">0.60</text>
+</g>
+<g data-progress-point="31" class="progress-point">
+<circle class="progress-halo" cx="396.00" cy="50.00" r="10"/>
+<circle class="progress-dot" cx="396.00" cy="50.00" r="4.5"/>
+<text class="progress-value" x="396.00" y="37.00" text-anchor="middle">1.00</text>
+</g>
+</svg>
+<div class="progress-samples" role="group" aria-label="定位到对应采样画面">
+<button type="button" data-progress-seek="0" aria-label="定位到采样位置 0：初始，进度 0.00" aria-pressed="true">
+<span>0 · 0.00</span>
+<small>初始</small>
+</button>
+<button type="button" data-progress-seek="7" aria-label="定位到采样位置 7：接近蓝杯，进度 0.10" aria-pressed="false">
+<span>7 · 0.10</span>
+<small>接近蓝杯</small>
+</button>
+<button type="button" data-progress-seek="15" aria-label="定位到采样位置 15：接触杯沿，进度 0.20" aria-pressed="false">
+<span>15 · 0.20</span>
+<small>接触杯沿</small>
+</button>
+<button type="button" data-progress-seek="23" aria-label="定位到采样位置 23：举至槽外，进度 0.60" aria-pressed="false">
+<span>23 · 0.60</span>
+<small>举至槽外</small>
+</button>
+<button type="button" data-progress-seek="31" aria-label="定位到采样位置 31：放入并释放，进度 1.00" aria-pressed="false">
+<span>31 · 1.00</span>
+<small>放入并释放</small>
+</button>
+</div>
+<p class="progress-playback-status" data-progress-status>回放帧 0 · 最近采样位置 0 · 协议起点 0.00</p>
+<p class="progress-chart-note" id="cup-success-playback-note">点选下方采样点可定位视频；橙色竖线随回放移动。 空心起点为协议设定，非模型预测。连线仅辅助阅读，不代表中间帧有额外预测或人工标注。</p>
+</div>
+</div>
+<div class="progress-compare" data-progress-compare data-progress-indices="0,7,15,23,31" data-progress-values="0.00,0.08,0.22,0.55,0.40" data-progress-fps="4" data-progress-frames="32">
+    <figure class="progress-video">
+<video controls playsinline muted preload="none" poster="assets/rbm/q0039-poster.jpg" src="assets/rbm/q0039-replay.mp4" aria-label="杯子滑落在槽外" aria-describedby="cup-slip-playback-note">
 </video>
 <figcaption>图 4. 杯子滑落在槽外</figcaption>
 </figure>
-<figure>
-<video controls playsinline muted preload="none" poster="assets/rbm/q0037-poster.jpg" src="assets/rbm/q0037-replay.mp4" aria-label="杯子任务的对象错误轨迹">
+    <div class="progress-chart">
+<p class="progress-chart-title">Astra 预测进度</p>
+<svg class="progress-svg" viewBox="0 0 440 270" role="img" aria-labelledby="cup-slip-chart-title cup-slip-chart-desc">
+<title id="cup-slip-chart-title">杯子滑落在槽外 · Astra 预测进度</title>
+<desc id="cup-slip-chart-desc">采样位置与进度：0: 0.00；7: 0.08；15: 0.22；23: 0.55；31: 0.40。起点由协议设为 0，其余为模型预测；连线仅辅助阅读。</desc>
+<text class="progress-axis-title" x="48" y="20">预测进度（0–1）</text>
+<line class="progress-grid" x1="48" x2="396" y1="210.00" y2="210.00"/>
+<text class="progress-tick" x="38" y="214.00" text-anchor="end">0</text>
+<line class="progress-grid" x1="48" x2="396" y1="170.00" y2="170.00"/>
+<text class="progress-tick" x="38" y="174.00" text-anchor="end">0.25</text>
+<line class="progress-grid" x1="48" x2="396" y1="130.00" y2="130.00"/>
+<text class="progress-tick" x="38" y="134.00" text-anchor="end">0.5</text>
+<line class="progress-grid" x1="48" x2="396" y1="90.00" y2="90.00"/>
+<text class="progress-tick" x="38" y="94.00" text-anchor="end">0.75</text>
+<line class="progress-grid" x1="48" x2="396" y1="50.00" y2="50.00"/>
+<text class="progress-tick" x="38" y="54.00" text-anchor="end">1</text>
+<line class="progress-baseline" x1="48" x2="396" y1="210" y2="210"/>
+<text class="progress-tick" x="48.00" y="231" text-anchor="middle">0</text>
+<text class="progress-tick" x="126.58" y="231" text-anchor="middle">7</text>
+<text class="progress-tick" x="216.39" y="231" text-anchor="middle">15</text>
+<text class="progress-tick" x="306.19" y="231" text-anchor="middle">23</text>
+<text class="progress-tick" x="396.00" y="231" text-anchor="middle">31</text>
+<text class="progress-axis-title" x="222" y="257" text-anchor="middle">已保存采样位置（非秒）</text>
+<polyline class="progress-line" points="48.00,210.00 126.58,197.20 216.39,174.80 306.19,122.00 396.00,146.00"/>
+<line class="progress-playhead" data-progress-cursor x1="48" x2="48" y1="39" y2="210"/>
+<g data-progress-point="0" class="progress-point is-active">
+<circle class="progress-halo" cx="48.00" cy="210.00" r="10"/>
+<circle class="progress-dot is-fixed" cx="48.00" cy="210.00" r="4.5"/>
+<text class="progress-value" x="48.00" y="197.00" text-anchor="middle">0.00</text>
+</g>
+<g data-progress-point="7" class="progress-point">
+<circle class="progress-halo" cx="126.58" cy="197.20" r="10"/>
+<circle class="progress-dot" cx="126.58" cy="197.20" r="4.5"/>
+<text class="progress-value" x="126.58" y="184.20" text-anchor="middle">0.08</text>
+</g>
+<g data-progress-point="15" class="progress-point">
+<circle class="progress-halo" cx="216.39" cy="174.80" r="10"/>
+<circle class="progress-dot" cx="216.39" cy="174.80" r="4.5"/>
+<text class="progress-value" x="216.39" y="161.80" text-anchor="middle">0.22</text>
+</g>
+<g data-progress-point="23" class="progress-point">
+<circle class="progress-halo" cx="306.19" cy="122.00" r="10"/>
+<circle class="progress-dot" cx="306.19" cy="122.00" r="4.5"/>
+<text class="progress-value" x="306.19" y="109.00" text-anchor="middle">0.55</text>
+</g>
+<g data-progress-point="31" class="progress-point">
+<circle class="progress-halo" cx="396.00" cy="146.00" r="10"/>
+<circle class="progress-dot" cx="396.00" cy="146.00" r="4.5"/>
+<text class="progress-value" x="396.00" y="133.00" text-anchor="middle">0.40</text>
+</g>
+</svg>
+<div class="progress-samples" role="group" aria-label="定位到对应采样画面">
+<button type="button" data-progress-seek="0" aria-label="定位到采样位置 0：初始，进度 0.00" aria-pressed="true">
+<span>0 · 0.00</span>
+<small>初始</small>
+</button>
+<button type="button" data-progress-seek="7" aria-label="定位到采样位置 7：接近，进度 0.08" aria-pressed="false">
+<span>7 · 0.08</span>
+<small>接近</small>
+</button>
+<button type="button" data-progress-seek="15" aria-label="定位到采样位置 15：抓取定位，进度 0.22" aria-pressed="false">
+<span>15 · 0.22</span>
+<small>抓取定位</small>
+</button>
+<button type="button" data-progress-seek="23" aria-label="定位到采样位置 23：移至槽边，进度 0.55" aria-pressed="false">
+<span>23 · 0.55</span>
+<small>移至槽边</small>
+</button>
+<button type="button" data-progress-seek="31" aria-label="定位到采样位置 31：槽外滑落，进度 0.40" aria-pressed="false">
+<span>31 · 0.40</span>
+<small>槽外滑落</small>
+</button>
+</div>
+<p class="progress-playback-status" data-progress-status>回放帧 0 · 最近采样位置 0 · 协议起点 0.00</p>
+<p class="progress-chart-note" id="cup-slip-playback-note">点选下方采样点可定位视频；橙色竖线随回放移动。 空心起点为协议设定，非模型预测。连线仅辅助阅读，不代表中间帧有额外预测或人工标注。</p>
+</div>
+</div>
+<div class="progress-compare" data-progress-compare data-progress-indices="0,7,15,23,31" data-progress-values="0.00,0.05,0.05,0.00,0.00" data-progress-fps="4" data-progress-frames="32">
+    <figure class="progress-video">
+<video controls playsinline muted preload="none" poster="assets/rbm/q0037-poster.jpg" src="assets/rbm/q0037-replay.mp4" aria-label="搬动了错误物体" aria-describedby="wrong-object-playback-note">
 </video>
 <figcaption>图 5. 搬动了错误物体</figcaption>
 </figure>
+    <div class="progress-chart">
+<p class="progress-chart-title">Astra 预测进度</p>
+<svg class="progress-svg" viewBox="0 0 440 270" role="img" aria-labelledby="wrong-object-chart-title wrong-object-chart-desc">
+<title id="wrong-object-chart-title">搬动了错误物体 · Astra 预测进度</title>
+<desc id="wrong-object-chart-desc">采样位置与进度：0: 0.00；7: 0.05；15: 0.05；23: 0.00；31: 0.00。起点由协议设为 0，其余为模型预测；连线仅辅助阅读。</desc>
+<text class="progress-axis-title" x="48" y="20">预测进度（0–1）</text>
+<line class="progress-grid" x1="48" x2="396" y1="210.00" y2="210.00"/>
+<text class="progress-tick" x="38" y="214.00" text-anchor="end">0</text>
+<line class="progress-grid" x1="48" x2="396" y1="170.00" y2="170.00"/>
+<text class="progress-tick" x="38" y="174.00" text-anchor="end">0.25</text>
+<line class="progress-grid" x1="48" x2="396" y1="130.00" y2="130.00"/>
+<text class="progress-tick" x="38" y="134.00" text-anchor="end">0.5</text>
+<line class="progress-grid" x1="48" x2="396" y1="90.00" y2="90.00"/>
+<text class="progress-tick" x="38" y="94.00" text-anchor="end">0.75</text>
+<line class="progress-grid" x1="48" x2="396" y1="50.00" y2="50.00"/>
+<text class="progress-tick" x="38" y="54.00" text-anchor="end">1</text>
+<line class="progress-baseline" x1="48" x2="396" y1="210" y2="210"/>
+<text class="progress-tick" x="48.00" y="231" text-anchor="middle">0</text>
+<text class="progress-tick" x="126.58" y="231" text-anchor="middle">7</text>
+<text class="progress-tick" x="216.39" y="231" text-anchor="middle">15</text>
+<text class="progress-tick" x="306.19" y="231" text-anchor="middle">23</text>
+<text class="progress-tick" x="396.00" y="231" text-anchor="middle">31</text>
+<text class="progress-axis-title" x="222" y="257" text-anchor="middle">已保存采样位置（非秒）</text>
+<polyline class="progress-line" points="48.00,210.00 126.58,202.00 216.39,202.00 306.19,210.00 396.00,210.00"/>
+<line class="progress-playhead" data-progress-cursor x1="48" x2="48" y1="39" y2="210"/>
+<g data-progress-point="0" class="progress-point is-active">
+<circle class="progress-halo" cx="48.00" cy="210.00" r="10"/>
+<circle class="progress-dot is-fixed" cx="48.00" cy="210.00" r="4.5"/>
+<text class="progress-value" x="48.00" y="197.00" text-anchor="middle">0.00</text>
+</g>
+<g data-progress-point="7" class="progress-point">
+<circle class="progress-halo" cx="126.58" cy="202.00" r="10"/>
+<circle class="progress-dot" cx="126.58" cy="202.00" r="4.5"/>
+<text class="progress-value" x="126.58" y="189.00" text-anchor="middle">0.05</text>
+</g>
+<g data-progress-point="15" class="progress-point">
+<circle class="progress-halo" cx="216.39" cy="202.00" r="10"/>
+<circle class="progress-dot" cx="216.39" cy="202.00" r="4.5"/>
+<text class="progress-value" x="216.39" y="189.00" text-anchor="middle">0.05</text>
+</g>
+<g data-progress-point="23" class="progress-point">
+<circle class="progress-halo" cx="306.19" cy="210.00" r="10"/>
+<circle class="progress-dot" cx="306.19" cy="210.00" r="4.5"/>
+<text class="progress-value" x="306.19" y="197.00" text-anchor="middle">0.00</text>
+</g>
+<g data-progress-point="31" class="progress-point">
+<circle class="progress-halo" cx="396.00" cy="210.00" r="10"/>
+<circle class="progress-dot" cx="396.00" cy="210.00" r="4.5"/>
+<text class="progress-value" x="396.00" y="197.00" text-anchor="middle">0.00</text>
+</g>
+</svg>
+<div class="progress-samples" role="group" aria-label="定位到对应采样画面">
+<button type="button" data-progress-seek="0" aria-label="定位到采样位置 0：初始，进度 0.00" aria-pressed="true">
+<span>0 · 0.00</span>
+<small>初始</small>
+</button>
+<button type="button" data-progress-seek="7" aria-label="定位到采样位置 7：接近工作区，进度 0.05" aria-pressed="false">
+<span>7 · 0.05</span>
+<small>接近工作区</small>
+</button>
+<button type="button" data-progress-seek="15" aria-label="定位到采样位置 15：未移动蓝杯，进度 0.05" aria-pressed="false">
+<span>15 · 0.05</span>
+<small>未移动蓝杯</small>
+</button>
+<button type="button" data-progress-seek="23" aria-label="定位到采样位置 23：拿起错误物体，进度 0.00" aria-pressed="false">
+<span>23 · 0.00</span>
+<small>拿起错误物体</small>
+</button>
+<button type="button" data-progress-seek="31" aria-label="定位到采样位置 31：蓝杯仍未移动，进度 0.00" aria-pressed="false">
+<span>31 · 0.00</span>
+<small>蓝杯仍未移动</small>
+</button>
+</div>
+<p class="progress-playback-status" data-progress-status>回放帧 0 · 最近采样位置 0 · 协议起点 0.00</p>
+<p class="progress-chart-note" id="wrong-object-playback-note">点选下方采样点可定位视频；橙色竖线随回放移动。 空心起点为协议设定，非模型预测。连线仅辅助阅读，不代表中间帧有额外预测或人工标注。</p>
+</div>
 </div>
 <p class="fine">视频为采样帧回放，并非连续原速视频；评测时，模型只看到截至当时的采样观测。</p>
 <p>成功的一次执行中，Astra 在蓝杯仍悬于槽外时给出 0.60，放入并释放后升至 1.00；杯子滑落的一次，到达水槽附近时为 0.55，滑落在槽外后降至 0.40；搬错物体的一次，蓝杯始终没有移动，最终进度回到 0.00。这些升降对应了任务目标的推进或受挫，而非单纯的时间流逝。</p>
+<details class="method-detail">
+<summary>查看三次终点判断的模型原文</summary>
+<dl class="model-quotes">
+<div>
+<dt>成功放置 · 1.00</dt>
+<dd lang="en">The blue cup is now upright inside the sink basin, and the gripper has withdrawn above it. The instructed placement is complete.</dd>
+</div>
+<div>
+<dt>滑落在槽外 · 0.40</dt>
+<dd lang="en">The cup has moved next to the sink but appears to have slipped from the gripper and is tilted outside the basin. It is closer to the destination, but must be grasped again and placed inside.</dd>
+</div>
+<div>
+<dt>搬错物体 · 0.00</dt>
+<dd lang="en">The robot has moved the pale object into the sink, not the blue cup. The blue cup remains unmoved at its initial position on the counter.</dd>
+</div>
+</dl>
+</details>
+<h4 class="case-title" id="banana-retry-case">Case Study：正向案例，识别受挫后的重试与完成</h4>
+<p>任务是把香蕉从蓝盘移到绿盘。这条轨迹的公开质量标签为成功。第一次接近后，香蕉仍在蓝盘，手臂已经退回；Astra 的进度由 0.15 降回 0.00。再次接近时，分数回到 0.15；直到最后一次采样观测中香蕉位于绿盘、夹爪离开后，才升至 1.00。<strong>模型没有把暂时受挫误当成最终结果，也没有仅凭重新接近就宣告完成。</strong>
+</p>
+<div class="progress-compare" data-progress-compare data-progress-indices="0,7,15,23,31" data-progress-values="0.00,0.15,0.00,0.15,1.00" data-progress-fps="4" data-progress-frames="32">
+    <figure class="progress-video">
+<video controls playsinline muted preload="none" poster="assets/rbm/t011-poster.jpg" src="assets/rbm/t011-replay.mp4" aria-label="受挫后重试成功" aria-describedby="banana-retry-playback-note">
+</video>
+<figcaption id="banana-retry-caption">MIT Franka · 香蕉转移任务 · 公开标签：成功。32 张已保存图像按每秒 4 帧回放，不是原始执行时长；模型每次只依据截至当时的观测。</figcaption>
+</figure>
+    <div class="progress-chart">
+<p class="progress-chart-title">Astra 预测进度</p>
+<svg class="progress-svg" viewBox="0 0 440 270" role="img" aria-labelledby="banana-retry-chart-title banana-retry-chart-desc">
+<title id="banana-retry-chart-title">受挫后重试成功 · Astra 预测进度</title>
+<desc id="banana-retry-chart-desc">采样位置与进度：0: 0.00；7: 0.15；15: 0.00；23: 0.15；31: 1.00。起点由协议设为 0，其余为模型预测；连线仅辅助阅读。</desc>
+<text class="progress-axis-title" x="48" y="20">预测进度（0–1）</text>
+<line class="progress-grid" x1="48" x2="396" y1="210.00" y2="210.00"/>
+<text class="progress-tick" x="38" y="214.00" text-anchor="end">0</text>
+<line class="progress-grid" x1="48" x2="396" y1="170.00" y2="170.00"/>
+<text class="progress-tick" x="38" y="174.00" text-anchor="end">0.25</text>
+<line class="progress-grid" x1="48" x2="396" y1="130.00" y2="130.00"/>
+<text class="progress-tick" x="38" y="134.00" text-anchor="end">0.5</text>
+<line class="progress-grid" x1="48" x2="396" y1="90.00" y2="90.00"/>
+<text class="progress-tick" x="38" y="94.00" text-anchor="end">0.75</text>
+<line class="progress-grid" x1="48" x2="396" y1="50.00" y2="50.00"/>
+<text class="progress-tick" x="38" y="54.00" text-anchor="end">1</text>
+<line class="progress-baseline" x1="48" x2="396" y1="210" y2="210"/>
+<text class="progress-tick" x="48.00" y="231" text-anchor="middle">0</text>
+<text class="progress-tick" x="126.58" y="231" text-anchor="middle">7</text>
+<text class="progress-tick" x="216.39" y="231" text-anchor="middle">15</text>
+<text class="progress-tick" x="306.19" y="231" text-anchor="middle">23</text>
+<text class="progress-tick" x="396.00" y="231" text-anchor="middle">31</text>
+<text class="progress-axis-title" x="222" y="257" text-anchor="middle">已保存采样位置（非秒）</text>
+<polyline class="progress-line" points="48.00,210.00 126.58,186.00 216.39,210.00 306.19,186.00 396.00,50.00"/>
+<line class="progress-playhead" data-progress-cursor x1="48" x2="48" y1="39" y2="210"/>
+<g data-progress-point="0" class="progress-point is-active">
+<circle class="progress-halo" cx="48.00" cy="210.00" r="10"/>
+<circle class="progress-dot is-fixed" cx="48.00" cy="210.00" r="4.5"/>
+<text class="progress-value" x="48.00" y="197.00" text-anchor="middle">0.00</text>
+</g>
+<g data-progress-point="7" class="progress-point">
+<circle class="progress-halo" cx="126.58" cy="186.00" r="10"/>
+<circle class="progress-dot" cx="126.58" cy="186.00" r="4.5"/>
+<text class="progress-value" x="126.58" y="173.00" text-anchor="middle">0.15</text>
+</g>
+<g data-progress-point="15" class="progress-point">
+<circle class="progress-halo" cx="216.39" cy="210.00" r="10"/>
+<circle class="progress-dot" cx="216.39" cy="210.00" r="4.5"/>
+<text class="progress-value" x="216.39" y="197.00" text-anchor="middle">0.00</text>
+</g>
+<g data-progress-point="23" class="progress-point">
+<circle class="progress-halo" cx="306.19" cy="186.00" r="10"/>
+<circle class="progress-dot" cx="306.19" cy="186.00" r="4.5"/>
+<text class="progress-value" x="306.19" y="173.00" text-anchor="middle">0.15</text>
+</g>
+<g data-progress-point="31" class="progress-point">
+<circle class="progress-halo" cx="396.00" cy="50.00" r="10"/>
+<circle class="progress-dot" cx="396.00" cy="50.00" r="4.5"/>
+<text class="progress-value" x="396.00" y="37.00" text-anchor="middle">1.00</text>
+</g>
+</svg>
+<div class="progress-samples" role="group" aria-label="定位到对应采样画面">
+<button type="button" data-progress-seek="0" aria-label="定位到采样位置 0：初始，进度 0.00" aria-pressed="true">
+<span>0 · 0.00</span>
+<small>初始</small>
+</button>
+<button type="button" data-progress-seek="7" aria-label="定位到采样位置 7：首次接近，进度 0.15" aria-pressed="false">
+<span>7 · 0.15</span>
+<small>首次接近</small>
+</button>
+<button type="button" data-progress-seek="15" aria-label="定位到采样位置 15：退回且未取走，进度 0.00" aria-pressed="false">
+<span>15 · 0.00</span>
+<small>退回且未取走</small>
+</button>
+<button type="button" data-progress-seek="23" aria-label="定位到采样位置 23：再次接近，进度 0.15" aria-pressed="false">
+<span>23 · 0.15</span>
+<small>再次接近</small>
+</button>
+<button type="button" data-progress-seek="31" aria-label="定位到采样位置 31：香蕉放到绿盘，进度 1.00" aria-pressed="false">
+<span>31 · 1.00</span>
+<small>香蕉放到绿盘</small>
+</button>
+</div>
+<p class="progress-playback-status" data-progress-status>回放帧 0 · 最近采样位置 0 · 协议起点 0.00</p>
+<p class="progress-chart-note" id="banana-retry-playback-note">点选下方采样点可定位视频；橙色竖线随回放移动。 空心起点为协议设定，非模型预测。连线仅辅助阅读，不代表中间帧有额外预测或人工标注。</p>
+</div>
+</div>
+<p class="method-note">
+<strong>采样位置 0 / 7 / 15 / 23 / 31：</strong>0.00 → 0.15 → 0.00 → 0.15 → 1.00。起点 0.00 由协议设定，后四个值为模型预测；采样位置不是秒数。</p>
+<details class="method-detail">
+<summary>查看四次预测的模型原文</summary>
+<dl class="model-quotes">
+<div>
+<dt>采样位置 7 · 进度 0.15</dt>
+<dd lang="en">The gripper is positioned close above the banana, but the banana remains on the blue plate after the plate was disturbed. No secure pickup or transfer to the empty green plate is visible.</dd>
+</div>
+<div>
+<dt>采样位置 15 · 进度 0.00</dt>
+<dd lang="en">The arm has withdrawn from the blue plate, losing the earlier close grasping position. The banana remains on the blue plate and the green plate is empty; no pickup or transfer has been achieved.</dd>
+</div>
+<div>
+<dt>采样位置 23 · 进度 0.15</dt>
+<dd lang="en">The gripper has returned to the banana at the blue plate&#x27;s edge, providing a close pickup position. The banana is not visibly lifted clear of the plate, and the green plate remains empty.</dd>
+</div>
+<div>
+<dt>采样位置 31 · 进度 1.00</dt>
+<dd lang="en">The banana is now resting on the green plate, and the gripper has lifted away. The banana is no longer on the blue plate, completing the requested transfer.</dd>
+</div>
+</dl>
+</details>
+<p class="fine">以上为已有评测记录中的事后正向选例，不新增实验。进度分数不是人工标注的逐帧完成率，也不是独立排序或直接偏好结果。公开材料没有这些轨迹上 DeepSeek 或 Robometer 的对应预测，因此不能据此声称逐案例胜过它们。</p>
 <a class="inline-link" href="evidence.html#trajectories">查看逐时刻预测与模型原文 ↗</a>
 </section>
 <section id="progress-icl" class="result-topic" data-toc>
@@ -570,7 +1147,7 @@
 <p>这条轨迹的参考终态是成功。零样本回答认为瓶盖已与瓶口分离，最终进度为 1.00；加入示例后，回答改为瓶盖似乎仍在原位、没有明确取下，最终进度降至 0.35。下表将最终进度与整段评分的时间相关性（VOC）、误差（MSE）并列，展示这两种判断在不同指标上的差异。</p>
 <div class="table-scroll" role="region" tabindex="0">
 <table class="case-table">
-<caption>表 4. 同一开瓶轨迹的两个评测条件</caption>
+<caption>表 6. 同一开瓶轨迹的两个评测条件</caption>
 <thead>
 <tr>
 <th scope="col">条件</th>
@@ -658,7 +1235,7 @@
 <summary>完整结果数值与来源</summary>
 <div class="table-scroll" role="region" aria-label="完整 RBM 结果：保留不同来源、版本及示例条件。" tabindex="0">
 <table>
-<caption>表 5. 完整 RBM 结果：保留不同来源、版本及示例条件。</caption>
+<caption>表 7. 完整 RBM 结果：保留不同来源、版本及示例条件。</caption>
 <thead>
 <tr>
 <th scope="col">配置</th>
@@ -916,7 +1493,7 @@
 <summary>完整结果与不同 RoboFail 评测版本</summary>
 <div class="table-scroll" role="region" aria-label="本研究与 AHA 文献记录；精确问题集合对齐未验证。" tabindex="0">
 <table>
-<caption>表 6. 本研究与 AHA 文献记录；精确问题集合对齐未验证。</caption>
+<caption>表 8. 本研究与 AHA 文献记录；精确问题集合对齐未验证。</caption>
 <thead>
 <tr>
 <th scope="col">配置</th>
@@ -1030,7 +1607,7 @@
 </sup> 使用 Cosmos 筛选的 100 个样本。它们与本研究的评测范围不同，且没有 Astra 在这两套数据上的结果。下列文献记录分别列示，不与本研究的 85.96% 合并排名。</p>
 <div class="table-scroll" role="region" aria-label="Guardian v4，Tables 1/2。+GF 表示使用 GuardianFail-36k 训练。" tabindex="0">
 <table>
-<caption>表 7. Guardian v4，Tables 1/2。+GF 表示使用 GuardianFail-36k 训练。</caption>
+<caption>表 9. Guardian v4，Tables 1/2。+GF 表示使用 GuardianFail-36k 训练。</caption>
 <thead>
 <tr>
 <th scope="col">配置</th>
@@ -1089,7 +1666,7 @@
 </div>
 <div class="table-scroll" role="region" aria-label="PRIMO, Table 3 / Appendix A.3." tabindex="0">
 <table>
-<caption>表 8. PRIMO, Table 3 / Appendix A.3.</caption>
+<caption>表 10. PRIMO, Table 3 / Appendix A.3.</caption>
 <thead>
 <tr>
 <th scope="col">配置</th>

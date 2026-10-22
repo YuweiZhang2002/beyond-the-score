@@ -4,6 +4,7 @@ from html import escape
 import json
 import re
 from robofail_visuals import expanded_cases, visibility_experiment
+from progress_charts import render_progress_video
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = json.loads((ROOT / 'data/report.json').read_text())
@@ -90,6 +91,7 @@ def video(id, title):
 def confirmed(name):
     """Render reviewed bilingual prose and cases; raw model responses are shared verbatim."""
     content = CONFIRMED[name][LANG]
+    content = re.sub(r'\[\[progress-video:([A-Z][0-9]+)\]\]', lambda match: render_progress_video(next(case for case in RBM_CASES if case['id'] == match.group(1)), LANG), content)
     # Reuse the remote design's scrollable tables on narrow screens.
     content = re.sub(r'(<table class="case-table">.*?</table>)', r'<div class="table-scroll" role="region" tabindex="0">\1</div>', content, flags=re.S)
     return content

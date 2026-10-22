@@ -86,3 +86,34 @@ addEventListener('load', reading);
 all('details').forEach(d => d.addEventListener('toggle',reading));
 reading();
 all('video').forEach(v => v.addEventListener('play', () => all('video').filter(x => x !== v).forEach(x => x.pause())));
+
+// Keep exact recorded samples separate from replay time and interpolation.
+all('[data-progress-compare]').forEach(panel => {
+  const video = panel.querySelector('video');
+  const indices = panel.dataset.progressIndices.split(',').map(Number);
+  const values = panel.dataset.progressValues.split(',').map(Number);
+  const fps = Number(panel.dataset.progressFps);
+  const lastFrame = Number(panel.dataset.progressFrames) - 1;
+  const cursor = panel.querySelector('[data-progress-cursor]');
+  const status = panel.querySelector('[data-progress-status]');
+  const buttons = [...panel.querySelectorAll('[data-progress-seek]')];
+  const points = [...panel.querySelectorAll('[data-progress-point]')];
+  const zh = document.documentElement.lang.startsWith('zh');
+  function syncProgress() {
+    const frame = Math.max(0, Math.min(lastFrame, Math.floor((video.currentTime || 0) * fps + 1e-6)));
+    const nearest = indices.reduce((best, sample, n) => Math.abs(sample - frame) < Math.abs(indices[best] - frame) ? n : best, 0);
+    const x = 48 + frame / lastFrame * 348;
+    cursor.setAttribute('x1', String(x)); cursor.setAttribute('x2', String(x));
+    buttons.forEach((button, n) => button.setAttribute('aria-pressed', String(n === nearest)));
+    points.forEach((point, n) => point.classList.toggle('is-active', n === nearest));
+    const kind = nearest === 0 ? (zh ? '协议起点' : 'Protocol initial value') : (zh ? 'Astra 预测' : 'Astra prediction');
+    status.textContent = zh ? `回放帧 ${frame} · 最近采样位置 ${indices[nearest]} · ${kind} ${values[nearest].toFixed(2)}` : `Replay frame ${frame} · Nearest sample ${indices[nearest]} · ${kind} ${values[nearest].toFixed(2)}`;
+  }
+  buttons.forEach(button => button.addEventListener('click', () => {
+    const seek = () => { video.currentTime = Number(button.dataset.progressSeek) / fps; syncProgress(); };
+    if (video.readyState >= 1) seek();
+    else { video.addEventListener('loadedmetadata', seek, {once:true}); video.load(); }
+  }));
+  ['timeupdate', 'seeking', 'seeked', 'loadedmetadata', 'ended'].forEach(event => video.addEventListener(event, syncProgress));
+  syncProgress();
+});
