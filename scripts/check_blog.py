@@ -44,6 +44,25 @@ robo=json.loads((ROOT/'data/robofail-cases.json').read_text())
 visibility=json.loads((ROOT/'data/robofail-visibility.json').read_text())
 positive=json.loads((ROOT/'data/rbm-positive-cases.json').read_text())
 positive_cases=positive['cases']
+ambiguity=json.loads((ROOT/'data/rbm-quality-ambiguity-cases.json').read_text())['cases']
+assert [c['slug'] for c in ambiguity]==['ambiguity-banana','ambiguity-pebbles']
+assert [[t['quality_label'] for t in c['trajectories']] for c in ambiguity]==[['suboptimal','failure'],['failure','suboptimal']]
+for case in ambiguity:
+    prediction=case['prediction']
+    assert json.loads(case['original_final_output'])==prediction['model_answer']
+    assert case['request_sha256_reconstructed']==prediction['request_sha256']
+    assert prediction['display_order']=={t['display']:t['id'] for t in case['trajectories']}
+    assert prediction['preference_pred']==0 and prediction['model_answer']['winner']!=case['reference_winner']
+    assert prediction['metadata']['chosen_metadata']['id']==prediction['display_order'][case['reference_winner']]
+    for trajectory in case['trajectories']:
+        meta=next(m for m in prediction['metadata'].values() if m['id']==trajectory['id'])
+        assert meta['quality_label']==trajectory['quality_label']
+        assert [f['stored_index'] for f in trajectory['input_frames']]==[0,4,9,13,18,22,27,31]
+        for frame in trajectory['input_frames']:
+            assert hashlib.sha256((ROOT/frame['path']).read_bytes()).hexdigest()==frame['sha256']
+        for kind in ['poster','video']:
+            assert hashlib.sha256((ROOT/trajectory[kind]).read_bytes()).hexdigest()==trajectory[kind+'_sha256']
+        assert (ROOT/trajectory['poster']).read_bytes()==(ROOT/trajectory['input_frames'][-1]['path']).read_bytes()
 assert [(c['slug'], c['stage']) for c in positive_cases] == [
     ('ranking-drawer','policy_ranking'), ('ranking-banana','policy_ranking'),
     ('preference-button','quality_preference'), ('preference-red-bin','quality_preference')]
@@ -179,8 +198,19 @@ for name,text in pages.items():
     assert quality.count('assets/figures/01_ranking_zero_shot.png') == 1
     assert quality.index('id="ranking-drawer-case"') < quality.index('id="banana-case"')
     assert quality.index('id="ranking-banana-case"') < quality.index('id="banana-case"')
-    assert quality.index('id="preference-button-case"') < quality.index('id="separate-cups-case"')
-    assert quality.index('id="preference-red-bin-case"') < quality.index('id="separate-cups-case"')
+    assert quality.index('id="preference-button-case"') < quality.index('id="pencil-case-case"') < quality.index('id="preference-criteria"')
+    assert quality.index('id="preference-red-bin-case"') < quality.index('id="preference-criteria"')
+    assert not any(f'id="{slug}-case"' in quality for slug in ['separate-cups','green-bin'])
+    for case in ambiguity:
+        slug=case['slug']
+        match=re.search(r'<div class="ambiguity-case" data-ambiguity-case="'+slug+r'">(.*?)<!-- /ambiguity-case -->',quality,re.S)
+        assert match and quality.index('id="preference-criteria"') < match.start()
+        block=match.group(1)
+        assert [t['video'] for t in case['trajectories']]==Page(block).media
+        assert case['prediction']['model_answer']['reason'] in unescape(block)
+        for trajectory in case['trajectories']:
+            assert ('参考标签：' if lang=='zh' else 'Reference label: ')+labels[lang][trajectory['quality_label']] in block
+        assert f'href="#{slug}-case"' in text.split('id="failure-modes"',1)[1]
     assert all(f'data-positive-case="{c["slug"]}"' in quality for c in positive_cases)
     assert len(p.section_media['quality-results'])==18
     assert quality.index('assets/figures/01_ranking_zero_shot.png') < quality.index('id="banana-case"')
@@ -197,8 +227,11 @@ for name,text in pages.items():
         assert [int(n) for _, n in numbers] == list(range(1, len(numbers) + 1)), (name, ident, numbers)
         assert f'id="{ident}-summary" data-toc' in topic, (name, ident)
         summary = re.search(r'<div class="section-summary"[^>]*>(.*?)</div>\s*</section>$', topic, re.S)
-        assert summary and summary.group(1).count('<p>') == 2, (name, ident)
-        assert re.search(r'<p>.*?<strong>.+?</strong>\s*</p>', summary.group(1), re.S), (name, ident)
+        expected_paragraphs=sum(bool(confirmed[prefix+ident][lang].strip()) for prefix in ['summary_','analysis_'])
+        assert summary and summary.group(1).count('<p>') == expected_paragraphs, (name, ident)
+        assert '<p></p>' not in summary.group(1)
+        if ident!='quality-results':
+            assert re.search(r'<p>.*?<strong>.+?</strong>\s*</p>', summary.group(1), re.S), (name, ident)
     # Main captions stay consecutive when supplemental material is collapsed.
     for tag in ['figcaption', 'caption']:
         main_numbers = [int(n) for n in re.findall(r'<' + tag + r'>(?:图|表|Figure|Table) (\d+)\.', text)]

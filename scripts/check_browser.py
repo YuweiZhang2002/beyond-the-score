@@ -45,8 +45,8 @@ def main():
                 assert len(media) == 29 and all(m['duration'] > 0 and m['width'] > 0 for m in media)
                 assert all(abs(m['duration'] - 8) < .05 for m in media if any(s in m['src'] for s in ['ranking-drawer', 'ranking-banana', 'preference-button', 'preference-red-bin']))
                 # Play each new replay briefly, then seek its final sampled image and capture the card.
-                for case in page.locator('.positive-case').all():
-                    slug = case.get_attribute('data-positive-case')
+                for case in page.locator('.positive-case, .ambiguity-case').all():
+                    slug = case.get_attribute('data-positive-case') or case.get_attribute('data-ambiguity-case')
                     for video in case.locator('video').all():
                         video.evaluate('async v => {v.muted=true; await v.play()}')
                         page.wait_for_function('(v) => v.currentTime > 0', arg=video.element_handle())

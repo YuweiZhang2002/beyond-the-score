@@ -12,8 +12,8 @@ def outcome(case, response, t):
 def expanded_cases(cases, t, ids, fold=True):
     notes = {
         55: ('抓取炉灶旋钮', 'Grasping the stove knob',
-             '参考答案为失败：夹爪未闭合。零样本判为失败，理由是抓取位置不对；ICL 条件判为成功。',
-             'The reference identifies failure because the gripper does not close. Zero-shot predicts failure but cites grasp location; the ICL condition predicts success.'),
+             '参考答案为失败：夹爪未闭合。零样本判为失败，理由是抓取位置不对；ICL 条件下判为成功。',
+             'The reference identifies failure because the gripper does not close. Zero-shot predicts failure but cites grasp location; under the ICL condition, the model predicts success.'),
         36: ('切胡萝卜', 'Slicing a carrot',
              '参考答案为成功；零样本和 ICL 条件均因未看到分离的切片而判为失败。',
              'The reference labels success; both zero-shot and ICL conditions predict failure because no separated slice is visible.'),
