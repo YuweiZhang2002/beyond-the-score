@@ -27,7 +27,7 @@
         "name": "Direct preference",
         "support": "1,192 fixed pairs",
         "input": "Both trajectories in same request",
-        "reference": "Split composition incompletely documented"
+        "reference": "Different-quality preference; official sampling, up to 500 pairs per source; source-equal accuracy"
       },
       {
         "name": "Subtask diagnosis",
@@ -175,7 +175,7 @@
         55.5
       ]
     ],
-    "caveat": "Literature records not rerun or protocol-matched. Study 567 trajectories vs RynnValue 976 OOD suite. External preference uses 500 different-quality pairs per OOD source vs 1,192 study pairs of incompletely documented composition. Paper and website Robometer versions must remain distinct."
+    "caveat": "Ranking and different-quality preference reuse official Robometer sampling and metric rules. Study seed 44 versus current official default 42; historical paper manifests unavailable. Prompted model outputs and learned heads differ. Robometer v1 tau-a 0.655 is the cited result; v2 is approximately 0.643."
   },
   "table3_study_ranks": {
     "page": 3,
@@ -681,5 +681,29 @@
       "media": "Full tables expandable by record, PDF, local source/provenance notes without secrets"
     }
   ],
-  "historical_additions": "Conversation mentions GPT-5.6 Sol and DeepSeek RoboFail follow-up runs; they are NOT in this PDF, whose RoboFail study table contains only Astra zero-shot and five-example. If independently verified in run files and used on website, label clearly as supplementary later evaluations, not results of report Tables 5/7."
+  "historical_additions": "Conversation mentions GPT-5.6 Sol and DeepSeek RoboFail follow-up runs; they are NOT in this PDF, whose RoboFail study table contains only Astra zero-shot and five-example. If independently verified in run files and used on website, label clearly as supplementary later evaluations, not results of report Tables 5/7.",
+  "protocol_verification_update": {
+    "source": "User-provided verification summary, 2026-10-22; not independently rerun during this editorial update",
+    "ranking_cached_trajectories": 571,
+    "ranking_excluded_single_quality_trajectories": 4,
+    "ranking_evaluated_trajectories": 567,
+    "excluded_tasks": {
+      "Trossen stir pot": 3,
+      "Trossen remove red pen cap": 1
+    },
+    "preference_pairs_by_source": {
+      "Koch": 500,
+      "MIT Franka": 500,
+      "USC Franka": 48,
+      "Trossen": 42,
+      "xArm": 72,
+      "SO101": 30
+    },
+    "seed": 44,
+    "current_official_default_seed": 42,
+    "manifest_reconstruction": "User reports exact agreement of trajectory indices, pairs, and ordering",
+    "ranking_recomputed_tau_a": 0.8166246,
+    "preference_recomputed_source_equal_pct": 92.3528,
+    "preference_pooled_pct_not_reported_metric": 89.26
+  }
 }

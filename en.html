@@ -232,7 +232,7 @@
 <p class="">
 <strong>Observation masking.</strong> On two existing RoboFail cases, we separately explore three visibility levels and two prompting conditions, making 12 new requests with one response per condition. We retain the original question and mask later observations. Partial inputs have no corresponding temporal ground truth and receive no accuracy score. This supplement is separate from the original 57-question evaluation and examines response sensitivity to visible information.</p>
 <p class="">
-<strong>Comparison scope.</strong> We distinguish directly evaluated configurations from published results. Literature values from Robometer, RynnValue, AHA, and other methods were not rerun on our samples and inputs; training, prompts, and aggregation may also differ. They provide context rather than a matched-protocol ranking. Chart tags [S], [P], [W], [R], and [A] denote this study, the Robometer paper, its website, RynnValue, and AHA, respectively. Versions and missing results are retained as recorded.</p>
+<strong>Result sources.</strong> Chart tags [S], [P], [W], [R], and [A] denote this study, the Robometer paper, its project website, RynnValue, and AHA. RBM ranking and different-quality preference follow official sampling and metric rules; Section 2.1.3 records seeds, model interfaces, and cited versions. RoboFail literature comparisons use different question sets, as described in Section 2.4.</p>
 <div id="positive-case-protocol">
 <p class="">
 <strong>Case comparisons.</strong> The four positive examples are selected post hoc for illustration, not to estimate overall error rates. Astra and DeepSeek receive identical tasks, trajectories, prompts, and input images without reference quality labels; preference cases retain the actual A/B order. Reasoning settings and compute budgets are unmatched: Astra uses low effort with a 512-token output limit, while DeepSeek uses max effort with a 32768-token limit. No swapped-order repeat or matched per-example Robometer output is available.</p>
@@ -321,7 +321,7 @@
 <button type="button" data-zoom aria-label="Zero-shot ranking of three general-purpose multimodal models and published specialized-model references">
 <img loading="lazy" src="assets/figures/01_ranking_zero_shot.png" alt="Zero-shot ranking of three general-purpose multimodal models and published specialized-model references" width="1600" height="767">
 </button>
-<figcaption>Figure 1. Zero-shot trajectory quality ranking. Top: three general-purpose multimodal models evaluated in this study. Bottom: published reference values for two specialized models. Higher Kendall τa is better; literature results retain their own protocols.<span class="zoom-label" aria-hidden="true">Enlarge ↗</span>
+<figcaption>Figure 1. Zero-shot trajectory quality ranking. Top: three general-purpose multimodal models evaluated in this study. Bottom: published reference values for two specialized models. Higher Kendall τa is better; published values follow the cited versions.<span class="zoom-label" aria-hidden="true">Enlarge ↗</span>
 </figcaption>
 </figure>
 <p>The following positive examples and error analyses examine how the models judge execution quality.</p>
@@ -637,9 +637,12 @@
 </details>
 </div>
 <!-- /positive-case -->
-<p>The next three choices disagree with the reference. To interpret them, we first need to ask: by what criteria should the model judge one execution to be better?</p>
-<h5 class="case-title">Astra–reference preference disagreements: a task goal is not a complete evaluation criterion</h5>
-<p>“Separate two cups” and “open the bin” specify goals without fully defining completion or how to compare executions. Whether an object must be released, whether it must remain upright, and how opening width should be weighed against final stability all involve evaluative priorities. Even agreement about the visual facts can yield different preferences under different criteria. Cup-separation and green-bin disagreements therefore do not directly establish deficient ranking ability in Astra; they also concern whether its evaluation criteria match the reference annotations. This is an issue of criteria underspecified by the task description, not verified disagreement among human annotators. State-recognition questions, such as whether a zipper is open, must be distinguished from these evaluative choices.</p>
+<p>The following cases examine the evidence and evaluation criteria underlying Astra’s disagreements with reference preferences.</p>
+<h5 class="case-title">Astra–reference preference disagreements: multidimensional evaluation and criterion alignment</h5>
+<p>Task descriptions usually specify a goal without fully defining execution quality. The cup-separation and green-bin disagreements involve several dimensions: whether the target state is reached, whether the object is released, whether the final state is stable, and how these requirements are prioritized. A single success label or overall preference compresses these dimensions into one judgment, making it difficult to distinguish disagreements about visual recognition, completion conditions, and trade-offs among quality dimensions. Such reference disagreements therefore do not directly establish deficient ranking ability in Astra.</p>
+<p>A more informative analysis would specify task-relevant criteria, annotate the observable evidence and degree of satisfaction for each, and then form an overall judgment using predefined requirements or weights. Cup separation could be assessed through “separated,” “released,” and “upright”; bin opening through “required opening reached” and “remains open without support.” This criterion-based assessment follows the idea of rubric rewards; Flora-Rewarder already provides an interface that outputs a score for each rubric step<sup class="citation">
+<a href="#ref-flora" aria-label="NVIDIA Flora-Rewarder">[14]</a>
+</sup>. It makes the basis of evaluation explicit, while the criteria and weights still depend on task requirements. We have not performed such criterion-level reannotation in this study.</p>
 <h5 class="case-title" id="separate-cups-case">Case Study: release or tipping when separating cups</h5>
 <p>In the task of separating the purple and red cups, Astra describes both executions as creating a large gap. One does not show release in the final frame and is labeled successful. The other clearly releases the purple cup, but the cup tips onto its side, and is labeled failed. Astra chooses the latter and explicitly mentions both release and tipping in its reason.</p>
 <div class="case-video-grid case-replay-grid" role="group" aria-labelledby="separate-cups-case" aria-describedby="separate-cups-case-note">
@@ -727,19 +730,17 @@
 </details>
 <h4 id="literature" data-toc>2.1.3 Comparison with prior work</h4>
 <p class="">
-<strong>Specialized and general-purpose models acquire behavioral evaluation capabilities through different routes.</strong> Robometer<sup class="citation">
+<strong>General-purpose multimodal models show competitive offline evaluation capability relative to specialized models.</strong> Under Robometer’s official sampling and metric rules, Astra achieves zero-shot ranking τa of 0.8166 and preference accuracy of 92.4%, above Robometer’s reported 0.655 and 82.5%<sup class="citation">
 <a href="#ref-robometer" aria-label="Robometer">[2]</a>
-</sup> combines frame-level progress supervision with trajectory-preference supervision; RynnValue<sup class="citation">
+</sup>; its ranking also exceeds RynnValue-8B’s reported 0.675<sup class="citation">
 <a href="#ref-rynnvalue" aria-label="RynnValue">[5]</a>
-</sup> learns value representations through temporal distance. We instead query general-purpose multimodal models directly with task descriptions and visual observations, without additional robot-reward training for this evaluation. Astra reaches ranking τa of 0.8166 and preference accuracy of 92.4%, numerically above Robometer’s reported 0.655 / 82.5%; its ranking also exceeds RynnValue-8B’s reported 0.675. These results show that existing general-purpose capabilities support strong offline execution-quality comparison, a capability not confined to specialized robot reward models.</p>
+</sup>. These results show that general-purpose models can effectively compare robot execution quality without additional task-specific training for this evaluation. This conclusion concerns offline evaluation, not the effectiveness of their scores as training rewards.</p>
 <p class="">
-<strong>Selecting the better of two executions and assigning comparable scores to separate trajectories impose different demands.</strong> Pairwise preference lets a model inspect both executions together and identify contrasts. Independent ranking requires a compatible scoring scale within a task even when trajectories are evaluated separately. Astra and GPT-5.6-sol differ by 1.7 percentage points in preference accuracy and 0.0666 in ranking τa. These gaps cannot be compared directly across metrics; the tasks probe direct comparison and independent scoring, respectively. The preceding inversions and ties also show that identifying an execution problem in an explanation does not ensure that scores preserve the quality order.</p>
-<p class="">
-<strong>Agreement with reference preferences depends on both discrimination and evaluation criteria.</strong> When a task leaves priorities such as release and stability unspecified, disagreement alone does not establish inability to rank. Strong trajectory ranking also does not imply calibrated progress values or a reward ready for policy optimization. Our evidence supports offline comparison by general-purpose models; it does not yet establish matched-sample superiority over published models or training gains. The next section asks whether this performance carries over from comparing executions to estimating how far one execution has progressed.</p>
+<strong>Ambiguity in evaluation criteria remains a problem for both model classes.</strong> Overall scores and preference labels do not fully distinguish goal attainment, execution constraints, and final-state quality. The preceding cases show that, when these criteria are unspecified, reference disagreement may include differences in evaluative standards rather than model limitations alone. Comparing general-purpose and specialized models therefore requires a more comprehensive evaluation framework: explicit task-relevant rubrics, assessment of each requirement, and a common aggregation rule. This would help distinguish perceptual errors, differences in execution quality, and trade-offs among criteria instead of attributing them from a single score.</p>
 <details class="research-detail">
-<summary>Protocols and statistical notes for literature comparisons</summary>
-<p class="">These literature values were not rerun on our samples. Our independent-ranking run includes 567 trajectories across 41 source–task groups; sample-by-sample alignment with the literature evaluations has not been established. External preference evaluation uses 500 different-quality pairs per OOD source; our study uses 1,192 fixed pairs with incompletely documented composition. Sample, input, and aggregation differences prevent a matched-protocol superiority claim.</p>
-<p class="">Repeat-call variance and confidence intervals are unavailable, so these differences are descriptive rather than significance claims.</p>
+<summary>Sampling, metrics, and cited versions</summary>
+<p class="">Ranking and different-quality preference evaluation reuse Robometer’s official sampling and metric rules with seed=44. Of 571 cached trajectories, four belong to tasks with only successful examples and are excluded by the official rule, leaving 567. Preference sampling uses up to 500 pairs per source, yielding 1,192 pairs. Both metrics use equal weighting across the six sources.</p>
+<p class="">The current official default seed is 42; the original paper’s historical manifests are unavailable, so this is not a sample-by-sample reproduction. Both sample eight frames uniformly. Astra returns prompted scores or A/B choices, whereas Robometer uses trained progress/preference heads, with different image encoding and internal processing. We cite Robometer v1’s τa=0.655; the corresponding v2 value is approximately 0.643.</p>
 </details>
 </section>
 <section id="progress-results" class="result-topic" data-toc>
@@ -2295,6 +2296,8 @@
 <a href="https://research.nvidia.com/labs/srl/projects/astranomy/" target="_blank" rel="noopener">Astranomy</a>. Empirical study of GPT-6 Astra as a native robot policy.</li>
 <li id="ref-embodied">
 <a href="https://arxiv.org/abs/2609.38537" target="_blank" rel="noopener">Systematically Exploring the Capabilities of GPT-6 Astra as Embodied Policies</a>. Cross-domain evaluation of direct control, policy cooperation, and feedback adaptation.</li>
+<li id="ref-flora">
+<a href="https://huggingface.co/nvidia/Flora-Rewarder" target="_blank" rel="noopener">NVIDIA. Flora-Rewarder</a>. Official model card; rubric scoring interface.</li>
 </ol>
 <p class="fine">The full RBM table also includes GVL, VLAC, RoboReward, ReWiND, RL-VLM-F, TOPReward, and Robo-Dopamine. Their numbers come from the identified Robometer paper or website records; this does not imply that each method’s original paper evaluated RBM.</p>
 <details class="research-detail">

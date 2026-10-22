@@ -232,7 +232,7 @@
 <p class="">
 <strong>观测遮蔽。</strong>在两个既有 RoboFail 案例上，我们另做三种可见帧条件 × 两种提示条件的探索性实验，共 12 次新请求，每个条件仅一次。保留原问题并遮蔽后续观测；少帧条件没有对应的时间级真值，不计算准确率。这部分独立于原 57 问题评测，用于观察回答对可见信息的敏感性。</p>
 <p class="">
-<strong>比较范围。</strong>本研究直接评估的模型配置与文献结果分别标示。Robometer、RynnValue、AHA 等文献数值未在当前样本与输入上复测，训练、提示和聚合方式也可能不同，因此仅作为背景参照，不能据此作同协议排名。图中 [S] 表示本研究，[P]、[W]、[R]、[A] 分别对应 Robometer 论文、其网站、RynnValue 与 AHA；不同版本与缺失结果均按原记录保留。</p>
+<strong>结果来源。</strong>图中 [S] 为本研究，[P]、[W]、[R]、[A] 分别为 Robometer 论文、项目网站、RynnValue 与 AHA。RBM 排序与“不同质量”偏好沿用官方采样和指标规则；随机种子、模型接口与引用版本见 2.1.3。RoboFail 的文献对照使用不同问题集合，范围见 2.4。</p>
 <div id="positive-case-protocol">
 <p class="">
 <strong>案例对照。</strong>四组正例为评测后的说明性选例，不用于估计整体错误率。Astra 与 DeepSeek 使用相同任务、轨迹、提示和输入图像，不接收参考质量标签；偏好案例保留实际 A/B 顺序。两者推理配置与计算预算未匹配：Astra 为 low、输出上限 512 token，DeepSeek 为 max、上限 32768 token。未进行 A/B 交换复测，也没有匹配的 Robometer 逐条输出。</p>
@@ -322,7 +322,7 @@
 <button type="button" data-zoom aria-label="三种通用多模态模型的零样本排序结果与专用模型文献参照">
 <img loading="lazy" src="assets/figures/01_ranking_zero_shot.png" alt="三种通用多模态模型的零样本排序结果与专用模型文献参照" width="1600" height="767">
 </button>
-<figcaption>图 1. 零样本轨迹质量排序。上：本研究的三种通用多模态模型；下：两种专用模型的文献参照。Kendall τa 越高越好；文献结果沿用各自协议。<span class="zoom-label" aria-hidden="true">放大 ↗</span>
+<figcaption>图 1. 零样本轨迹质量排序。上：本研究的三种通用多模态模型；下：两种专用模型的文献参照。Kendall τa 越高越好；文献数值按引用版本列示。<span class="zoom-label" aria-hidden="true">放大 ↗</span>
 </figcaption>
 </figure>
 <p>下面结合正向案例与失败分析，观察模型如何判断执行质量。</p>
@@ -638,9 +638,12 @@
 </details>
 </div>
 <!-- /positive-case -->
-<p>下面三组选择与参考偏好不一致，但理解这些分歧，首先需要明确：我们究竟要求模型按什么标准评价“更好”？</p>
-<h5 class="case-title">Astra 与参考偏好的分歧：任务目标并不等于完整的评价标准</h5>
-<p>“分开两个杯子”或“打开垃圾桶”规定了目标，却没有完整规定怎样才算完成、不同执行应如何比较。是否必须释放物体、是否要求保持直立、开盖幅度与最终稳定性哪个更重要，都包含评价者对执行质量的价值取舍。即便对画面事实有相同理解，不同判据也可能产生不同偏好。因此，分杯与开绿桶这类分歧不能直接作为 Astra 排序能力不足的证据：它们还涉及模型采用的评价标准是否与参考标注一致。这里讨论的是判据未被任务描述充分指定的问题，并非已经验证了标注者之间的意见差异；拉链开合这样的状态辨识问题则需要另行区分。</p>
+<p>以下案例进一步分析 Astra 与参考偏好不一致时，判断依据与评价标准之间的关系。</p>
+<h5 class="case-title">Astra 与参考偏好的分歧：多维评价与判据对齐</h5>
+<p>任务描述通常只规定目标，并未完整定义执行质量。分杯与开绿桶案例中的分歧涉及多个维度：目标状态是否达到、物体是否释放、末态是否稳定，以及这些要求的优先级。单一成功标签或总体偏好将这些维度压缩为一个结论，难以区分分歧来自视觉辨识、完成条件，还是对不同质量维度的权衡。因此，这类参考不一致不能直接归结为 Astra 的排序能力不足。</p>
+<p>更合适的分析方式是显式列出与任务相关的评价准则，分别标注可观察证据与满足程度，再根据预先规定的必要条件或权重形成总体评价。例如，分杯可以分别检查“已分离”“已释放”“保持直立”，开桶可以检查“达到要求的开口”“撤去支撑后保持打开”。这种 rubric 式分项评价与 rubric reward 的思路一致；Flora-Rewarder 已提供按 rubric 步骤输出评分的接口<sup class="citation">
+<a href="#ref-flora" aria-label="NVIDIA Flora-Rewarder">[14]</a>
+</sup>。它使评价依据更明确，但各项要求及其权重仍需由任务需求确定；本文尚未开展分项重标注。</p>
 <h5 class="case-title" id="separate-cups-case">Case Study：分杯时，更看重释放还是侧倒</h5>
 <p>例如，在“分开紫杯与红杯”的任务中，Astra 认为两次执行都已把两杯拉开距离。一条在末帧仍未显示释放，参考标为成功；另一条明确释放紫杯、但杯子侧倒，参考标为失败。Astra 选择了后者，并在理由中同时写出了“已释放”和“侧倒”。</p>
 <div class="case-video-grid case-replay-grid" role="group" aria-labelledby="separate-cups-case" aria-describedby="separate-cups-case-note">
@@ -728,19 +731,17 @@
 </details>
 <h4 id="literature" data-toc>2.1.3 与已有工作的比较</h4>
 <p class="">
-<strong>专用模型与通用模型，通过不同方式获得行为评价能力。</strong>Robometer<sup class="citation">
+<strong>通用多模态模型已表现出可与专用模型竞争的离线评价能力。</strong>在沿用 Robometer 官方采样与指标规则的评测中，Astra 的零样本排序 τa 为 0.8166、偏好准确率为 92.4%，高于 Robometer 报告的 0.655 和 82.5%<sup class="citation">
 <a href="#ref-robometer" aria-label="Robometer">[2]</a>
-</sup>将帧级进度监督与轨迹偏好监督结合；RynnValue<sup class="citation">
+</sup>；排序结果也高于 RynnValue-8B 的 0.675<sup class="citation">
 <a href="#ref-rynnvalue" aria-label="RynnValue">[5]</a>
-</sup>通过时间距离学习构建价值表示。本文则直接调用通用多模态模型，根据任务描述与视觉观测进行零样本评价，没有为本次评测追加机器人奖励训练。Astra 的排序 τa 为 0.8166、偏好准确率为 92.4%，数值上高于 Robometer 报告的 0.655 / 82.5%，排序也高于 RynnValue-8B 的 0.675。这表明，通用模型已有的能力足以支持较强的离线执行质量比较，而这种能力并不只存在于专门训练的机器人奖励模型中。</p>
+</sup>。这些结果说明，通用模型在不追加本次任务专项训练的条件下，已能有效比较机器人执行质量。这里的结论针对离线评价，不等同于训练奖励的有效性。</p>
 <p class="">
-<strong>“能选出更好的一条”与“能对每条轨迹给出可比较的分数”是不同要求。</strong>成对偏好允许模型同时观察两次执行并寻找差异；独立排序则要求分开评价时仍能在同一任务内保持相容的评分尺度。Astra 与 GPT-5.6-sol 的两项差值分别为 1.7 个百分点和 0.0666 τa；两种指标不能直接比较差值大小，但它们分别检验了直接比较与独立评分的一致性。前述逆序与平分案例也说明，解释中识别出执行问题，并不保证分数准确保留质量次序。</p>
-<p class="">
-<strong>与参考偏好一致，既取决于辨别能力，也取决于评价标准。</strong>当任务没有说明释放、稳定性等要求的优先级时，参考不一致不能单独证明模型不会排序；而即使轨迹排序较强，也不意味着进度数值已经校准，或可以直接作为策略优化的奖励。本研究支持的是通用模型的离线比较能力，尚未完成文献样本对齐，也未验证训练收益。下一节进一步考察：从比较两段执行，转向判断一段执行推进了多少时，模型表现是否仍然成立。</p>
+<strong>评价标准的模糊性仍是两类模型都需要面对的问题。</strong>总体分数或偏好标签不能完整表达目标完成、操作约束与末态质量之间的区别。前述案例表明，当这些判据未被明确给出时，与参考不一致可能包含标准上的分歧，不能全部解释为模型能力不足。因此，对通用模型和专用模型的比较都需要更全面的评价体系：显式定义任务相关的 rubric，分别检查各项要求，再按统一规则汇总。这样的分析有助于区分感知错误、执行质量差异和判据权衡，而不是仅凭一个总分归因。</p>
 <details class="research-detail">
-<summary>文献比较的协议与统计说明</summary>
-<p class="">这些文献值没有在本研究的样本上复测。本研究的独立排序运行包含 567 条轨迹、41 个来源–任务组，双方的逐条样本尚未完成对齐；外部偏好评测在每个 OOD 来源使用 500 组不同质量轨迹对，本研究则使用组成未完全记录的 1,192 组固定对。样本、输入与聚合方式未对齐，不能据此得出统一协议下的领先结论。</p>
-<p class="">当前没有重复调用方差或置信区间，因此上述差异为描述性比较，不作统计显著性解释。</p>
+<summary>采样、指标与引用版本</summary>
+<p class="">排序与“不同质量”偏好评测复用 Robometer 官方采样和指标规则，使用 seed=44。571 条缓存轨迹中，4 条属于仅含成功样本的任务，按官方规则排除后得到 567 条；偏好配对按每来源最多 500 对采样，共 1,192 对。两项指标均按六来源等权汇总。</p>
+<p class="">当前官方默认 seed 为 42，原论文历史清单不可得，故不称为逐条样本复现。双方均匀取 8 帧；Astra 通过提示词输出评分或 A/B，Robometer 使用训练后的 progress/preference head，图像编码与内部处理不同。正文引用 Robometer v1 的 τa=0.655；v2 对应值约为 0.643。</p>
 </details>
 </section>
 <section id="progress-results" class="result-topic" data-toc>
@@ -2296,6 +2297,8 @@
 <a href="https://research.nvidia.com/labs/srl/projects/astranomy/" target="_blank" rel="noopener">Astranomy</a>. GPT-6 Astra 作为原生机器人策略的实证研究。</li>
 <li id="ref-embodied">
 <a href="https://arxiv.org/abs/2609.38537" target="_blank" rel="noopener">Systematically Exploring the Capabilities of GPT-6 Astra as Embodied Policies</a>. 直接控制、策略协作和反馈适应的跨领域评估。</li>
+<li id="ref-flora">
+<a href="https://huggingface.co/nvidia/Flora-Rewarder" target="_blank" rel="noopener">NVIDIA. Flora-Rewarder</a>. 官方模型说明，rubric 分项评分接口。</li>
 </ol>
 <p class="fine">完整 RBM 表还列出 GVL、VLAC、RoboReward、ReWiND、RL-VLM-F、TOPReward 与 Robo-Dopamine。其数值来自表内注明的 Robometer 论文或网站记录，不表示这些方法的原论文均评估了 RBM。</p>
 <details class="research-detail">
