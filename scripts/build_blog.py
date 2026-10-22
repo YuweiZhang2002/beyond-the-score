@@ -311,8 +311,8 @@ def resources():
     body = SUPPLEMENT_PROTOCOL + p('<a href="assets/Beyond-the-Score.pdf">技术报告 ↗</a> · <a href="evidence.html">案例与逐步预测 ↗</a>', '<a href="assets/Beyond-the-Score.pdf">Technical report ↗</a> · <a href="evidence.html">Cases and step-by-step predictions ↗</a>')
     def reference_item(ref):
         note = ref['publication']
-        if note == 'accessed':
-            note = t('访问于 2026 年 10 月 22 日。', 'Accessed October 22, 2026.')
+        if note == 'model-documentation':
+            note = t('模型文档。', 'Model documentation.')
         return (f'<li id="ref-{ref["key"]}">{escape(ref["authors"].rstrip("."))}. '
                 f'<a href="{escape(ref["url"], quote=True)}" target="_blank" rel="noopener">'
                 f'{escape(ref["title"])}.</a> {escape(note)}</li>')

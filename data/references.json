@@ -6,12 +6,12 @@
       "authors": "OpenAI",
       "title": "GPT-6 Astra",
       "url": "https://developers.openai.com/api/docs/models/gpt-6-astra",
-      "publication": "accessed",
+      "publication": "model-documentation",
       "group": "main",
       "verification_sources": [
         "https://developers.openai.com/api/docs/models/gpt-6-astra"
       ],
-      "verification_note": "Undated live API documentation; use access date, not an inferred publication year."
+      "verification_note": "Official model documentation verified on 2026-10-22. No publication date is given; display the resource type without an inferred year or a reader-facing access date."
     },
     {
       "key": "robometer",
@@ -66,12 +66,12 @@
       "authors": "OpenAI",
       "title": "GPT-5.6 Sol",
       "url": "https://developers.openai.com/api/docs/models/gpt-5.6-sol",
-      "publication": "accessed",
+      "publication": "model-documentation",
       "group": "main",
       "verification_sources": [
         "https://developers.openai.com/api/docs/models/gpt-5.6-sol"
       ],
-      "verification_note": "Undated live API documentation; use access date, not an inferred publication year."
+      "verification_note": "Official model documentation verified on 2026-10-22. No publication date is given; display the resource type without an inferred year or a reader-facing access date."
     },
     {
       "key": "deepseek",
