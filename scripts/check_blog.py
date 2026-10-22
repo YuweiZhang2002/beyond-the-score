@@ -96,7 +96,7 @@ for name,text in pages.items():
     assert all(int(i.get('width',0))>0 and int(i.get('height',0))>0 for i in p.images),f'{name}: missing intrinsic image size'
     assert len(p.media)==expected_videos and len(set(p.media))==expected_videos,(name,p.media)
     assert len([x for x in p.media if 'assets/case-studies/' in x])==18
-    assert len([h for h in p.headings if h.startswith('Case Study')])==12 # RoboFail cases now use task-specific headings
+    assert len([h for h in p.headings if h.startswith('Case Study')])==18 # Twelve RBM and six RoboFail case-study headings
     assert not re.search(r'\b[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}\b',' '.join(p.visible_text))
     assert not any(re.search(r'\b(?:Q\d{4}|T\d{3}|055|036)\b',h) for h in p.headings)
     for ref in p.refs:
@@ -146,7 +146,7 @@ for name,text in pages.items():
     assert len({(r['case_id'],r['condition'],r['visible_frames']) for r in visibility['results']})==12
     for row in visibility['results']:
         assert row['answer'] in unescape(text),(name,'missing experimental response')
-        assert row['returned_model'] in text
+        assert row['returned_model'] and 'data/robofail-visibility.json' in text
     assert len(re.findall(r'class="visibility-label ',text))==12
     assert 'VOC ×100' not in text and 'VOC（未缩放）' not in text and 'VOC (unscaled)' not in text
     assert all(str(n) in text for n in [93.6,94.2,0.8166,0.7953,92.4,64.91,85.96,89.3,90.51,95.36,0.0407,0.1312])
@@ -195,6 +195,17 @@ for name,text in pages.items():
         summary = re.search(r'<div class="section-summary"[^>]*>(.*?)</div>\s*</section>$', topic, re.S)
         assert summary and summary.group(1).count('<p>') == 2, (name, ident)
         assert re.search(r'<p>.*?<strong>.+?</strong>\s*</p>', summary.group(1), re.S), (name, ident)
+    # Main captions stay consecutive when supplemental material is collapsed.
+    for tag in ['figcaption', 'caption']:
+        main_numbers = [int(n) for n in re.findall(r'<' + tag + r'>(?:图|表|Figure|Table) (\d+)\.', text)]
+        assert main_numbers == list(range(1, len(main_numbers) + 1)), (name, tag)
+    depth = 0
+    for token in re.findall(r'<details\b[^>]*>|</details>', text):
+        depth += -1 if token == '</details>' else 1
+        assert 0 <= depth <= 1, (name, 'nested details')
+    assert depth == 0 and len(re.findall(r'<details\b', text)) <= 30
+    assert all(v in text for v in ['+0.2807', '+0.0336', '0.290', '0.280', '0.204', '0.236'])
+    assert not any(v in text for v in ['后端快照', '是否对应同一版本', 'backend snapshot consistency', '原始输入与证据边界'])
     citation = re.search(r'<pre class="citation-block"[^>]*>\s*<code>(.*?)</code>\s*</pre>', text, re.S).group(1)
     assert unescape(citation).strip() == (ROOT / 'CITATION.bib').read_text().strip()
     assert 'and others' in citation and 'xxx' not in citation

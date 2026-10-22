@@ -81,3 +81,7 @@ dialog{width:min(1280px,95vw);max-height:92vh;border:0;padding:44px 16px 16px;ba
 .article .section-summary{margin:24px 0 0}
 .citation-block{max-width:100%;overflow-x:auto;background:#f0f2ec;border:1px solid var(--line);border-radius:5px;padding:18px;font-size:12px;line-height:1.7;tab-size:2;white-space:pre-wrap;overflow-wrap:anywhere}
 .citation-block code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+
+/* Keep task subsections above case-study headings, including nested ICL cases. */
+.article .visibility-study>h4{font-size:18px;line-height:1.5;font-weight:600;margin:32px 0 16px}.article .robo-expanded-case h5.case-title{font-size:17px;line-height:1.55;font-weight:600;margin:24px 0 14px}.visibility-case>.robofail-extra{margin-top:0}.visibility-case .robo-expanded-case{border-top:0;padding-top:0;margin-top:0}
+@media(max-width:560px){.article .visibility-study>h4{font-size:17px}.article .robo-expanded-case h5.case-title{font-size:16px}}
