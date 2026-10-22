@@ -96,7 +96,7 @@ for name,text in pages.items():
     assert all(int(i.get('width',0))>0 and int(i.get('height',0))>0 for i in p.images),f'{name}: missing intrinsic image size'
     assert len(p.media)==expected_videos and len(set(p.media))==expected_videos,(name,p.media)
     assert len([x for x in p.media if 'assets/case-studies/' in x])==18
-    assert len([h for h in p.headings if h.startswith('Case Study')])==13 # 12 RBM + combined RoboFail group
+    assert len([h for h in p.headings if h.startswith('Case Study')])==12 # RoboFail cases now use task-specific headings
     assert not re.search(r'\b[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}\b',' '.join(p.visible_text))
     assert not any(re.search(r'\b(?:Q\d{4}|T\d{3}|055|036)\b',h) for h in p.headings)
     for ref in p.refs:
@@ -150,15 +150,12 @@ for name,text in pages.items():
     assert len(re.findall(r'class="visibility-label ',text))==12
     assert 'VOC ×100' not in text and 'VOC（未缩放）' not in text and 'VOC (unscaled)' not in text
     assert all(str(n) in text for n in [93.6,94.2,0.8166,0.7953,92.4,64.91,85.96,89.3,90.51,95.36,0.0407,0.1312])
-    icl=text.split('<section id="progress-icl"',1)[1].split('</section>',1)[0]
-    assert 'RoboFail' not in icl and 'ROBOFAIL' not in icl
-    assert icl.count('assets/figures/01_ranking.png')==1 and icl.count('assets/figures/03_progress.png')==1
     progress=text.split('<section id="progress-results"',1)[1].split('</section>',1)[0]
     assert p.section_parents['results'] is None
-    for ident in ['quality-results','progress-results','progress-icl','failure','explanations']:
+    for ident in ['quality-results','progress-results','failure','explanations']:
         assert p.section_parents[ident] == 'results',(name,ident,'must be a Results subsection')
         assert re.search(r'<a class="subsection" href="#'+ident+r'">',text),(name,ident,'missing Results subsection TOC link')
-    assert len(p.section_media['progress-results'])==4
+    assert len(p.section_media['progress-results'])==5
     assert all(anchor in p.ids for anchor in ['bluecup-case','banana-retry-case'])
     assert progress.count('assets/rbm/t011-replay.mp4')==1
     for case in rbm['cases']:
@@ -167,14 +164,17 @@ for name,text in pages.items():
             for reason in case['reasons'][1:]:assert reason in unescape(progress),(name,'missing retry rationale')
         elif case['id'] in ['Q0041','Q0039','Q0037']:
             assert case['reasons'][-1] in unescape(progress),(name,'missing cup rationale')
-    assert len(p.section_media['progress-icl'])==1
-    assert len(p.section_media['failure'])==len(robo['cases'])
+    assert 'progress-icl' not in p.section_parents
+    assert len(p.section_media['failure'])==5
+    assert len(p.section_media['explanations'])==1
+    assert 'assets/robofail/case-033-source-replay.mp4' in p.section_media['explanations']
     assert all(x in progress for x in ['93.6','105','Case Study'])
-    assert all(x not in progress for x in ['94.2','0.7953','95.36','0.1312','assets/figures/03_progress.png'])
-    assert all(x in icl for x in ['94.2','0.7953','95.36','0.1312'])
+    assert 'assets/figures/01_ranking.png' not in progress
+    assert all(x in progress for x in ['94.2','95.36','0.1312','assets/figures/03_progress.png'])
     assert not any(x in text for x in ['Progress and context','Progress estimation and context examples','进度与上下文','进度估计与上下文示例'])
     quality=text.split('<section id="quality-results"',1)[1].split('<section id="progress-results"',1)[0]
-    assert 'assets/figures/01_ranking.png' not in quality and '0.7953' not in quality
+    assert quality.count('assets/figures/01_ranking.png')==1 and '0.7953' in quality
+    assert 'assets/figures/03_progress.png' not in quality
     assert quality.count('assets/figures/01_ranking_zero_shot.png') == 1
     assert quality.index('id="ranking-drawer-case"') < quality.index('id="banana-case"')
     assert quality.index('id="ranking-banana-case"') < quality.index('id="banana-case"')
@@ -189,10 +189,12 @@ for name,text in pages.items():
     assert 'id="outcome-counts"' in failure and 'data-condition=' not in failure
     assert all(value in failure for value in ['64.91%', '85.96%', '66.1%', '19.9'])
     assert text.index('id="conclusions"') < text.index('id="failure-modes"') < text.index('id="limitations"') < text.index('id="next-steps"')
-    assert text.count('class="section-summary"') == 5
-    for ident in ['quality-results', 'progress-results', 'progress-icl', 'failure', 'explanations']:
+    assert text.count('class="section-summary"') == 4
+    for ident in ['quality-results', 'progress-results', 'failure', 'explanations']:
         topic = re.search(r'<section id="' + ident + r'".*?</section>', text, re.S).group()
-        assert re.search(r'<p class="section-summary"[^>]*>.*?</p>\s*</section>$', topic, re.S), (name, ident)
+        summary = re.search(r'<div class="section-summary"[^>]*>(.*?)</div>\s*</section>$', topic, re.S)
+        assert summary and summary.group(1).count('<p>') == 2, (name, ident)
+        assert re.search(r'<p>.*?<strong>.+?</strong>\s*</p>', summary.group(1), re.S), (name, ident)
     citation = re.search(r'<pre class="citation-block"[^>]*>\s*<code>(.*?)</code>\s*</pre>', text, re.S).group(1)
     assert unescape(citation).strip() == (ROOT / 'CITATION.bib').read_text().strip()
     assert 'and others' in citation and 'xxx' not in citation
@@ -201,7 +203,7 @@ for name,text in pages.items():
         assert f'href="#ref-{key}"' in text,(name,key,'missing inline citation')
     assert 'A<sub>pref</sub> = (100 / 6)' in text
     assert text.count('href="assets/Beyond-the-Score.pdf"')==1
-    checks[name]={'unique_videos':expected_videos,'paired_input_replays':18,'rbm_cases':12,'positive_ranking_cases':2,'positive_preference_cases':2,'verified_positive_request_hashes':12,'robofail_cases':len(robo['cases']),'new_experimental_responses':12,'local_references_checked':len(p.refs),'raw_answers_preserved':True,'reader_visible_internal_ids_removed':True,'exact_progress_charts':4,'sample_seek_buttons':20,'parallel_outcome_table':True,'five_results_subsections':True}
+    checks[name]={'unique_videos':expected_videos,'paired_input_replays':18,'rbm_cases':12,'positive_ranking_cases':2,'positive_preference_cases':2,'verified_positive_request_hashes':12,'robofail_cases':len(robo['cases']),'new_experimental_responses':12,'local_references_checked':len(p.refs),'raw_answers_preserved':True,'reader_visible_internal_ids_removed':True,'exact_progress_charts':4,'sample_seek_buttons':20,'parallel_outcome_table':True,'four_task_based_results_subsections':True}
 assert parsed['index.html'].ids==parsed['en.html'].ids
 assert parsed['index.html'].media==parsed['en.html'].media
 # A rebuild must reproduce both committed-to-disk artifacts exactly.

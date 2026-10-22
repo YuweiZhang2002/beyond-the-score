@@ -47,11 +47,10 @@
 <a class="" href="#results">2. 结果</a>
 <a class="subsection" href="#quality-results">2.1 轨迹质量与偏好</a>
 <a class="subsection" href="#progress-results">2.2 任务进度估计</a>
-<a class="subsection" href="#progress-icl">2.3 上下文示例的影响</a>
-<a class="subsection" href="#failure">2.4 子任务成败判断</a>
-<a class="subsection" href="#explanations">2.5 失败解释与得分</a>
+<a class="subsection" href="#failure">2.3 子任务成败判断</a>
+<a class="subsection" href="#explanations">2.4 失败解释与得分</a>
 <a class="" href="#outlook">3. 讨论与展望</a>
-<a class="subsection" href="#conclusions">3.1 已展现的评价能力</a>
+<a class="subsection" href="#conclusions">3.1 主要发现</a>
 <a class="subsection" href="#failure-modes">3.2 Astra 何时仍会判断失误</a>
 <a class="subsection" href="#limitations">3.3 局限与未来工作</a>
 <a class="" href="#resources">参考文献</a>
@@ -221,7 +220,7 @@
 <a href="#ref-astra" aria-label="OpenAI: GPT-6 Astra">[1]</a>
 </sup> 为主要研究对象，通过提示提供任务与观测，不进行额外的评价任务微调。RBM 的进度、独立排序与直接偏好任务另包含 GPT-5.6-sol 和 DeepSeek-V4.1-Flash 的零样本比较；RoboFail 的本研究结果包含 Astra 的零样本与外部五示例条件。</p>
 <p class="">
-<strong>上下文示例。</strong>Astra 的示例条件按评价任务分别设置：</p>
+<strong>上下文示例。</strong> Astra 的示例条件按评价任务分别设置：</p>
 <ul>
 <li>
 <strong>进度估计：</strong>一条相同或相近任务的训练轨迹，附六个阶段评分。</li>
@@ -234,7 +233,7 @@
 <p class="">
 <strong>观测遮蔽。</strong>在两个既有 RoboFail 案例上，我们另做三种可见帧条件 × 两种提示条件的探索性实验，共 12 次新请求，每个条件仅一次。保留原问题并遮蔽后续观测；少帧条件没有对应的时间级真值，不计算准确率。这部分独立于原 57 问题评测，用于观察回答对可见信息的敏感性。</p>
 <p class="">
-<strong>结果来源。</strong>图中 [S] 为本研究，[P]、[W]、[R]、[A] 分别为 Robometer 论文、项目网站、RynnValue 与 AHA。RBM 排序与“不同质量”偏好沿用官方采样和指标规则；随机种子、模型接口与引用版本见 2.1.3。RoboFail 的文献对照使用不同问题集合，范围见 2.4。</p>
+<strong>结果来源。</strong>图中 [S] 为本研究，[P]、[W]、[R]、[A] 分别为 Robometer 论文、项目网站、RynnValue 与 AHA。RBM 排序与“不同质量”偏好沿用官方采样和指标规则；随机种子、模型接口与引用版本见 2.1 的折叠说明。RoboFail 的文献对照使用不同问题集合，范围见 2.3。</p>
 <div id="positive-case-protocol">
 <p class="">
 <strong>案例对照。</strong>四组正例为评测后的说明性选例，不用于估计整体错误率。Astra 与 DeepSeek 使用相同任务、轨迹、提示和输入图像，不接收参考质量标签；偏好案例保留实际 A/B 顺序。两者推理配置与计算预算未匹配：Astra 为 low、输出上限 512 token，DeepSeek 为 max、上限 32768 token。未进行 A/B 交换复测，也没有匹配的 Robometer 逐条输出。</p>
@@ -258,7 +257,7 @@
 <p class="">
 <strong>成败分类：准确率、失败召回率、误报率和漏检率。</strong>以失败为正类：TP 是正确识别的失败，FN 是漏掉的失败，TN 是正确识别的成功，FP 是把成功误判为失败。准确率为 (TP + TN) / 57；失败召回率为 TP / 34；误报率为 FP / 23；漏检率为 FN / 34。四项都以百分比报告。它们评估的是回答，不是机器人实际执行成功率。</p>
 <p class="">
-<strong>失败解释：AHA 综合 ROUGE-L，越高越好。</strong>标签错误计 0；正确成功计 1；正确失败按原始英文解释与参考答案的词干化 ROUGE-L F1 计分。对后一项，令 L 为两个词元序列的最长公共子序列长度，P = L / 生成词元数，R = L / 参考词元数，F1 = 2PR / (P + R)，无重合时为 0。将 57 个问题的得分求和后除以 57。该综合指标混合了成功识别与失败文本重合度，第 2.5 节会拆开报告，避免把它读成解释准确率。</p>
+<strong>失败解释：AHA 综合 ROUGE-L，越高越好。</strong>标签错误计 0；正确成功计 1；正确失败按原始英文解释与参考答案的词干化 ROUGE-L F1 计分。对后一项，令 L 为两个词元序列的最长公共子序列长度，P = L / 生成词元数，R = L / 参考词元数，F1 = 2PR / (P + R)，无重合时为 0。将 57 个问题的得分求和后除以 57。该综合指标混合了成功识别与失败文本重合度，第 2.4 节会拆开报告，避免把它读成解释准确率。</p>
 <p class="">非学习参照可以帮助判断指标本身是否足够。下表只列由定义或当前标签数量推导的参照，不是新增模型实验，也不混入实测排行。现有材料没有人工评审员、手写视觉规则或传感器阈值方法在同一输入上的独立实测结果，因此不能声称已经超过这些方法。公开质量标签和成败标注在这里是评分参照，不是一次人工评审员对照实验。</p>
 <div class="table-scroll" role="region" aria-label="非学习参照：解析推导，未作为实验运行。" tabindex="0">
 <table>
@@ -307,7 +306,7 @@
 </sup> 和 DeepSeek-V4.1-Flash<sup class="citation">
 <a href="#ref-deepseek" aria-label="DeepSeek-V4.1-Flash">[7]</a>
 </sup>，包括对单条轨迹独立评分，以及同时观察两条轨迹后直接判断偏好。总体结果呈现三种模型的差异；案例分析以 Astra 为代表，检查评分和解释如何对应实际执行。</p>
-<p class="fine">以下呈现零样本结果；上下文示例对照见第 2.3 节。案例视频均为模型输入帧的回放，非原速视频。</p>
+<p class="fine">先报告零样本结果，再比较轨迹排序的示例条件。案例视频均为模型输入帧的回放，非原速视频。</p>
 <h4 id="ranking-results" data-toc>2.1.1 轨迹质量排序</h4>
 <p>我们沿用 RBM-EVAL-OOD 的轨迹质量排序评测方式<sup class="citation">
 <a href="#ref-robometer" aria-label="Robometer">[2]</a>
@@ -555,6 +554,61 @@
 </div>
 </dl>
 </details>
+<h5 id="ranking-context" class="case-title">上下文示例：逆序减少，平分增多</h5>
+<p>
+<strong>轨迹排序。</strong>提供三条不同评分水平的参考轨迹后，错序减少但平分增多，Kendall τa 从 <strong>0.8166 降至 0.7953</strong>。按与指标一致的加权口径，反序率从 4.78% 降至 3.68%，平分率从 8.78% 增至 13.11%。</p>
+<figure class="figure">
+<button type="button" data-zoom aria-label="放大轨迹排序零样本与 ICL 对照图">
+<img loading="lazy" src="assets/figures/01_ranking.png" alt="轨迹质量排序：Astra 零样本 Kendall τa 为 0.8166，三轨迹示例 ICL 为 0.7953；外部数值来自所引用的文献版本。" width="1384" height="1104">
+</button>
+<figcaption>图 2. <span>轨迹排序的零样本与三轨迹示例 ICL 对照。每条待评轨迹独立输入八帧图像评分；外部数值来自所引用的文献版本。</span>
+<span class="zoom-label" aria-hidden="true">放大 ↗</span>
+</figcaption>
+</figure>
+<details class="research-detail">
+<summary>排序变化的分解</summary>
+<p class="">排序的 41 个来源–任务组中，8 组提高、10 组下降、23 组不变。下图按与报告得分一致的成对权重拆解正确顺序、平分与颠倒，不将其当作独立轨迹对的原始计数。这是得分变化的分解，尚不能确定示例影响判断的具体机制。</p>
+<figure class="study-figure">
+<div class="stack-key">
+<span>
+<i>
+</i>正确顺序</span>
+<span>
+<i>
+</i>平分</span>
+<span>
+<i>
+</i>颠倒</span>
+</div>
+<div class="stack-heading">
+<strong>零样本</strong>
+<span>τa 0.8166</span>
+</div>
+<div class="outcome-stack" role="img" aria-label="正确顺序 86.44% · 平分 8.78% · 颠倒 4.78%">
+<span style="width:86.44%">
+</span>
+<span style="width:8.78%">
+</span>
+<span style="width:4.78%">
+</span>
+</div>
+<p class="stack-values">正确顺序 86.44% · 平分 8.78% · 颠倒 4.78%</p>
+<div class="stack-heading">
+<strong>三参考轨迹 ICL</strong>
+<span>τa 0.7953</span>
+</div>
+<div class="outcome-stack" role="img" aria-label="正确顺序 83.21% · 平分 13.11% · 颠倒 3.68%">
+<span style="width:83.21%">
+</span>
+<span style="width:13.11%">
+</span>
+<span style="width:3.68%">
+</span>
+</div>
+<p class="stack-values">正确顺序 83.21% · 平分 13.11% · 颠倒 3.68%</p>
+<figcaption>图 3. 与报告得分一致的加权成对结果，非独立轨迹对的未加权计数。τa 等于正确顺序权重减去颠倒权重。</figcaption>
+</figure>
+</details>
 <h4 id="preference-results" data-toc>2.1.2 直接偏好判断</h4>
 <p>直接偏好判断将两条轨迹同时提供给模型，要求选择更好的执行。在 1,192 组固定轨迹对上，Astra、GPT-5.6-sol 和 DeepSeek-V4.1-Flash 的来源等权准确率分别为 <strong>92.4%、90.7% 和 82.2%</strong>。三者的点估计顺序与独立评分一致；Astra 与 GPT-5.6-sol 的差距为 1.7 个百分点。作为文献参照，Robometer 报告的准确率为 82.5%<sup class="citation">
 <a href="#ref-robometer" aria-label="Robometer">[2]</a>
@@ -563,7 +617,7 @@
 <button type="button" data-zoom aria-label="放大直接偏好判断图">
 <img loading="lazy" src="assets/figures/02_preference.png" alt="直接偏好判断：Astra 在 1,192 组固定轨迹对上的来源等权准确率为 92.4%。" width="1384" height="576">
 </button>
-<figcaption>图 2. <span>直接偏好判断。两条轨迹各八帧，同次比较；准确率按六个来源等权汇总。</span>
+<figcaption>图 4. <span>直接偏好判断。两条轨迹各八帧，同次比较；准确率按六个来源等权汇总。</span>
 <span class="zoom-label" aria-hidden="true">放大 ↗</span>
 </figcaption>
 </figure>
@@ -736,17 +790,21 @@
 <p class="">排序与“不同质量”偏好评测复用 Robometer 官方采样和指标规则，使用 seed=44。571 条缓存轨迹中，4 条属于仅含成功样本的任务，按官方规则排除后得到 567 条；偏好配对按每来源最多 500 对采样，共 1,192 对。两项指标均按六来源等权汇总。</p>
 <p class="">当前官方默认 seed 为 42，原论文历史清单不可得，故不称为逐条样本复现。双方均匀取 8 帧；Astra 通过提示词输出评分或 A/B，Robometer 使用训练后的 progress/preference head，图像编码与内部处理不同。正文引用 Robometer v1 的 τa=0.655；v2 对应值约为 0.643。</p>
 </details>
-<p class="section-summary" id="literature">
-<strong>小结。</strong>通用多模态模型已能有效比较机器人执行质量，Astra 的排序与偏好结果可与专用模型竞争。部分参考分歧涉及目标完成、操作约束与终态质量的不同权衡，需要明确分项判据，不能全部归为排序能力不足。</p>
+<div class="section-summary" id="literature">
+<p>小结。<strong>Astra 的排序与偏好结果可与专用奖励模型竞争，但参考分歧不都等于质量比较能力不足。</strong>
+</p>
+<p>在沿用官方评价规则的比较中，Astra 无需额外任务微调便取得了有竞争力的结果。剩余分歧既包含逆序与平分，也涉及目标完成、释放、稳定性等要求的不同权衡。下一步需要把这些要求写成明确的分项判据，区分模型没有辨认出状态，还是采用了不同的评价标准；仅提高单一偏好准确率不能回答这一问题。</p>
+</div>
 </section>
 <section id="progress-results" class="result-topic" data-toc>
 <h3 id="context">2.2 任务进度估计</h3>
+<h4 id="progress-zero" data-toc>2.2.1 零样本进度估计</h4>
 <p>除了比较整段执行的质量，我们还考察通用多模态模型能否根据任务描述和截至当前时刻的画面，判断任务已经推进到哪一步。在 105 条成功轨迹上，Astra、GPT-5.6-sol 和 DeepSeek-V4.1-Flash 的零样本 VOC 分别为 <strong>93.6、93.5 和 89.7</strong>。</p>
 <figure class="figure">
 <button type="button" data-zoom aria-label="零样本任务进度估计：Astra 93.6、GPT-5.6-sol 93.5、DeepSeek-V4.1-Flash 89.7；文献参照单独列示。">
 <img loading="lazy" src="assets/figures/03_progress_zero_shot.png" alt="零样本任务进度估计：Astra 93.6、GPT-5.6-sol 93.5、DeepSeek-V4.1-Flash 89.7；文献参照单独列示。" width="1600" height="1233">
 </button>
-<figcaption>图 3. <span>零样本进度估计的模型对比（VOC，越高越好）。本研究与文献参照分组展示，各组内按报告值排序。</span>
+<figcaption>图 5. <span>零样本进度估计的模型对比（VOC，越高越好）。本研究与文献参照分组展示，各组内按报告值排序。</span>
 </figcaption>
 </figure>
 <p>Astra 与 GPT-5.6-sol 的时间相关性接近，两者均高于 DeepSeek；Astra 低于 Robometer 报告的 94.8<sup class="citation">
@@ -754,14 +812,14 @@
 </sup>。下面通过案例检查评分如何响应完成、受挫与重试。</p>
 
 <p class="fine">以下为采样帧回放，非原速视频。每次评分仅使用截至当时的观测；空心起点由协议设为 0，连线仅辅助阅读。</p>
-<h4 class="case-title" id="bluecup-case">Case Study：正向案例，分清完成、滑落与搬错物体</h4>
+<h5 class="case-title" id="bluecup-case">Case Study：正向案例，分清完成、滑落与搬错物体</h5>
 <p>
 <strong>这组正向案例展示 Astra 能识别任务相关的状态差异。</strong>同样是“把蓝杯放进水槽”，模型区分了成功放置、杯子滑落和搬错物体，而没有把所有机械臂运动都当作进度。</p>
 <div class="progress-compare" data-progress-compare data-progress-indices="0,7,15,23,31" data-progress-values="0.00,0.10,0.20,0.60,1.00" data-progress-fps="4" data-progress-frames="32">
     <figure class="progress-video">
 <video controls playsinline muted preload="none" poster="assets/rbm/q0041-poster.jpg" src="assets/rbm/q0041-replay.mp4" aria-label="成功放入水槽" aria-describedby="cup-success-playback-note">
 </video>
-<figcaption>图 4. 成功放入水槽</figcaption>
+<figcaption>图 6. 成功放入水槽</figcaption>
 </figure>
     <div class="progress-chart">
 <p class="progress-chart-title">Astra 预测进度</p>
@@ -844,7 +902,7 @@
     <figure class="progress-video">
 <video controls playsinline muted preload="none" poster="assets/rbm/q0039-poster.jpg" src="assets/rbm/q0039-replay.mp4" aria-label="杯子滑落在槽外" aria-describedby="cup-slip-playback-note">
 </video>
-<figcaption>图 5. 杯子滑落在槽外</figcaption>
+<figcaption>图 7. 杯子滑落在槽外</figcaption>
 </figure>
     <div class="progress-chart">
 <p class="progress-chart-title">Astra 预测进度</p>
@@ -927,7 +985,7 @@
     <figure class="progress-video">
 <video controls playsinline muted preload="none" poster="assets/rbm/q0037-poster.jpg" src="assets/rbm/q0037-replay.mp4" aria-label="搬动了错误物体" aria-describedby="wrong-object-playback-note">
 </video>
-<figcaption>图 6. 搬动了错误物体</figcaption>
+<figcaption>图 8. 搬动了错误物体</figcaption>
 </figure>
     <div class="progress-chart">
 <p class="progress-chart-title">Astra 预测进度</p>
@@ -1024,7 +1082,7 @@
 </div>
 </dl>
 </details>
-<h4 class="case-title" id="banana-retry-case">Case Study：正向案例，识别受挫后的重试与完成</h4>
+<h5 class="case-title" id="banana-retry-case">Case Study：正向案例，识别受挫后的重试与完成</h5>
 <p>任务是把香蕉从蓝盘移到绿盘。这条轨迹的公开质量标签为成功。第一次接近后，香蕉仍在蓝盘，手臂已经退回；Astra 的进度由 0.15 降回 0.00。再次接近时，分数回到 0.15；直到最后一次采样观测中香蕉位于绿盘、夹爪离开后，才升至 1.00。<strong>模型没有把暂时受挫误当成最终结果，也没有仅凭重新接近就宣告完成。</strong>
 </p>
 <div class="progress-compare" data-progress-compare data-progress-indices="0,7,15,23,31" data-progress-values="0.00,0.15,0.00,0.15,1.00" data-progress-fps="4" data-progress-frames="32">
@@ -1133,39 +1191,26 @@
 </dl>
 </details>
 
-<p class="section-summary">
-<strong>小结。</strong>Astra 能追踪目标物体、受挫与重试后的状态变化。但较高的时间相关性不等于准确的语义完成度，仍需结合具体状态与终点判断评价其进度估计。</p>
-</section>
-<section id="progress-icl" class="result-topic" data-toc>
-<h3 id="progress-icl-title">2.3 上下文示例的影响（ICL）</h3>
-<p>我们进一步考察，提供参考示例能否改善 Astra 的进度估计与轨迹排序。</p>
+<div id="progress-icl">
+<h4 id="progress-icl-title" data-toc>2.2.2 上下文示例与完成判断</h4>
 <p>
 <strong>进度估计。</strong>加入一条相同或相近任务的带阶段评分轨迹后，VOC 从 <strong>93.6 升至 94.2</strong>，整体时间相关性略有提高。</p>
 <figure class="figure">
 <button type="button" data-zoom aria-label="放大进度估计零样本与 ICL 对照图">
 <img loading="lazy" src="assets/figures/03_progress.png?v=voc" alt="任务进度估计：Astra 零样本 VOC 为 93.6，单轨迹示例 ICL 为 94.2；外部文献报告值采用不同协议。" width="1384" height="960">
 </button>
-<figcaption>图 7. <span>进度估计的零样本与单轨迹示例 ICL 对照（VOC）。模型仅使用截至当前时刻的观测；外部数值沿用各论文协议。</span>
+<figcaption>图 9. <span>进度估计的零样本与单轨迹示例 ICL 对照（VOC）。模型仅使用截至当前时刻的观测；外部数值沿用各论文协议。</span>
 <span class="zoom-label" aria-hidden="true">放大 ↗</span>
 </figcaption>
 </figure>
-<p>
-<strong>轨迹排序。</strong>提供三条不同评分水平的参考轨迹后，错序减少但平分增多，Kendall τa 从 <strong>0.8166 降至 0.7953</strong>。按与指标一致的加权口径，反序率从 4.78% 降至 3.68%，平分率从 8.78% 增至 13.11%。</p>
-<figure class="figure">
-<button type="button" data-zoom aria-label="放大轨迹排序零样本与 ICL 对照图">
-<img loading="lazy" src="assets/figures/01_ranking.png" alt="轨迹质量排序：Astra 零样本 Kendall τa 为 0.8166，三轨迹示例 ICL 为 0.7953；外部文献报告值采用不同协议。" width="1384" height="1104">
-</button>
-<figcaption>图 8. <span>轨迹排序的零样本与三轨迹示例 ICL 对照。每条待评轨迹独立输入八帧图像评分；外部数值沿用各论文协议。</span>
-<span class="zoom-label" aria-hidden="true">放大 ↗</span>
-</figcaption>
-</figure>
+
 <p>进度估计的整体相关性略有提高，但个别轨迹的完成判断仍可能退步。下面的开瓶案例对比同一条轨迹在零样本与单轨迹示例条件下的预测，具体展示这种差异。</p>
-<h4 class="case-title">Case Study：开瓶相关性提高，完成判断退步</h4>
+<h5 class="case-title">Case Study：开瓶相关性提高，完成判断退步</h5>
 <p>同一段开瓶画面，在两种条件下得到了不同的瓶盖分离判断。</p>
 <figure class="case-media">
 <video controls playsinline muted preload="none" poster="assets/rbm/t098-poster.jpg" src="assets/rbm/t098-replay.mp4" aria-label="开瓶任务的采样帧回放">
 </video>
-<figcaption>图 9. 视频为采样帧回放，并非连续原速视频；模型依据的是截至各时刻的观测，而非完整连续视频。</figcaption>
+<figcaption>图 10. 视频为采样帧回放，并非连续原速视频；模型依据的是截至各时刻的观测，而非完整连续视频。</figcaption>
 </figure>
 <p>这条轨迹的参考终态是成功。零样本回答认为瓶盖已与瓶口分离，最终进度为 1.00；加入示例后，回答改为瓶盖似乎仍在原位、没有明确取下，最终进度降至 0.35。下表将最终进度与整段评分的时间相关性（VOC）、误差（MSE）并列，展示这两种判断在不同指标上的差异。</p>
 <div class="table-scroll" role="region" tabindex="0">
@@ -1210,49 +1255,8 @@
 </dl>
 </details>
 <details class="research-detail">
-<summary>逐轨迹变化与排序分解</summary>
+<summary>逐轨迹进度变化</summary>
 <p class="">逐轨迹变化并不一致：105 条轨迹中，58 条的 VOC 提高、35 条下降、12 条不变；58 条 VOC 提高的轨迹中，有 11 条的 MSE 变差。总体时间参考 MSE 从 0.0402 降至 0.0390。在报告的香蕉转移任务中，19 条轨迹有 18 条下降、1 条不变。这些是聚合统计，不能用单个案例代替。</p>
-<p class="">排序的 41 个来源–任务组中，8 组提高、10 组下降、23 组不变。下面按与报告得分一致的成对权重拆解正确顺序、平分与颠倒，不将其当作独立轨迹对的原始计数。它说明得分如何变化，尚不能确定示例影响判断的具体机制。</p>
-<figure class="study-figure">
-<div class="stack-key">
-<span>
-<i>
-</i>正确顺序</span>
-<span>
-<i>
-</i>平分</span>
-<span>
-<i>
-</i>颠倒</span>
-</div>
-<div class="stack-heading">
-<strong>零样本</strong>
-<span>τa 0.8166</span>
-</div>
-<div class="outcome-stack" role="img" aria-label="正确顺序 86.44% · 平分 8.78% · 颠倒 4.78%">
-<span style="width:86.44%">
-</span>
-<span style="width:8.78%">
-</span>
-<span style="width:4.78%">
-</span>
-</div>
-<p class="stack-values">正确顺序 86.44% · 平分 8.78% · 颠倒 4.78%</p>
-<div class="stack-heading">
-<strong>三参考轨迹 ICL</strong>
-<span>τa 0.7953</span>
-</div>
-<div class="outcome-stack" role="img" aria-label="正确顺序 83.21% · 平分 13.11% · 颠倒 3.68%">
-<span style="width:83.21%">
-</span>
-<span style="width:13.11%">
-</span>
-<span style="width:3.68%">
-</span>
-</div>
-<p class="stack-values">正确顺序 83.21% · 平分 13.11% · 颠倒 3.68%</p>
-<figcaption>图 10. 与报告得分一致的加权成对结果，非独立轨迹对的未加权计数。τa 等于正确顺序权重减去颠倒权重。</figcaption>
-</figure>
 </details>
 <details class="research-detail">
 <summary>完整结果数值与来源</summary>
@@ -1440,17 +1444,22 @@
 </tbody>
 </table>
 </div>
-<p class="">Robometer 论文版<sup class="citation">
+<p class="">Robometer 报告<sup class="citation">
 <a href="#ref-robometer" aria-label="Robometer">[2]</a>
 </sup>与网站版<sup class="citation">
 <a href="#ref-rbm" aria-label="RBM-EVAL-OOD">[3]</a>
-</sup>分别报告 VOC 94.8 / 94.0、τa 0.655 / 0.643，分别保留，不合并。名称中的 RBM-1M 和 RoboReward data 指训练数据。空项表示没有核实的数值；ICL 不作为额外模型，也不与零样本结果择优拼接。各文献数值未在本研究的样本和协议上复测。</p>
+</sup>分别报告 VOC 94.8 / 94.0、τa 0.655 / 0.643，分别保留，不合并。名称中的 RBM-1M 和 RoboReward data 指训练数据。空项表示没有核实的数值；ICL 不作为额外模型，也不与零样本结果择优拼接。各文献数值未在本研究的具体样本上复测。</p>
 </details>
-<p class="section-summary">
-<strong>小结。</strong>示例的收益因评价任务而异：进度相关性提高，排序却因平分增多而下降；开瓶案例还显示，相关性提高可以伴随更差的终点判断。</p>
+</div>
+<div class="section-summary">
+<p>小结。<strong>Astra 能追踪与任务相关的推进和受挫，但更高的时间相关性不保证更准确的完成判断。</strong>
+</p>
+<p>正向案例中，预测会随目标物体的放置、滑落和重试而变化；开瓶对照则显示，加入示例后相关性提高，终点估计却变差。因此，进度评价除了整条曲线的趋势，还应检查关键状态与终点是否判断正确。当前以归一化时间为参照的指标，不能单独回答语义完成度是否准确。</p>
+</div>
 </section>
 <section id="failure" class="result-topic" data-toc>
-<h3>2.4 子任务成败判断</h3>
+<h3>2.3 子任务成败判断</h3>
+<h4 id="outcome-results" data-toc>2.3.1 总体表现与错误分布</h4>
 <p>我们在 RoboFail<sup class="citation">
 <a href="#ref-reflect" aria-label="REFLECT / RoboFail">[4]</a>
 </sup> 的 57 个子任务问题上评估 Astra 的成败判断与失败解释能力，输入为子任务描述和关键帧。</p>
@@ -1747,114 +1756,27 @@
 </table>
 </div>
 </details>
-<p>成败标签与解释理由也可能出现不同的问题：抓取旋钮的零样本回答判对了失败标签，给出的原因却与参考答案不同，五示例条件下又将同一失败子任务判为成功；切片案例则在两种条件下都以胡萝卜仍然完整为由判为失败，与参考成功标签相反。</p>
-<h4 class="case-title" id="robofail-cases" data-toc>
-<span class="number">Case Study</span>成败判断与原因解释，要分别检验</h4>
-<div class="case-video-grid" aria-label="RoboFail 两种判断错误的来源视频">
-<figure>
-<video controls playsinline muted preload="none" poster="assets/robofail/case-055-frame-4.jpg" src="assets/robofail/case-055-source-replay.mp4" aria-label="RoboFail 抓住炉灶旋钮的来源视频">
-</video>
-<figcaption>图 12. <strong>抓住炉灶旋钮</strong>
-<span>参考判为失败，原因是夹爪没有闭合。零样本也判失败，却归因于抓取位置错误；五示例条件则判为成功。</span>
-</figcaption>
-</figure>
-<figure>
-<video controls playsinline muted preload="none" poster="assets/robofail/case-036-frame-3.jpg" src="assets/robofail/case-036-source-replay.mp4" aria-label="RoboFail 切胡萝卜的来源视频">
-</video>
-<figcaption>图 13. <strong>切胡萝卜</strong>
-<span>参考判为成功。零样本和五示例条件都因未看到完整切片而判为失败。</span>
-</figcaption>
-</figure>
-</div>
-<p class="fine">视频为原始轨迹回放；评测输入仅为关键帧拼图与问题。</p>
-<details class="method-detail" id="robofail-keyframe-gifs">
-<summary>查看两例 RoboFail 的关键帧动图（GIF）</summary>
-<p class="fine">动图按评测拼图中的顺序回放关键帧，每秒 1 帧。旋钮案例共 4 帧，切片案例共 3 帧；回放时长不代表实际执行时间。模型输入仍为原始拼图与问题。展开查看，收起可隐藏动画。</p>
-<div class="case-video-grid">
-<div class="case-media">
-<a href="assets/robofail/case-055-keyframes.gif" target="_blank" rel="noopener">
-<img loading="lazy" src="assets/robofail/case-055-keyframes.gif" alt="抓取炉灶旋钮 · 4 张评测关键帧" width="480" height="270">
-</a>
-<p class="fine">抓取炉灶旋钮 · 4 张评测关键帧</p>
-</div>
-<div class="case-media">
-<a href="assets/robofail/case-036-keyframes.gif" target="_blank" rel="noopener">
-<img loading="lazy" src="assets/robofail/case-036-keyframes.gif" alt="切胡萝卜 · 3 张评测关键帧" width="480" height="270">
-</a>
-<p class="fine">切胡萝卜 · 3 张评测关键帧</p>
-</div>
-</div>
-</details>
-<details class="method-detail">
-<summary>查看旋钮案例的评测关键帧</summary>
-<figure class="figure case-observations">
-<button type="button" data-zoom aria-label="放大炉灶旋钮案例关键帧">
-<img loading="lazy" src="assets/robofail/case-055-observations.jpg" alt="RoboFail 炉灶旋钮案例：与原始输入匹配的四张关键帧，供检查成败判断与解释。" width="1280" height="722">
-</button>
-<figcaption>图 14. <span>旋钮案例评测输入中的四张关键帧。</span>
-<span class="zoom-label" aria-hidden="true">放大 ↗</span>
-</figcaption>
-</figure>
-</details>
-<p>旋钮案例说明，正确的成败标签未必伴随正确的解释；切片案例则提示，模型仍可能把成功执行判断为失败。</p>
-<details class="method-detail">
-<summary>查看参考答案与模型原文</summary>
-<dl class="model-quotes">
-<div>
-<dt>参考答案</dt>
-<dd lang="en">No, The robot gripper fails to close the gripper.</dd>
-</div>
-<div>
-<dt>零样本</dt>
-<dd lang="en">No. The gripper is positioned over the burner area rather than around a stove knob, so it has not established a secure grasp on the knob.</dd>
-</div>
-<div>
-<dt>五示例 ICL</dt>
-<dd lang="en">Yes, the robot successfully grasped the stove knob.</dd>
-</div>
-</dl>
-</details>
-<p class="fine">
-<a class="inline-link" href="assets/robofail/case-055-input.jpg" target="_blank" rel="noopener">查看旋钮输入拼图 ↗</a> · <a class="inline-link" href="assets/robofail/case-036-input.jpg" target="_blank" rel="noopener">查看切片输入拼图 ↗</a>
-</p>
-<a class="inline-link" href="evidence.html#failure-cases">查看关键帧、参考答案与模型解释 ↗</a>
-<details class="research-detail">
-<summary>切片案例的参考与模型原文</summary>
-<blockquote>
-<strong>参考答案</strong>
-<p lang="en">Yes, the robot succeed at the sub-task.</p>
-</blockquote>
-<blockquote>
-<strong>零样本</strong>
-<p lang="en">No. The arm moves toward the carrot, but the blade does not complete a cut through it. The carrot remains intact on the board, with no visibly separated slice.</p>
-</blockquote>
-<blockquote>
-<strong>五示例</strong>
-<p lang="en">No, the carrot remains whole on the counter; the robot did not successfully cut it into slices.</p>
-</blockquote>
-</details>
-<p class="fine">这两例在评测后选取，用于检查标签与理由的分歧，不用于估计错误频率。模型文字并不能证明参考标签有误，也不独立验证其声称的物理原因。</p>
+<h4 id="robofail-gallery" data-toc>2.3.2 从误报纠正到失败漏检</h4>
+<p class="fine">下面先看成功识别得到纠正的案例，再看动作完成与任务要求之间的分歧。视频为原始轨迹回放，模型只接收关键帧拼图与问题；所有案例均从已完成测评中选取，用于分析判断依据，不代表错误频率。</p>
 <div class="robofail-extra">
-<h4 id="robofail-gallery" data-toc>更多案例：从误报纠正到失败漏检</h4>
-<p>以下补充案例来自同一批已保存的 zero-shot 与外部 5-shot 测评。每例并排展示源视频、模型实际看到的观测帧、公开参考和模型原文。它们是事后挑选的定性案例，不改变 57 个问题的总体分数。</p>
 <article class="robo-expanded-case" id="robo-case-50">
 <h5>按咖啡机按钮：误报得到纠正</h5>
 <p>零样本将缺少可见激活迹象解释为失败，5-shot 则给出与公开成功标签一致的判断。这个例子展示成功识别的改善，但不能单凭回答确定按钮实际接触或机器内部状态。</p>
-<div class="robo-case-columns">
-<div>
+<div class="case-video-grid">
 <figure>
 <video controls playsinline muted preload="none" src="assets/robofail/case-050-source-replay.mp4" poster="assets/robofail/case-050-frame-2.jpg" aria-label="Press the coffee-machine button">
 </video>
-<figcaption>图 15. 原始轨迹回放，保持原速；该连续视频未输入模型。</figcaption>
+<figcaption>图 12. 原始轨迹回放，保持原速；该连续视频未输入模型。</figcaption>
 </figure>
 <figure>
 <button type="button" data-zoom aria-label="放大观测帧">
 <img loading="lazy" src="assets/robofail/case-050-observations.jpg" alt="实际输入中的可见观测帧，按时间排序" width="960" height="1088">
 </button>
-<figcaption>图 16. 输入观测帧，按原顺序展示；为便于阅读重新排版，完整原图见下方。</figcaption>
+<figcaption>图 13. 输入观测帧，按原顺序展示；为便于阅读重新排版，完整原图见下方。</figcaption>
 </figure>
 </div>
-<div>
+<details class="method-detail">
+<summary>参考答案与两种条件的模型原文</summary>
 <p>
 <strong>公开参考 · 成功</strong>
 </p>
@@ -1867,8 +1789,7 @@
 <strong>外部 5-shot · 标签一致</strong>
 </p>
 <blockquote lang="en">Yes, the robot successfully pressed the button on the coffee machine.</blockquote>
-</div>
-</div>
+</details>
 <details class="research-detail">
 <summary>原始输入与证据边界</summary>
 <p>
@@ -1878,106 +1799,24 @@
 <p>视频对应关系通过观测帧的像素匹配与视觉检查核验。关键帧位置不是人工失败区间，也不是模型报警时间；模型解释不构成独立的物理原因验证。</p>
 </details>
 </article>
-<article class="robo-expanded-case" id="robo-case-33">
-<h5>拿刀：相同失败标签，不同原因</h5>
-<p>两个条件都识别出失败，但零样本解释为未抓住刀，5-shot 则指出拿了勺子而不是刀，后者与参考中的“操作对象错误”更直接对应。标签一致并不意味着解释相同。</p>
-<div class="robo-case-columns">
-<div>
-<figure>
-<video controls playsinline muted preload="none" src="assets/robofail/case-033-source-replay.mp4" poster="assets/robofail/case-033-frame-2.jpg" aria-label="Grasp the knife">
-</video>
-<figcaption>图 17. 原始轨迹回放，保持原速；该连续视频未输入模型。</figcaption>
-</figure>
-<figure>
-<button type="button" data-zoom aria-label="放大观测帧">
-<img loading="lazy" src="assets/robofail/case-033-observations.jpg" alt="实际输入中的可见观测帧，按时间排序" width="960" height="1088">
-</button>
-<figcaption>图 18. 输入观测帧，按原顺序展示；为便于阅读重新排版，完整原图见下方。</figcaption>
-</figure>
-</div>
-<div>
-<p>
-<strong>公开参考 · 失败</strong>
-</p>
-<blockquote lang="en">No, The robot execute the action on the wrong object.</blockquote>
-<p>
-<strong>零样本 · 标签一致</strong>
-</p>
-<blockquote lang="en">No. The knife remains on the countertop beside the sink while the robot arm lifts away without securing it. The grasp failed, so the knife was not picked up.</blockquote>
-<p>
-<strong>外部 5-shot · 标签一致</strong>
-</p>
-<blockquote lang="en">No, The robot picked up the spoon instead of the knife.</blockquote>
-</div>
-</div>
-<details class="research-detail">
-<summary>原始输入与证据边界</summary>
-<p>
-<a class="inline-link" href="assets/robofail/case-033-input.jpg" target="_blank" rel="noopener">查看完整原始输入拼图 ↗</a>
-</p>
-<p lang="en">In the image, it contains many frames from a single view at different time steps in a matrix arrangement depicting the robot arm performing pick up the knife.         Each frame is labeled with the corresponding timestep reflecting the temporal information from left to right.        The white grid represents future sub-tasks that has yet to happen and should be ignore.        For the given sub-tasks, first determine it has succeed by choosing from [&quot;yes&quot;, &quot;no&quot;], and then explain the reason why the current sub-tasks has failed.</p>
-<p>视频对应关系通过观测帧的像素匹配与视觉检查核验。关键帧位置不是人工失败区间，也不是模型报警时间；模型解释不构成独立的物理原因验证。</p>
-</details>
-</article>
-<article class="robo-expanded-case" id="robo-case-2">
-<h5>抓取苹果：共同识别成功</h5>
-<p>两种条件都回答成功，与该子任务的公开标签一致。该例提供一个正确成功判断的对照；它只涉及当前抓取子任务，不代表整个后续轨迹成功。</p>
-<div class="robo-case-columns">
-<div>
-<figure>
-<video controls playsinline muted preload="none" src="assets/robofail/case-002-source-replay.mp4" poster="assets/robofail/case-002-frame-2.jpg" aria-label="Grasp the apple">
-</video>
-<figcaption>图 19. 原始轨迹回放，保持原速；该连续视频未输入模型。</figcaption>
-</figure>
-<figure>
-<button type="button" data-zoom aria-label="放大观测帧">
-<img loading="lazy" src="assets/robofail/case-002-observations.jpg" alt="实际输入中的可见观测帧，按时间排序" width="960" height="1088">
-</button>
-<figcaption>图 20. 输入观测帧，按原顺序展示；为便于阅读重新排版，完整原图见下方。</figcaption>
-</figure>
-</div>
-<div>
-<p>
-<strong>公开参考 · 成功</strong>
-</p>
-<blockquote lang="en">Yes, the robot succeed at the sub-task.</blockquote>
-<p>
-<strong>零样本 · 标签一致</strong>
-</p>
-<blockquote lang="en">Yes. The robot has successfully picked up the apple: in frame 2, the apple is held by the gripper and lifted clear of the countertop. No failure is visible.</blockquote>
-<p>
-<strong>外部 5-shot · 标签一致</strong>
-</p>
-<blockquote lang="en">Yes, the robot successfully grasped the apple and lifted it off the countertop.</blockquote>
-</div>
-</div>
-<details class="research-detail">
-<summary>原始输入与证据边界</summary>
-<p>
-<a class="inline-link" href="assets/robofail/case-002-input.jpg" target="_blank" rel="noopener">查看完整原始输入拼图 ↗</a>
-</p>
-<p lang="en">In the image, it contains many frames from a single view at different time steps in a matrix arrangement depicting the robot arm performing pick up of the apple.         Each frame is labeled with the corresponding timestep reflecting the temporal information from left to right.        The white grid represents future sub-tasks that has yet to happen and should be ignore.        For the given sub-tasks, first determine it has succeed by choosing from [&quot;yes&quot;, &quot;no&quot;], and then explain the reason why the current sub-tasks has failed.</p>
-<p>视频对应关系通过观测帧的像素匹配与视觉检查核验。关键帧位置不是人工失败区间，也不是模型报警时间；模型解释不构成独立的物理原因验证。</p>
-</details>
-</article>
 <article class="robo-expanded-case" id="robo-case-49">
 <h5>放入碗中：识别动作仍可能漏掉任务错误</h5>
-<p>参考将失败归因于操作对象错误。零样本虽回答失败，却解释为尚未释放草莓；5-shot 回答放置成功，从而漏掉公开失败标签。这提示应把动作是否发生与任务对象是否正确分开核查。</p>
-<div class="robo-case-columns">
-<div>
+<p>参考将失败归因于操作对象错误。零样本虽回答失败，却解释为尚未释放草莓；5-shot 回答放置成功，从而漏掉公开失败标签。但问题只写“放入碗中”，没有明确应放哪个对象；因此，这个分歧还涉及任务信息是否充分，不能只归为视觉辨识错误。</p>
+<div class="case-video-grid">
 <figure>
 <video controls playsinline muted preload="none" src="assets/robofail/case-049-source-replay.mp4" poster="assets/robofail/case-049-frame-3.jpg" aria-label="Place the object in the bowl">
 </video>
-<figcaption>图 21. 原始轨迹回放，保持原速；该连续视频未输入模型。</figcaption>
+<figcaption>图 14. 原始轨迹回放，保持原速；该连续视频未输入模型。</figcaption>
 </figure>
 <figure>
 <button type="button" data-zoom aria-label="放大观测帧">
 <img loading="lazy" src="assets/robofail/case-049-observations.jpg" alt="实际输入中的可见观测帧，按时间排序" width="960" height="1636">
 </button>
-<figcaption>图 22. 输入观测帧，按原顺序展示；为便于阅读重新排版，完整原图见下方。</figcaption>
+<figcaption>图 15. 输入观测帧，按原顺序展示；为便于阅读重新排版，完整原图见下方。</figcaption>
 </figure>
 </div>
-<div>
+<details class="method-detail">
+<summary>参考答案与两种条件的模型原文</summary>
 <p>
 <strong>公开参考 · 失败</strong>
 </p>
@@ -1990,8 +1829,7 @@
 <strong>外部 5-shot · 漏检</strong>
 </p>
 <blockquote lang="en">Yes, the robot successfully placed the strawberry in the bowl.</blockquote>
-</div>
-</div>
+</details>
 <details class="research-detail">
 <summary>原始输入与证据边界</summary>
 <p>
@@ -2002,12 +1840,105 @@
 </details>
 </article>
 </div>
+<details class="research-detail">
+<summary>补充对照：两种条件都识别成功</summary>
+<div class="robofail-extra">
+<article class="robo-expanded-case" id="robo-case-2">
+<h5>抓取苹果：共同识别成功</h5>
+<p>两种条件都回答成功，与该子任务的公开标签一致。该例提供一个正确成功判断的对照；它只涉及当前抓取子任务，不代表整个后续轨迹成功。</p>
+<div class="case-video-grid">
+<figure>
+<video controls playsinline muted preload="none" src="assets/robofail/case-002-source-replay.mp4" poster="assets/robofail/case-002-frame-2.jpg" aria-label="Grasp the apple">
+</video>
+<figcaption>图 16. 原始轨迹回放，保持原速；该连续视频未输入模型。</figcaption>
+</figure>
+<figure>
+<button type="button" data-zoom aria-label="放大观测帧">
+<img loading="lazy" src="assets/robofail/case-002-observations.jpg" alt="实际输入中的可见观测帧，按时间排序" width="960" height="1088">
+</button>
+<figcaption>图 17. 输入观测帧，按原顺序展示；为便于阅读重新排版，完整原图见下方。</figcaption>
+</figure>
+</div>
+<details class="method-detail">
+<summary>参考答案与两种条件的模型原文</summary>
+<p>
+<strong>公开参考 · 成功</strong>
+</p>
+<blockquote lang="en">Yes, the robot succeed at the sub-task.</blockquote>
+<p>
+<strong>零样本 · 标签一致</strong>
+</p>
+<blockquote lang="en">Yes. The robot has successfully picked up the apple: in frame 2, the apple is held by the gripper and lifted clear of the countertop. No failure is visible.</blockquote>
+<p>
+<strong>外部 5-shot · 标签一致</strong>
+</p>
+<blockquote lang="en">Yes, the robot successfully grasped the apple and lifted it off the countertop.</blockquote>
+</details>
+<details class="research-detail">
+<summary>原始输入与证据边界</summary>
+<p>
+<a class="inline-link" href="assets/robofail/case-002-input.jpg" target="_blank" rel="noopener">查看完整原始输入拼图 ↗</a>
+</p>
+<p lang="en">In the image, it contains many frames from a single view at different time steps in a matrix arrangement depicting the robot arm performing pick up of the apple.         Each frame is labeled with the corresponding timestep reflecting the temporal information from left to right.        The white grid represents future sub-tasks that has yet to happen and should be ignore.        For the given sub-tasks, first determine it has succeed by choosing from [&quot;yes&quot;, &quot;no&quot;], and then explain the reason why the current sub-tasks has failed.</p>
+<p>视频对应关系通过观测帧的像素匹配与视觉检查核验。关键帧位置不是人工失败区间，也不是模型报警时间；模型解释不构成独立的物理原因验证。</p>
+</details>
+</article>
+</div>
+</details>
+<span id="robofail-cases">
+</span>
 <div class="visibility-study">
-<h4 id="robofail-visibility" data-toc>补充实验：可见证据如何影响判断？</h4>
-<p>我们对网页原有的旋钮抓取与胡萝卜切片两例补做了 12 次请求。每例保留前 1 帧、前 2 帧或全部已观测帧，分别使用 zero-shot 与相同的外部 5-shot，均请求 GPT-6 Astra。所有结果均为新请求，包含全部帧的对照条件。</p>
-<p class="method-note">本实验于 2026 年 10 月 20 日新增，独立于上文正式测评。遮蔽后仍使用原来的回顾性问题；少帧条件没有对应的时间级真值，因此不计算准确率，也不解释为在线报警。每个条件仅请求一次，不能把变化完全归因于可见帧数量。</p>
+<h4 id="robofail-visibility" data-toc>2.3.3 补充观测能否改善判断？</h4>
+<p>我们进一步对旋钮抓取与胡萝卜切片两例进行观测遮蔽。每例分别保留前 1 帧、前 2 帧或全部观测，在零样本与相同的五示例条件下各请求一次，共 12 次新回答；以下将原测评案例与这组对照放在一起。</p>
+<p class="fine">遮蔽条件沿用原来的回顾性问题，少帧输入没有对应的时间级真值，因此只比较回答，不计算准确率。每条件仅一次请求，不能据此确定观测量变化的因果效应。</p>
 <article class="visibility-case">
+<div class="robofail-extra">
+<article class="robo-expanded-case" id="robo-case-55">
 <h5>抓取炉灶旋钮</h5>
+<p>参考判为失败，原因是夹爪未闭合。原测评中，零样本判失败但强调抓取位置，五示例条件则判成功。下面比较减少观测后，两种条件的判断是否改变。</p>
+<div class="case-video-grid">
+<figure>
+<video controls playsinline muted preload="none" src="assets/robofail/case-055-source-replay.mp4" poster="assets/robofail/case-055-frame-4.jpg" aria-label="Grasp the stove knob">
+</video>
+<figcaption>图 18. 原始轨迹回放，保持原速；该连续视频未输入模型。</figcaption>
+</figure>
+<figure>
+<button type="button" data-zoom aria-label="放大观测帧">
+<img loading="lazy" src="assets/robofail/case-055-observations.jpg" alt="实际输入中的可见观测帧，按时间排序" width="1280" height="722">
+</button>
+<figcaption>图 19. 输入观测帧，按原顺序展示；为便于阅读重新排版，完整原图见下方。</figcaption>
+</figure>
+</div>
+<details class="method-detail">
+<summary>参考答案与两种条件的模型原文</summary>
+<p>
+<strong>公开参考 · 失败</strong>
+</p>
+<blockquote lang="en">No, The robot gripper fails to close the gripper.</blockquote>
+<p>
+<strong>零样本 · 标签一致</strong>
+</p>
+<blockquote lang="en">No. The gripper is positioned over the burner area rather than around a stove knob, so it has not established a secure grasp on the knob.</blockquote>
+<p>
+<strong>外部 5-shot · 漏检</strong>
+</p>
+<blockquote lang="en">Yes, the robot successfully grasped the stove knob.</blockquote>
+</details>
+<details class="research-detail">
+<summary>原始输入与证据边界</summary>
+<p>
+<a class="inline-link" href="assets/robofail/case-055-input.jpg" target="_blank" rel="noopener">查看完整原始输入拼图 ↗</a>
+</p>
+<p lang="en">In the image, it contains many frames from a single view at different time steps in a matrix arrangement depicting the robot arm grasp onto the stove knob.         Each frame is labeled with the corresponding timestep reflecting the temporal information from left to right.        The white grid represents future sub-tasks that has yet to happen and should be ignore.        For the given sub-tasks, first determine it has succeed by choosing from [&quot;yes&quot;, &quot;no&quot;], and then explain the reason why the current sub-tasks has failed.</p>
+<p>视频对应关系通过观测帧的像素匹配与视觉检查核验。关键帧位置不是人工失败区间，也不是模型报警时间；模型解释不构成独立的物理原因验证。</p>
+</details>
+<details class="method-detail" id="robofail-keyframe-gifs">
+<summary>查看评测关键帧动图</summary>
+<img loading="lazy" src="assets/robofail/case-055-keyframes.gif" alt="Grasp the stove knob" width="480" height="270">
+<p class="fine">按输入顺序每秒回放一帧；回放时长不代表执行时间。</p>
+</details>
+</article>
+</div>
 <div class="visibility-matrix" role="group" aria-label="各条件下的模型判断">
 <span>
 </span>
@@ -2061,7 +1992,7 @@
 <blockquote lang="en">No, the robot grasped and lifted the pot instead of grasping the stove knob.</blockquote>
 <p class="fine">返回模型标识：gpt-6-astra</p>
 </details>
-<details class="research-detail visibility-response" open>
+<details class="research-detail visibility-response">
 <summary>4 帧：输入与两种条件的模型原文</summary>
 <div class="experiment-input" tabindex="0" role="region" aria-label="横向滚动查看实验输入">
 <a href="assets/robofail/visibility/case-055-visible-4.png" target="_blank" rel="noopener">
@@ -2081,7 +2012,53 @@
 </details>
 </article>
 <article class="visibility-case">
+<div class="robofail-extra">
+<article class="robo-expanded-case" id="robo-case-36">
 <h5>切胡萝卜</h5>
+<p>参考判为成功，原测评的两种条件却都以未看到分离的切片为由判失败。下面检查这一分歧是否随着观测补全而消失。</p>
+<div class="case-video-grid">
+<figure>
+<video controls playsinline muted preload="none" src="assets/robofail/case-036-source-replay.mp4" poster="assets/robofail/case-036-frame-3.jpg" aria-label="Slice the carrot">
+</video>
+<figcaption>图 20. 原始轨迹回放，保持原速；该连续视频未输入模型。</figcaption>
+</figure>
+<figure>
+<button type="button" data-zoom aria-label="放大观测帧">
+<img loading="lazy" src="assets/robofail/case-036-observations.jpg" alt="实际输入中的可见观测帧，按时间排序" width="752" height="1280">
+</button>
+<figcaption>图 21. 输入观测帧，按原顺序展示；为便于阅读重新排版，完整原图见下方。</figcaption>
+</figure>
+</div>
+<details class="method-detail">
+<summary>参考答案与两种条件的模型原文</summary>
+<p>
+<strong>公开参考 · 成功</strong>
+</p>
+<blockquote lang="en">Yes, the robot succeed at the sub-task.</blockquote>
+<p>
+<strong>零样本 · 误报</strong>
+</p>
+<blockquote lang="en">No. The arm moves toward the carrot, but the blade does not complete a cut through it. The carrot remains intact on the board, with no visibly separated slice.</blockquote>
+<p>
+<strong>外部 5-shot · 误报</strong>
+</p>
+<blockquote lang="en">No, the carrot remains whole on the counter; the robot did not successfully cut it into slices.</blockquote>
+</details>
+<details class="research-detail">
+<summary>原始输入与证据边界</summary>
+<p>
+<a class="inline-link" href="assets/robofail/case-036-input.jpg" target="_blank" rel="noopener">查看完整原始输入拼图 ↗</a>
+</p>
+<p lang="en">In the image, it contains many frames from a single view at different time steps in a matrix arrangement depicting the robot arm slice the carrot.         Each frame is labeled with the corresponding timestep reflecting the temporal information from left to right.        The white grid represents future sub-tasks that has yet to happen and should be ignore.        For the given sub-tasks, first determine it has succeed by choosing from [&quot;yes&quot;, &quot;no&quot;], and then explain the reason why the current sub-tasks has failed.</p>
+<p>视频对应关系通过观测帧的像素匹配与视觉检查核验。关键帧位置不是人工失败区间，也不是模型报警时间；模型解释不构成独立的物理原因验证。</p>
+</details>
+<details class="method-detail">
+<summary>查看评测关键帧动图</summary>
+<img loading="lazy" src="assets/robofail/case-036-keyframes.gif" alt="Slice the carrot" width="480" height="270">
+<p class="fine">按输入顺序每秒回放一帧；回放时长不代表执行时间。</p>
+</details>
+</article>
+</div>
 <div class="visibility-matrix" role="group" aria-label="各条件下的模型判断">
 <span>
 </span>
@@ -2135,7 +2112,7 @@
 <blockquote lang="en">No, the robot picked up the knife but did not slice the carrot; the carrot remains whole on the countertop.</blockquote>
 <p class="fine">返回模型标识：gpt-6-astra</p>
 </details>
-<details class="research-detail visibility-response" open>
+<details class="research-detail visibility-response">
 <summary>3 帧：输入与两种条件的模型原文</summary>
 <div class="experiment-input" tabindex="0" role="region" aria-label="横向滚动查看实验输入">
 <a href="assets/robofail/visibility/case-036-visible-3.png" target="_blank" rel="noopener">
@@ -2163,11 +2140,15 @@
 </p>
 </details>
 </div>
-<p class="section-summary">
-<strong>小结。</strong>五示例条件大幅减少了成功子任务的误报，但增加了失败漏检。案例与观测遮蔽结果提示，成败判断还需核对可见证据；当前比较尚不能分离示例与后端差异的影响。</p>
+<div class="section-summary">
+<p>小结。<strong>五示例条件更善于识别成功子任务，但成功识别的改善没有同时消除失败漏检。</strong>
+</p>
+<p>案例显示，模型对“动作已经发生”的判断，还需与任务要求的对象和完成条件对应。补足观测也未在旋钮与切片两例中消除最终判断与参考的分歧。要解释这些错误，需要分别检查评价标准是否充分给出、关键状态是否可见，以及模型是否正确使用了这些证据，而不能只比较总体准确率。</p>
+</div>
 </section>
 <section id="explanations" class="result-topic" data-toc>
-<h3>2.5 失败解释与得分</h3>
+<h3>2.4 失败解释与得分</h3>
+<h4 id="explanation-scores" data-toc>2.4.1 综合得分与分项贡献</h4>
 <p class="">五示例条件的综合 ROUGE-L 从 0.185 升至 0.499，但约 <strong>89.3% 的增量来自成功子任务被正确识别</strong>。</p>
 <p class="">AHA 的综合评分规则<sup class="citation">
 <a href="#ref-aha" aria-label="AHA">[8]</a>
@@ -2176,7 +2157,7 @@
 <button type="button" data-zoom aria-label="放大: 包含 AHA 及其他 baseline 的综合 ROUGE-L 对比">
 <img loading="lazy" src="assets/figures/05_robofail_icl.png" alt="包含 AHA 及其他 baseline 的综合 ROUGE-L 对比" width="1180" height="875">
 </button>
-<figcaption>图 23. 综合 ROUGE-L 对比；文献结果沿用各自协议。<span class="zoom-label" aria-hidden="true">放大 ↗</span>
+<figcaption>图 22. 综合 ROUGE-L 对比；文献结果沿用各自协议。<span class="zoom-label" aria-hidden="true">放大 ↗</span>
 </figcaption>
 </figure>
 <figure class="study-figure">
@@ -2208,7 +2189,7 @@
 <span>0</span>
 <span>0.55</span>
 </div>
-<figcaption>图 24. 综合 ROUGE-L 的组成：正确成功项贡献了大部分增量。</figcaption>
+<figcaption>图 23. 综合 ROUGE-L 的组成：正确成功项贡献了大部分增量。</figcaption>
 </figure>
 <details class="research-detail">
 <summary>综合评分规则与分项计算</summary>
@@ -2219,15 +2200,69 @@
 <p class="">正确成功项从 0.0877 增至 0.3684，增量约为 16 / 57 = 0.2807，占报告总增量 0.3144 的约 89.3%。失败解释项从 0.0969 增至 0.1305，占剩余约 10.7%。因此，0.499 不能读作“49.9% 的失败解释正确”；大部分增量来自识别成功，而非失败解释项。</p>
 <p class="">组成图的两条形使用相同的 0–0.55 刻度，两项均以 57 为分母。分项与总分分别取整，末位可能有舍入差异。</p>
 </details>
-<p class="section-summary">
-<strong>小结。</strong>综合 ROUGE-L 的增长主要来自成功识别，不能等同于失败解释的同等改善。<a class="inline-link" href="#robofail-cases">旋钮与切片案例</a>表明，标签与理由需分别核验；可信的原因解释还需要语义与物理证据。</p>
+<h4 id="explanation-cases" data-toc>2.4.2 判对失败，是否也解释对了原因？</h4>
+<div class="robofail-extra">
+<article class="robo-expanded-case" id="robo-case-33">
+<h5>拿刀：相同失败标签，不同原因</h5>
+<p>两个条件都识别出失败，但零样本解释为未抓住刀，5-shot 则指出拿了勺子而不是刀，后者与参考中的“操作对象错误”更直接对应。标签一致并不意味着解释相同。</p>
+<div class="case-video-grid">
+<figure>
+<video controls playsinline muted preload="none" src="assets/robofail/case-033-source-replay.mp4" poster="assets/robofail/case-033-frame-2.jpg" aria-label="Grasp the knife">
+</video>
+<figcaption>图 24. 原始轨迹回放，保持原速；该连续视频未输入模型。</figcaption>
+</figure>
+<figure>
+<button type="button" data-zoom aria-label="放大观测帧">
+<img loading="lazy" src="assets/robofail/case-033-observations.jpg" alt="实际输入中的可见观测帧，按时间排序" width="960" height="1088">
+</button>
+<figcaption>图 25. 输入观测帧，按原顺序展示；为便于阅读重新排版，完整原图见下方。</figcaption>
+</figure>
+</div>
+<details class="method-detail">
+<summary>参考答案与两种条件的模型原文</summary>
+<p>
+<strong>公开参考 · 失败</strong>
+</p>
+<blockquote lang="en">No, The robot execute the action on the wrong object.</blockquote>
+<p>
+<strong>零样本 · 标签一致</strong>
+</p>
+<blockquote lang="en">No. The knife remains on the countertop beside the sink while the robot arm lifts away without securing it. The grasp failed, so the knife was not picked up.</blockquote>
+<p>
+<strong>外部 5-shot · 标签一致</strong>
+</p>
+<blockquote lang="en">No, The robot picked up the spoon instead of the knife.</blockquote>
+</details>
+<details class="research-detail">
+<summary>原始输入与证据边界</summary>
+<p>
+<a class="inline-link" href="assets/robofail/case-033-input.jpg" target="_blank" rel="noopener">查看完整原始输入拼图 ↗</a>
+</p>
+<p lang="en">In the image, it contains many frames from a single view at different time steps in a matrix arrangement depicting the robot arm performing pick up the knife.         Each frame is labeled with the corresponding timestep reflecting the temporal information from left to right.        The white grid represents future sub-tasks that has yet to happen and should be ignore.        For the given sub-tasks, first determine it has succeed by choosing from [&quot;yes&quot;, &quot;no&quot;], and then explain the reason why the current sub-tasks has failed.</p>
+<p>视频对应关系通过观测帧的像素匹配与视觉检查核验。关键帧位置不是人工失败区间，也不是模型报警时间；模型解释不构成独立的物理原因验证。</p>
+</details>
+</article>
+</div>
+<p class="">
+<a href="#robo-case-55">旋钮案例</a>给出另一种分歧：零样本判断与失败标签一致，但回答强调抓取位置，参考则强调夹爪未闭合。这种标签一致不能直接证明原因诊断正确；仅凭与参考措辞不同，也不能判定模型所述原因必然错误，仍需核对关键状态。</p>
+<div class="section-summary">
+<p>小结。<strong>综合 ROUGE-L 的增长主要来自成功识别，不能据此认定失败原因诊断获得了同等改善。</strong>
+</p>
+<p>拿刀案例中，两种条件给出相同的失败标签，却描述了不同原因；旋钮案例也出现标签与参考一致、理由却不一致的回答。解释评价需要在成败标签之外，单独检验错误对象、动作或状态是否被准确指出，以及所述原因是否得到观测支持。文本重合度可以辅助比较，但不能替代这些语义判断。</p>
+</div>
 </section>
 </section>
 <section id="outlook" class="" data-toc>
 <h2>3. 讨论与展望</h2>
-<h3 id="conclusions" data-toc>3.1 已展现的评价能力</h3>
-<p class="">通用多模态模型已有的视觉理解与推理能力，能够支持机器人执行质量比较、进度估计与成败判断。在本次评测中，Astra 的排序与偏好结果可与专用模型竞争；案例还显示，它能够识别目标物体、执行受挫与重试后的完成，无需针对这些任务额外微调。</p>
-<p class="">这些能力对评价接口与上下文的响应并不一致。示例可以改善部分判断，也可能改变评分尺度、增加平分或干扰终态判断。因此，比较、进度、成败与解释应作为不同能力分别评价，不能由单一总分推断模型已具备通用、可靠的机器人 critic 能力。</p>
+<h3 id="conclusions" data-toc>3.1 主要发现</h3>
+<p class="">
+<strong>通用模型可以具备有竞争力的执行质量比较能力。</strong> Astra 在本研究中的零样本排序与直接偏好结果，数值上高于所引用的专用模型报告结果；这种能力无需针对评测任务额外微调。但不同通用模型间也有明显差异，不能将 Astra 的表现推广为所有多模态模型的共同能力。</p>
+<p class="">
+<strong>比较执行、追踪进度与确认完成是可分离的能力。</strong>模型可以正确识别相对质量和执行中的受挫，却仍误判终态。开瓶案例中，示例条件提高了时间相关性，同时低估了完成进度。这说明排序或趋势指标的改善，不能替代对完成条件的直接检验。</p>
+<p class="">
+<strong>示例带来的收益具有任务依赖性，也会伴随不同的错误分布。</strong>本研究中，进度相关性略有提高，轨迹排序却因平分增多而下降；RoboFail 五示例条件减少了误报，同时增加了漏检。示例并非通用的纠错手段，需要同时检查收益和新增错误。RoboFail 对照的后端一致性尚未确认，因此这里只报告条件间差异，不将其全部归因于示例。</p>
+<p class="">
+<strong>总体分数不足以说明模型依据什么作出评价。</strong>综合解释分数的增长主要来自成功识别，而部分偏好分歧涉及未明确的释放、稳定性等判据。前者需要拆开成败识别与原因解释，后者需要明确评价标准。两者都说明，评价机器人 critic 既要看结果是否符合参考，也要检查判断依据是否对应任务要求；现有实验尚未验证这种评价能否改善策略学习。</p>
 <h3 id="failure-modes" data-toc>3.2 Astra 何时仍会判断失误</h3>
 <p class="">
 <strong>相似结果可能掩盖质量差异。</strong>在<a href="#blue-bin-case">蓝桶案例</a>中，Astra 将参考为成功和次优的两条轨迹都评为满分。模型识别了共同的开盖结果，却没有区分参考质量等级。</p>
@@ -2236,7 +2271,7 @@
 <a href="#progress-icl">开瓶案例</a>中，示例条件提高了时间相关性，却将成功轨迹的终点进度从 1.00 降至 0.35。轨迹上的平滑变化不能替代对关键状态的识别。</p>
 <p class="">
 <strong>判对成败不保证解释可信。</strong>
-<a href="#robofail-cases">抓旋钮案例</a>的零样本回答与失败标签一致，所述原因却不同于参考；五示例条件又将同一子任务判断为成功。另一方面，杯子与垃圾桶的偏好分歧涉及释放、稳定性等未明确的评价标准，应与这类状态误判分开分析。</p>
+<a href="#robo-case-55">抓旋钮案例</a>的零样本回答与失败标签一致，所述原因却不同于参考；五示例条件又将同一子任务判断为成功。另一方面，杯子与垃圾桶的偏好分歧涉及释放、稳定性等未明确的评价标准，应与这类状态误判分开分析。</p>
 <h3 id="limitations" data-toc>3.3 局限与未来工作</h3>
 <p class="">本研究限于固定离线轨迹，模型与任务覆盖有限。RoboFail 的 57 个问题共享 15 组轨迹，轨迹对也共享任务与样本；重复调用与抽样不确定性尚未量化，部分示例对照还存在后端差异。后续需固定模型快照与示例选择规则，在独立任务上检验稳定性。</p>
 <p class="">案例为事后选取，不代表错误频率。对标准含糊的样本，需要明确任务目标、过程约束与终态质量等 rubric，并由多位标注者独立复核；对仅靠图像难以判断的接触与稳定状态，则需补充视角或传感器证据，以区分标准分歧、观测不足与模型错误。</p>
