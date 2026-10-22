@@ -1,21 +1,6 @@
 'use strict';
 const qs = s => document.querySelector(s);
 const all = s => [...document.querySelectorAll(s)];
-const diagnosis = [
-  {accuracy:'64.91', recall:'94.12%', falseAlarms:18, misses:2, correct:37, matrix:[5,18,2,32]},
-  {accuracy:'85.96', recall:'82.35%', falseAlarms:2, misses:6, correct:49, matrix:[21,2,6,28]}
-];
-function setCondition(index) {
-  const d = diagnosis[index];
-  all('[data-condition]').forEach(b => b.setAttribute('aria-pressed', String(Number(b.dataset.condition) === index)));
-  qs('#accuracy').textContent = d.accuracy;
-  qs('#recall').textContent = d.recall;
-  qs('#false-alarms').textContent = d.falseAlarms;
-  qs('#misses').textContent = d.misses;
-  qs('#correct').textContent = d.correct + ' / 57';
-  all('[data-cell]').forEach((el,i) => el.textContent = d.matrix[i]);
-}
-all('[data-condition]').forEach(b => b.addEventListener('click', () => setCondition(Number(b.dataset.condition))));
 const modal = qs('#figure-modal');
 let lastFocus;
 all('[data-zoom]').forEach(button => button.addEventListener('click', () => {

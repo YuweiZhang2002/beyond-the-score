@@ -50,9 +50,9 @@
 <a class="subsection" href="#progress-icl">2.3 Effects of context examples</a>
 <a class="subsection" href="#failure">2.4 Subtask classification</a>
 <a class="subsection" href="#explanations">2.5 Explanations and scores</a>
-<a class="" href="#outlook">3. Discussion and limitations</a>
-<a class="subsection" href="#limitations">3.1 Limitations</a>
-<a class="subsection" href="#next-steps">3.2 Reinforcement learning</a>
+<a class="" href="#outlook">3. Discussion and outlook</a>
+<a class="subsection" href="#conclusions">3.1 Findings</a>
+<a class="subsection" href="#limitations">3.2 Limitations and future work</a>
 <a class="" href="#resources">Data and references</a>
 </nav>
 </aside>
@@ -1451,74 +1451,73 @@
 </section>
 <section id="failure" class="result-topic" data-toc>
 <h3>2.4 Subtask success and failure</h3>
-<p>We further test Astra’s ability to recognize and explain failures on RoboFail<sup class="citation">
+<p>We evaluate Astra’s subtask outcome judgments and failure explanations on 57 RoboFail<sup class="citation">
 <a href="#ref-reflect" aria-label="REFLECT / RoboFail">[4]</a>
-</sup>. The evaluation contains <strong>57 subtask questions from 15 trajectory groups</strong> and asks the model to determine subtask success from keyframes and explain failures. Reading the judgment alongside its reason allows researchers to inspect the cited evidence and potential errors.</p>
-<p>Zero-shot Astra identifies 32 of 34 failed subtasks, reaching failure recall of <strong>94.12%</strong>. Overall accuracy is <strong>64.91%</strong>, above the reported values for the specially trained AHA-7B (62.5%)<sup class="citation">
+</sup> questions, using subtask descriptions and keyframes as input.</p>
+<p>Zero-shot accuracy is <strong>64.91%</strong>, comparable to the reported results of the specialized AHA models. With five external examples, accuracy reaches <strong>85.96%</strong>, about <strong>19.9 percentage points</strong> above the <strong>66.1%</strong> reported for AHA-13B Vicuna<sup class="citation">
 <a href="#ref-aha" aria-label="AHA">[8]</a>
-</sup> and AHA-13B (Llama-2, 64.3%), and close to AHA-13B (Vicuna) at 66.1%. This shows an ability to assess subtask outcomes without task-specific fine-tuning. Its judgments are conservative, however: 18 of 23 successful subtasks are predicted as failures.</p>
-<p>With five external in-context learning (ICL) examples, Astra’s overall accuracy reaches <strong>85.96%</strong>, above AHA-13B (Vicuna)’s reported 66.1%. Benchmark composite ROUGE-L also rises from the zero-shot score of <strong>0.185</strong> to <strong>0.499</strong>, above that model’s 0.290. Successful subtasks incorrectly predicted as failures decrease from <strong>18 to 2</strong>, indicating better discrimination of success and failure. However, missed failures also increase from <strong>2 to 6</strong>, so higher overall accuracy still involves a tradeoff between false alarms and misses. About <strong>89.3%</strong> of the composite ROUGE-L gain comes from recognizing more successful subtasks correctly; explanation quality still requires examination of individual cases.</p>
-<p class="fine">The literature values above were not rerun on our 57 questions, and exact question sets are unaligned; they are listed separately as context.</p>
+</sup>. Success recognition improves substantially, although more failures are missed; the table below gives the counts.</p>
 <figure class="figure">
-<button type="button" data-zoom aria-label="Enlarge: Outcome classification including AHA and other baselines">
-<img loading="lazy" src="assets/figures/04_robofail_icl.png" alt="Outcome classification including AHA and other baselines" width="1180" height="875">
+<button type="button" data-zoom aria-label="Enlarge: RoboFail outcome accuracy: this study and AHA-reported results">
+<img loading="lazy" src="assets/figures/04_robofail_icl.png" alt="RoboFail outcome accuracy: this study and AHA-reported results" width="1600" height="1118">
 </button>
-<figcaption>Figure 11. Full study and AHA-literature classification chart, retaining AHA-7B/13B, GPT-4o, LLaVA, Qwen-VL, and Gemini records. Study and literature blocks are separated; exact question sets remain unaligned.<span class="zoom-label" aria-hidden="true">Enlarge ↗</span>
+<figcaption>Figure 11. Outcome classification accuracy. Literature results are from the AHA report<sup class="citation">
+<a href="#ref-aha" aria-label="AHA">[8]</a>
+</sup> and shown separately; exact question sets have not been matched item by item.<span class="zoom-label" aria-hidden="true">Enlarge ↗</span>
 </figcaption>
 </figure>
-<figure class="diagnosis">
-<div class="diagnosis-header">
-<span>ROBOFAIL · 57 questions</span>
-<div class="switch" role="group" aria-label="Evaluation condition">
-<button type="button" data-condition="0" aria-pressed="true">Zero-shot</button>
-<button type="button" data-condition="1" aria-pressed="false">Five-example ICL</button>
+<div id="outcome-counts">
+<div class="table-scroll" role="region" aria-label="Outcome judgments on the same 57 questions: 23 successes and 34 failures." tabindex="0">
+<table>
+<caption>Table 8. Outcome judgments on the same 57 questions: 23 successes and 34 failures.</caption>
+<thead>
+<tr>
+<th scope="col">Reference → prediction</th>
+<th scope="col">Zero-shot</th>
+<th scope="col">Five-example ICL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">Accuracy</th>
+<td>64.91%</td>
+<td>85.96%</td>
+</tr>
+<tr>
+<th scope="row">Success → success</th>
+<td>5</td>
+<td>21</td>
+</tr>
+<tr>
+<th scope="row">Success → failure (false alarm)</th>
+<td>18</td>
+<td>2</td>
+</tr>
+<tr>
+<th scope="row">Failure → success (miss)</th>
+<td>2</td>
+<td>6</td>
+</tr>
+<tr>
+<th scope="row">Failure → failure</th>
+<td>32</td>
+<td>28</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
-    <div class="diagnosis-body" aria-live="polite" aria-atomic="true">
-<div class="accuracy">
-<b>
-<span id="accuracy">64.91</span>
-<small>%</small>
-</b>
-<span>Overall accuracy</span>
-<div class="diag-numbers">
-<div>Failure recall<strong id="recall">94.12%</strong>
-</div>
-<div>Correct answers<strong id="correct">37 / 57</strong>
-</div>
-<div>False alarms<strong id="false-alarms">18</strong>
-</div>
-<div>Misses<strong id="misses">2</strong>
-</div>
-</div>
-</div>
-    <div class="matrix" role="group" aria-label="Confusion matrix">
-<span>
-</span>
-<span class="label">Predicted success</span>
-<span class="label">Predicted failure</span>
-<span class="label">Reference success</span>
-<div class="cell">
-<b data-cell>5</b>Correct success</div>
-<div class="cell error">
-<b data-cell>18</b>False alarm</div>
-<span class="label">Reference failure</span>
-<div class="cell error">
-<b data-cell>2</b>Miss</div>
-<div class="cell">
-<b data-cell>32</b>Correct failure</div>
-</div>
-</div>
-    <figcaption>Figure 12. Classification on the same 57 questions, treating failure as positive. A false alarm is a reference success predicted as failure; a miss is a reference failure predicted as success. This is offline classification, not a timestamped online alarm.</figcaption>
-</figure>
-<p class="">An image-free reference always answers “failure.” From the current label counts, it gets 34 / 57 correct, or 59.65%. Zero-shot is 5.26 percentage points higher, recognizing five successes while missing two failures. This label-count deduction shows why accuracy must be read alongside both error types, rather than failure detection alone.</p>
-<p class="">The false-alarm rate on successful subtasks falls from 78.26% to 8.70%, while the miss rate on failures rises from 5.88% to 17.65%. The five-example condition recognizes success more often, but also misses more failures. The practical choice depends on the costs of unnecessary intervention and missed failures, which are not measured here.</p>
-<p class="method-note">Two limitations apply. The five demonstrations are reported as disjoint from test trajectories, which does not establish environment, embodiment, near-duplicate, or pretraining independence. Also, returned model identifiers differ despite the same requested model name and reasoning configuration. Backend snapshot consistency is unconfirmed, so the observed difference does not isolate a causal effect of ICL.</p>
+<p class="fine">Returned model identifiers differ between conditions, and backend snapshot consistency is unconfirmed; the full difference cannot be attributed to the examples.</p>
+<details class="research-detail">
+<summary>Classification metrics and demonstration setup</summary>
+<p class="">The false-alarm rate falls from 78.26% to 8.70%, while the miss rate rises from 5.88% to 17.65% and failure recall falls from 94.12% to 82.35%. An always-failure reference achieves 34 / 57 = 59.65% accuracy from the label distribution alone. These are offline classification results, without measurements of alarm timing or intervention costs.</p>
+<p class="">The five external demonstrations are disjoint from test trajectories; this does not establish independence of environments, embodiments, near-duplicates, or pretraining data. Requests use the same model name and reasoning configuration, but returned model identifiers differ. The effect of demonstrations therefore requires verification with a fixed backend.</p>
+</details>
 <details class="research-detail">
 <summary>Full results and distinct RoboFail adaptations</summary>
 <div class="table-scroll" role="region" aria-label="This study and published AHA records; exact question alignment is unverified." tabindex="0">
 <table>
-<caption>Table 8. This study and published AHA records; exact question alignment is unverified.</caption>
+<caption>Table 9. This study and published AHA records; exact question alignment is unverified.</caption>
 <thead>
 <tr>
 <th scope="col">Configuration</th>
@@ -1632,7 +1631,7 @@
 </sup> uses 100 Cosmos-curated examples. These supports differ from ours, and no Astra result is available on either. The literature records below remain separate from our 85.96% result.</p>
 <div class="table-scroll" role="region" aria-label="Guardian v4, Tables 1/2. +GF denotes training on GuardianFail-36k." tabindex="0">
 <table>
-<caption>Table 9. Guardian v4, Tables 1/2. +GF denotes training on GuardianFail-36k.</caption>
+<caption>Table 10. Guardian v4, Tables 1/2. +GF denotes training on GuardianFail-36k.</caption>
 <thead>
 <tr>
 <th scope="col">Configuration</th>
@@ -1691,7 +1690,7 @@
 </div>
 <div class="table-scroll" role="region" aria-label="PRIMO, Table 3 / Appendix A.3." tabindex="0">
 <table>
-<caption>Table 10. PRIMO, Table 3 / Appendix A.3.</caption>
+<caption>Table 11. PRIMO, Table 3 / Appendix A.3.</caption>
 <thead>
 <tr>
 <th scope="col">Configuration</th>
@@ -1747,21 +1746,21 @@
 </table>
 </div>
 </details>
-<p>Higher overall accuracy accompanies fewer false alarms and more misses, but individual judgments and their reasons still need separate checks. Two cases illustrate these disagreements. For the knob grasp, the zero-shot response matches the failure label but gives a different cause from the reference; the five-example condition then predicts success for the same failed subtask. For slicing, both conditions predict failure because they describe the carrot as intact, contrary to the reference success label.</p>
+<p>Outcome labels and explanations can fail in different ways. For the knob grasp, the zero-shot response matches the failure label but gives a different cause from the reference; the five-example condition then predicts success for the same failed subtask. For slicing, both conditions predict failure because they describe the carrot as intact, contrary to the reference success label.</p>
 <h4 class="case-title" id="robofail-cases" data-toc>
 <span class="number">Case Study</span>Check outcome judgments and explanations separately</h4>
 <div class="case-video-grid" aria-label="Source videos for two types of RoboFail judgment error">
 <figure>
 <video controls playsinline muted preload="none" poster="assets/robofail/case-055-frame-4.jpg" src="assets/robofail/case-055-source-replay.mp4" aria-label="Source video of grasping the stove knob">
 </video>
-<figcaption>Figure 13. <strong>Grasp the stove knob</strong>
+<figcaption>Figure 12. <strong>Grasp the stove knob</strong>
 <span>The reference labels a failure because the gripper does not close. Zero-shot also predicts failure but cites an incorrect grasp location; the five-example condition predicts success.</span>
 </figcaption>
 </figure>
 <figure>
 <video controls playsinline muted preload="none" poster="assets/robofail/case-036-frame-3.jpg" src="assets/robofail/case-036-source-replay.mp4" aria-label="Source video of slicing the carrot">
 </video>
-<figcaption>Figure 14. <strong>Slice the carrot</strong>
+<figcaption>Figure 13. <strong>Slice the carrot</strong>
 <span>The reference labels success. Zero-shot and five-example responses both predict failure, describing no completed slice.</span>
 </figcaption>
 </figure>
@@ -1791,7 +1790,7 @@
 <button type="button" data-zoom aria-label="Enlarge the stove-knob keyframes">
 <img loading="lazy" src="assets/robofail/case-055-observations.jpg" alt="Stove-knob case: four keyframes matched to the original model input, for inspecting judgments and explanations." width="1280" height="722">
 </button>
-<figcaption>Figure 15. <span>The four keyframes in the knob case’s evaluation input.</span>
+<figcaption>Figure 14. <span>The four keyframes in the knob case’s evaluation input.</span>
 <span class="zoom-label" aria-hidden="true">Enlarge ↗</span>
 </figcaption>
 </figure>
@@ -1845,13 +1844,13 @@
 <figure>
 <video controls playsinline muted preload="none" src="assets/robofail/case-050-source-replay.mp4" poster="assets/robofail/case-050-frame-2.jpg" aria-label="Press the coffee-machine button">
 </video>
-<figcaption>Figure 16. Source episode replay at original speed; this continuous video was not supplied to the model.</figcaption>
+<figcaption>Figure 15. Source episode replay at original speed; this continuous video was not supplied to the model.</figcaption>
 </figure>
 <figure>
 <button type="button" data-zoom aria-label="Enlarge observed frames">
 <img loading="lazy" src="assets/robofail/case-050-observations.jpg" alt="Visible observations from the actual input, in temporal order" width="960" height="1088">
 </button>
-<figcaption>Figure 17. Observed input tiles in original order, rearranged for readability; the exact montage is linked below.</figcaption>
+<figcaption>Figure 16. Observed input tiles in original order, rearranged for readability; the exact montage is linked below.</figcaption>
 </figure>
 </div>
 <div>
@@ -1886,13 +1885,13 @@
 <figure>
 <video controls playsinline muted preload="none" src="assets/robofail/case-033-source-replay.mp4" poster="assets/robofail/case-033-frame-2.jpg" aria-label="Grasp the knife">
 </video>
-<figcaption>Figure 18. Source episode replay at original speed; this continuous video was not supplied to the model.</figcaption>
+<figcaption>Figure 17. Source episode replay at original speed; this continuous video was not supplied to the model.</figcaption>
 </figure>
 <figure>
 <button type="button" data-zoom aria-label="Enlarge observed frames">
 <img loading="lazy" src="assets/robofail/case-033-observations.jpg" alt="Visible observations from the actual input, in temporal order" width="960" height="1088">
 </button>
-<figcaption>Figure 19. Observed input tiles in original order, rearranged for readability; the exact montage is linked below.</figcaption>
+<figcaption>Figure 18. Observed input tiles in original order, rearranged for readability; the exact montage is linked below.</figcaption>
 </figure>
 </div>
 <div>
@@ -1927,13 +1926,13 @@
 <figure>
 <video controls playsinline muted preload="none" src="assets/robofail/case-002-source-replay.mp4" poster="assets/robofail/case-002-frame-2.jpg" aria-label="Grasp the apple">
 </video>
-<figcaption>Figure 20. Source episode replay at original speed; this continuous video was not supplied to the model.</figcaption>
+<figcaption>Figure 19. Source episode replay at original speed; this continuous video was not supplied to the model.</figcaption>
 </figure>
 <figure>
 <button type="button" data-zoom aria-label="Enlarge observed frames">
 <img loading="lazy" src="assets/robofail/case-002-observations.jpg" alt="Visible observations from the actual input, in temporal order" width="960" height="1088">
 </button>
-<figcaption>Figure 21. Observed input tiles in original order, rearranged for readability; the exact montage is linked below.</figcaption>
+<figcaption>Figure 20. Observed input tiles in original order, rearranged for readability; the exact montage is linked below.</figcaption>
 </figure>
 </div>
 <div>
@@ -1968,13 +1967,13 @@
 <figure>
 <video controls playsinline muted preload="none" src="assets/robofail/case-049-source-replay.mp4" poster="assets/robofail/case-049-frame-3.jpg" aria-label="Place the object in the bowl">
 </video>
-<figcaption>Figure 22. Source episode replay at original speed; this continuous video was not supplied to the model.</figcaption>
+<figcaption>Figure 21. Source episode replay at original speed; this continuous video was not supplied to the model.</figcaption>
 </figure>
 <figure>
 <button type="button" data-zoom aria-label="Enlarge observed frames">
 <img loading="lazy" src="assets/robofail/case-049-observations.jpg" alt="Visible observations from the actual input, in temporal order" width="960" height="1636">
 </button>
-<figcaption>Figure 23. Observed input tiles in original order, rearranged for readability; the exact montage is linked below.</figcaption>
+<figcaption>Figure 22. Observed input tiles in original order, rearranged for readability; the exact montage is linked below.</figcaption>
 </figure>
 </div>
 <div>
@@ -2174,7 +2173,7 @@
 <button type="button" data-zoom aria-label="Enlarge: Composite ROUGE-L including AHA and other baselines">
 <img loading="lazy" src="assets/figures/05_robofail_icl.png" alt="Composite ROUGE-L including AHA and other baselines" width="1180" height="875">
 </button>
-<figcaption>Figure 24. Composite ROUGE-L comparison; literature results retain their own protocols.<span class="zoom-label" aria-hidden="true">Enlarge ↗</span>
+<figcaption>Figure 23. Composite ROUGE-L comparison; literature results retain their own protocols.<span class="zoom-label" aria-hidden="true">Enlarge ↗</span>
 </figcaption>
 </figure>
 <figure class="study-figure">
@@ -2206,7 +2205,7 @@
 <span>0</span>
 <span>0.55</span>
 </div>
-<figcaption>Figure 25. Components of composite ROUGE-L: correct success judgments account for most of the gain.</figcaption>
+<figcaption>Figure 24. Components of composite ROUGE-L: correct success judgments account for most of the gain.</figcaption>
 </figure>
 <details class="research-detail">
 <summary>Composite scoring rule and component calculations</summary>
@@ -2222,30 +2221,20 @@
 </section>
 </section>
 <section id="outlook" class="" data-toc>
-<h2>3. Discussion and limitations</h2>
-<p class="">These results support further study of Astra for offline robot assessment: it distinguishes execution quality, tracks progress, and detects many failures in the evaluated samples. The effects of examples nevertheless differ across metrics. Progress evaluation should include endpoint judgments; ranking should include ties; classification should report false alarms and misses separately; and explanations need validation beyond lexical overlap.</p>
-<h3 id="limitations" data-toc>3.1 Limitations</h3>
+<h2>3. Discussion and outlook</h2>
+<h3 id="conclusions" data-toc>3.1 Findings</h3>
 <p class="">
-<strong>Scope.</strong> No policy is trained or controlled using the critic. We do not measure reinforcement-learning sample efficiency, online failure localization, recovery, or closed-loop success. Offline scores do not establish reliable contact-state reasoning, causal diagnosis, or reward-model deployment safety.</p>
+<strong>General-purpose multimodal models can provide competitive evaluations of robot behavior.</strong> On RBM, using the official sampling and metric rules, Astra achieves a ranking τa of 0.8166 and preference accuracy of 92.4%, both above the cited Robometer results. On RoboFail, five-example outcome accuracy reaches 85.96%. These findings show that a general-purpose model’s existing visual understanding and reasoning capabilities can support strong offline behavior evaluation without additional fine-tuning for these tasks.</p>
 <p class="">
-<strong>Suitability for reinforcement learning remains untested.</strong> We have not trained a policy with Astra rewards or tested whether its preferences produce a more effective learned reward model. Correlation and ranking on fixed offline trajectories do not establish reliability during policy updates, distribution shifts, or active reward seeking. This is a central question for the planned closed-loop experiments.</p>
+<strong>Examples and higher aggregate scores do not improve every aspect of evaluation.</strong> With examples, progress VOC rises from 93.6 to 94.2 while ranking τa falls from 0.8166 to 0.7953. The five-example RoboFail condition reduces false alarms on successful subtasks but misses more failures. High progress correlation can coexist with inaccurate endpoint estimates, and most of the composite ROUGE-L gain comes from success recognition. The results support comparing offline behavior with these models, but do not establish their scores as reliable completion checks, failure explanations, or policy-optimization rewards.</p>
 <p class="">
-<strong>Statistics and experimental control.</strong> The 57 RoboFail questions share 15 trajectory groups, and ranking pairs may share trajectories and tasks. Repeat-call variation and sampling uncertainty are not quantified, so small differences are not established improvements. RoboFail backend differences and example-selection effects also require separate control.</p>
-<p class="">
-<strong>Labels and cases.</strong> Qualitative cases were selected post hoc and do not estimate the prevalence of failure types. Label ambiguity, limited visual evidence, and model error can all affect outcomes. Without independent blind review, model rationales do not establish that a reference label is wrong. We retain the released labels.</p>
-<details class="research-detail">
-<summary>Reproducibility status</summary>
-<p class="">The available materials provide evaluation counts, demonstration constructions, aggregates, and selected cases. Full independent reproduction still requires source and sample manifests, preference split composition, input-frame identities and resolution, complete prompts and demonstration identities, requested and returned model versions, run dates, output budgets and sampling settings, and parsing, refusal, retry, and missing-output rules.</p>
-<p class="">Scorer versions, aggregation weights, tie conventions, and per-sample predictions are also needed for score audits and uncertainty estimates that preserve trajectory or source–task dependence. Completing the release would not itself resolve backend or example-selection confounds; missing materials are also not evidence that the underlying experiments are invalid.</p>
-</details>
-<h3 id="next-steps" data-toc>3.2 Next: reinforcement learning with critic feedback</h3>
-<p class="">We plan to use Astra’s assessments in reinforcement learning to test whether evaluating existing trajectories translates into better policy learning. We will first verify model snapshots, prompts, inputs, and demonstration selection, checking stability through repeated calls and independent annotation. We will then fix policy initialization, the training algorithm, and the environment interaction budget while comparing feedback sources.</p>
-<p class="">
-<strong>Reward and preference pathways.</strong> One path converts validated progress or success judgments into rewards for policy optimization. Another uses trajectory preferences to supervise a reward model for policy learning. We will compare the signals separately and test calibration rather than assume that a high offline score makes an effective reward. Whether failure explanations help recovery or data selection requires separate ablations, not an inference from ROUGE-L.</p>
-<p class="">
-<strong>Controls and evaluation.</strong> Where available, controls will include sparse environment rewards, hand-written rules or sensor-based success checks, and reproducible learned critics. We will also compare context conditions and feedback interfaces. Evaluation will report success-versus-interaction learning curves, samples needed to reach a given success level, uncertainty across random seeds, and query count, latency, and cost. Final success must be determined by environment criteria or human review independent of Astra, rather than making it both the reward source and sole evaluator.</p>
-<p class="">
-<strong>Errors in the loop.</strong> Reinforcement learning changes the states a policy visits and may exploit critic errors. We will check whether ineffective actions, apparent completion, or unnecessarily long behavior earn high rewards, and track how false alarms and misses affect learning and recovery. These reinforcement-learning experiments have not been completed; this article does not report policy gains or sample-efficiency improvements.</p>
+<strong>Some evaluation disagreements require more explicit criteria.</strong> Task descriptions may leave final-state requirements such as release and stability unspecified, as well as priorities among quality dimensions. A single score or preference label compresses these distinctions, making criterion mismatch difficult to separate from model error. Future evaluations should use explicit multidimensional rubrics for task goals, execution constraints, and final-state quality, and compare criterion-level judgments against independent annotations.</p>
+<h3 id="limitations" data-toc>3.2 Limitations and future work</h3>
+<p class="">This study evaluates fixed offline trajectories with limited model coverage and sample sizes. The 57 RoboFail questions come from 15 trajectory groups, and trajectory pairs share tasks and samples. Repeat-call variation and sampling uncertainty remain unquantified. Future work should fix model backends, control demonstration selection, and assess stability across more tasks and independent samples.</p>
+<p class="">Qualitative cases examine the evidence behind judgments rather than estimate how often each problem occurs. The results do not fully separate limited observations, ambiguous criteria, and model errors. Disputed cases call for independent review by multiple annotators and clearer criterion-level standards. Contact, stability, and other states that images alone cannot resolve may require additional viewpoints or sensor evidence.</p>
+<h4 id="next-steps">Reinforcement learning: can evaluation capability improve a policy?</h4>
+<p class="">We will test two pathways: using calibrated progress or outcome judgments as rewards, and training a reward model from trajectory preferences before policy optimization. Experiments will fix policy initialization, training algorithms, and environment-interaction budgets, compare against sparse environment rewards and specialized critics, and report success rates, sample efficiency, and model-query costs across random seeds. Final success will be judged by environment criteria or human review independent of the evaluation model.</p>
+<p class="">Closed-loop validation must also examine distribution shifts and reward exploitation: whether apparent completion or ineffective behavior receives high scores, and whether policies learn to exploit these errors. The value of failure explanations for recovery or data selection requires separate ablations. These reinforcement-learning experiments have not yet been conducted, so this article reports no policy gains or sample-efficiency improvements.</p>
 </section>
 <section id="resources" class="" data-toc>
 <h2>Data and references</h2>

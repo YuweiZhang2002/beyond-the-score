@@ -185,14 +185,16 @@ for name,text in pages.items():
     assert quality.index('assets/figures/01_ranking_zero_shot.png') < quality.index('id="banana-case"')
     assert all(value in quality for value in ['0.8166', '0.7500', '0.5300', 'DeepSeek-V4.1-Flash'])
     assert text.count('assets/figures/02_preference.png')==1
-    merged=[x for x in p.paragraphs if all(n in x for n in ['85.96%','66.1%','0.185','0.499','0.290','89.3%'])]
-    assert len(merged)==1 and all(n in merged[0] for n in ['18','2','6']),name
+    failure=text.split('id="failure"', 1)[1].split('id="explanations"', 1)[0]
+    assert 'id="outcome-counts"' in failure and 'data-condition=' not in failure
+    assert all(value in failure for value in ['64.91%', '85.96%', '66.1%', '19.9'])
+    assert text.index('id="conclusions"') < text.index('id="limitations"') < text.index('id="next-steps"')
     assert not any(x in text for x in ['AHA 改编', 'AHA adaptation', '[[cite:'])
     for key in ['astra','sol','deepseek','robometer','rbm','reflect','rynnvalue','aha','guardian','primo']:
         assert f'href="#ref-{key}"' in text,(name,key,'missing inline citation')
     assert 'A<sub>pref</sub> = (100 / 6)' in text
     assert text.count('href="assets/Beyond-the-Score.pdf"')==1
-    checks[name]={'unique_videos':expected_videos,'paired_input_replays':18,'rbm_cases':12,'positive_ranking_cases':2,'positive_preference_cases':2,'verified_positive_request_hashes':12,'robofail_cases':len(robo['cases']),'new_experimental_responses':12,'local_references_checked':len(p.refs),'raw_answers_preserved':True,'reader_visible_internal_ids_removed':True,'exact_progress_charts':4,'sample_seek_buttons':20,'merged_robofail_paragraph':True,'five_results_subsections':True}
+    checks[name]={'unique_videos':expected_videos,'paired_input_replays':18,'rbm_cases':12,'positive_ranking_cases':2,'positive_preference_cases':2,'verified_positive_request_hashes':12,'robofail_cases':len(robo['cases']),'new_experimental_responses':12,'local_references_checked':len(p.refs),'raw_answers_preserved':True,'reader_visible_internal_ids_removed':True,'exact_progress_charts':4,'sample_seek_buttons':20,'parallel_outcome_table':True,'five_results_subsections':True}
 assert parsed['index.html'].ids==parsed['en.html'].ids
 assert parsed['index.html'].media==parsed['en.html'].media
 # A rebuild must reproduce both committed-to-disk artifacts exactly.
