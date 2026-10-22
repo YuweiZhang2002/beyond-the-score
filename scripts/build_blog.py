@@ -171,7 +171,7 @@ def study_design():
     protocol_details += '<ul>' + ''.join('<li>' + t(zh, en) + '</li>' for zh, en in [
         ('<strong>进度估计：</strong>一条相同或相近任务的训练轨迹，附六个阶段评分。', '<strong>Progress estimation:</strong> one training trajectory of the same or a similar task, with six stage scores.'),
         ('<strong>独立排序：</strong>随机选取高、中、低分训练轨迹各一条，不要求与测试任务相同；中等参考分数不等于测试集的“次优”标签。', '<strong>Independent ranking:</strong> one randomly selected training trajectory at each of three score levels—high, middle, and low—without requiring a task match. The middle reference score is not the test set’s suboptimal label.'),
-        ('<strong>RoboFail：</strong>五个固定的外部图像–问题–答案示例，报告为与测试轨迹不重叠。', '<strong>RoboFail:</strong> five fixed external image–question–answer demonstrations, reported disjoint from test trajectories.'),
+        ('<strong>RoboFail：</strong>从另外五条原始 RoboFail 真实轨迹中人工选取并构造五个外部图像–问题–答案示例（2 个成功、3 个失败），并非从训练集随机抽样。所有测试问题复用同一组及顺序；来源与标注方式见<a href="#robofail-icl-provenance">五示例说明</a>。', '<strong>RoboFail:</strong> five external image–question–answer demonstrations manually selected and constructed from five other original real-robot RoboFail episodes (two successes, three failures), not randomly sampled from a training split. Every test question uses the same examples and order; see the <a href="#robofail-icl-provenance">demonstration provenance</a>.'),
     ]) + '</ul>'
     protocol_details += p('直接偏好仅评估零样本。', 'Direct preference is evaluated only in the zero-shot setting.', 'method-note')
     protocol_details += p('<strong>观测遮蔽。</strong>两个 RoboFail 案例分别使用前 1 帧、前 2 帧与全部观测，在零样本和 ICL 条件下各请求一次，共 12 次。少帧条件没有时间级真值，只比较模型回答。', '<strong>Observation masking.</strong> Two RoboFail cases use the first frame, first two frames, or all observations, with one request per zero-shot and five-example ICL condition, for 12 requests. Partial observations have no time-specific labels; we compare responses without scoring accuracy.')
@@ -250,11 +250,13 @@ def article():
     result_topics += result_section('progress-results', '2.2 任务进度估计', '2.2 Task progress estimation', re.sub(r'<(/?)h4\b', r'<\1h5', body), heading_id='context')
 
     body = h3('outcome-results', '2.3.1 总体表现与错误分布', '2.3.1 Overall performance and error distribution')
+    body += '<div id="robofail-icl-provenance">' + confirmed('robofail_icl_summary')
+    body += detail('五个示例的来源、固定顺序与标注方式', 'Sources, fixed order, and annotations of the five examples', confirmed('robofail_icl_details')) + '</div>'
     body += confirmed('robofail_results')
     body += figure('assets/figures/04_robofail_icl.png', t('RoboFail 成败分类准确率：本研究与 AHA 报告结果', 'RoboFail outcome accuracy: this study and AHA-reported results'), t('成败分类准确率。文献结果来自 AHA 报告[[cite:aha]]，与本研究分组展示；文献采用其各自的问题集合。', 'Outcome classification accuracy. Literature results are from the AHA report[[cite:aha]] and shown separately; published results use their respective question sets.'))
     body += diagnosis()
     error_details = p('误报率从 78.26% 降至 8.70%，漏检率从 5.88% 升至 17.65%，失败召回率从 94.12% 降至 82.35%。', 'The false-alarm rate falls from 78.26% to 8.70%, while the miss rate rises from 5.88% to 17.65% and failure recall falls from 94.12% to 82.35%.')
-    error_details += p('五个外部示例与测试轨迹不重叠。', 'The five external demonstrations are disjoint from the test trajectories.')
+    error_details += p('按来源与画面核查，五条外部示例轨迹与测试轨迹不重叠；详细来源见<a href="#robofail-icl-provenance">五示例说明</a>。', 'Our source and visual audit found no overlap between the five demonstration episodes and test trajectories; see the <a href="#robofail-icl-provenance">demonstration provenance</a>.')
     more = table([t('配置', 'Configuration'), t('来源', 'Source'), t('准确率 % ↑', 'Accuracy % ↑'), 'ROUGE-L ↑'], [[escape(model_label(r[0])), source_label(r[1]), f'{r[2]:.2f}', f'{r[3]:.3f}'] for r in DATA['table5_robofail_aha']['rows']], t('本研究与 AHA 报告结果。', 'Results from this study and the AHA report.'))
     more += p('AHA-13B 的 Vicuna 与 Llama-2 版本分别列出；文献结果采用各自的评测样本。', 'The Vicuna and Llama-2 variants of AHA-13B are listed separately; published results use their respective evaluation samples.')
     more += p('Guardian[[cite:guardian]] 使用 153 个执行样本与 30 个规划样本，PRIMO[[cite:primo]] 使用 Cosmos 筛选的 100 个样本；两者单独列示。', 'Guardian[[cite:guardian]] uses 153 execution and 30 planning examples; PRIMO[[cite:primo]] uses 100 Cosmos-curated examples. Their results are listed separately.')
@@ -271,6 +273,7 @@ def article():
     result_topics += result_section('failure', '2.3 子任务成败判断', '2.3 Subtask success and failure', re.sub(r'<(/?)h4\b', r'<\1h5', body))
 
     body = p('本节分析 2.3 中同一批回答的综合 ROUGE-L，并区分成功识别与失败解释的贡献。', 'We analyze composite ROUGE-L for the same responses as Section 2.3, separating the contributions of success recognition and failure explanation.')
+    body += p('这里的 ICL 使用与成败判断完全相同的<a href="#robofail-icl-provenance">五个人工构造的外部示例</a>，没有为解释指标另选示例或重新请求模型。', 'ICL here uses exactly the same <a href="#robofail-icl-provenance">five manually constructed external demonstrations</a> as outcome classification; examples were not reselected and the model was not queried again for the explanation metric.', 'fine')
     body += h3('explanation-scores', '2.4.1 总体表现与基线比较', '2.4.1 Overall performance and baseline comparison')
     body += p('ICL 后的综合 ROUGE-L 为 <strong>0.499</strong>，零样本为 <strong>0.185</strong>。其中，成功识别项从 <strong>0.0877 增至 0.3684（+0.2807）</strong>，失败解释项从 <strong>0.0969 增至 0.1305（+0.0336）</strong>。', 'Composite ROUGE-L is <strong>0.499</strong> with five-example ICL versus <strong>0.185</strong> zero-shot. The success-recognition term rises from <strong>0.0877 to 0.3684 (+0.2807)</strong>, and the failure-explanation term from <strong>0.0969 to 0.1305 (+0.0336)</strong>.')
     body += p('gpt-6-astra 使用五个示例进行 ICL 后的综合得分高于 AHA 报告中的 AHA-13B Vicuna（0.290）、AHA-13B Llama-2（0.280）、AHA-7B（0.204）和 GPT-4o 的 ICL 结果（5 个示例，0.236）[[cite:aha]]。', 'gpt-6-astra’s five-example ICL composite score is above the AHA-reported values for AHA-13B Vicuna (0.290), AHA-13B Llama-2 (0.280), AHA-7B (0.204), and five-shot GPT-4o (0.236)[[cite:aha]].')

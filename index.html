@@ -1287,6 +1287,62 @@
 <section id="failure" class="result-topic" data-toc>
 <h3>2.3 子任务成败判断</h3>
 <h4 id="outcome-results" data-toc>2.3.1 总体表现与错误分布</h4>
+<div id="robofail-icl-provenance">
+<p>
+<strong>RoboFail 的五示例 ICL 使用人工选取并构造的外部示例。</strong>我们从原始 RoboFail 的另外五条真实机器人轨迹中各选一个子任务，组成 2 个成功、3 个失败的“图像—问题—答案”示例；并非从训练集随机抽取完整轨迹。五个示例及其顺序在本次 ICL 请求前固定，所有 57 个测试问题均使用同一组示例，不进行参数微调。成败准确率与综合 ROUGE-L 来自同一批回答。</p>
+<details class="research-detail">
+<summary>五个示例的来源、固定顺序与标注方式</summary>
+<p>示例来自 REFLECT 发布的原始 RoboFail 真实机器人记录<sup class="citation">
+<a href="#ref-reflect" aria-label="REFLECT / RoboFail">[4]</a>
+</sup>。按保存的来源与画面核查，这五条示例轨迹均未出现在 57 个测试问题对应的 15 组轨迹中；没有使用测试图像或测试答案作为示例。该对应关系由我们核查，不是作者发布的官方划分或轨迹映射，也不意味着环境、机器人或预训练数据独立。</p>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th>固定顺序</th>
+<th>原始轨迹</th>
+<th>示例子任务</th>
+<th>示例答案</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>appleInFridge1</td>
+<td>拿起装有苹果的碗</td>
+<td>失败：拿了空的蓝碗</td>
+</tr>
+<tr>
+<td>2</td>
+<td>secureObjects1</td>
+<td>拿起刀</td>
+<td>成功</td>
+</tr>
+<tr>
+<td>3</td>
+<td>appleInFridge2</td>
+<td>把装有苹果的碗放进冰箱</td>
+<td>失败：放在冰箱顶部</td>
+</tr>
+<tr>
+<td>4</td>
+<td>appleInFridge4</td>
+<td>拿起苹果</td>
+<td>成功</td>
+</tr>
+<tr>
+<td>5</td>
+<td>heatPotato1</td>
+<td>打开微波炉加热</td>
+<td>失败：微波炉门仍开着</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>三个失败答案由作者的轨迹级失败说明改写，并核对原始画面；两个成功答案来自我们对成功子任务的视觉标注。示例拼图按照作者动作边界从原始 RGB 构造，按时间排列并将未来区域留白。它们不是 AHA 作者发布的原始五示例，具体图像预处理也不保证与 AHA 完全一致。</p>
+<p>示例在这次外部五示例请求前固定，未依据本次 ICL 得分搜索或替换；选择时已有零样本结果，因此不属于盲选或预注册抽样。每次请求依次提供五组图像、问题与答案，再提供当前测试问题；57 个测试问题及其原始输入全部保留。</p>
+</details>
+</div>
 <p>我们在 RoboFail<sup class="citation">
 <a href="#ref-reflect" aria-label="REFLECT / RoboFail">[4]</a>
 </sup> 的 57 个子任务问题上评估 gpt-6-astra，输入为子任务描述和关键帧拼图，输出为 Yes/No 成败判断及文字解释。ICL 条件在待评问题之前加入固定的五个外部图像—问题—参考答案示例；零样本条件不提供示例。</p>
@@ -1347,7 +1403,7 @@
 <details class="research-detail">
 <summary>完整结果与不同 RoboFail 评测版本</summary>
 <p class="">误报率从 78.26% 降至 8.70%，漏检率从 5.88% 升至 17.65%，失败召回率从 94.12% 降至 82.35%。</p>
-<p class="">五个外部示例与测试轨迹不重叠。</p>
+<p class="">按来源与画面核查，五条外部示例轨迹与测试轨迹不重叠；详细来源见<a href="#robofail-icl-provenance">五示例说明</a>。</p>
 <div class="table-scroll" role="region" aria-label="本研究与 AHA 报告结果。" tabindex="0">
 <table>
 <caption>表 S2. 本研究与 AHA 报告结果。</caption>
@@ -1936,6 +1992,7 @@
 <section id="explanations" class="result-topic" data-toc>
 <h3>2.4 失败解释与得分</h3>
 <p class="">本节分析 2.3 中同一批回答的综合 ROUGE-L，并区分成功识别与失败解释的贡献。</p>
+<p class="fine">这里的 ICL 使用与成败判断完全相同的<a href="#robofail-icl-provenance">五个人工构造的外部示例</a>，没有为解释指标另选示例或重新请求模型。</p>
 <h4 id="explanation-scores" data-toc>2.4.1 总体表现与基线比较</h4>
 <p class="">ICL 后的综合 ROUGE-L 为 <strong>0.499</strong>，零样本为 <strong>0.185</strong>。其中，成功识别项从 <strong>0.0877 增至 0.3684（+0.2807）</strong>，失败解释项从 <strong>0.0969 增至 0.1305（+0.0336）</strong>。</p>
 <p class="">gpt-6-astra 使用五个示例进行 ICL 后的综合得分高于 AHA 报告中的 AHA-13B Vicuna（0.290）、AHA-13B Llama-2（0.280）、AHA-7B（0.204）和 GPT-4o 的 ICL 结果（5 个示例，0.236）<sup class="citation">
@@ -2163,7 +2220,7 @@
 <li>
 <strong>独立排序：</strong>随机选取高、中、低分训练轨迹各一条，不要求与测试任务相同；中等参考分数不等于测试集的“次优”标签。</li>
 <li>
-<strong>RoboFail：</strong>五个固定的外部图像–问题–答案示例，报告为与测试轨迹不重叠。</li>
+<strong>RoboFail：</strong>从另外五条原始 RoboFail 真实轨迹中人工选取并构造五个外部图像–问题–答案示例（2 个成功、3 个失败），并非从训练集随机抽样。所有测试问题复用同一组及顺序；来源与标注方式见<a href="#robofail-icl-provenance">五示例说明</a>。</li>
 </ul>
 <p class="method-note">直接偏好仅评估零样本。</p>
 <p class="">

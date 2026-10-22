@@ -1287,6 +1287,62 @@
 <section id="failure" class="result-topic" data-toc>
 <h3>2.3 Subtask success and failure</h3>
 <h4 id="outcome-results" data-toc>2.3.1 Overall performance and error distribution</h4>
+<div id="robofail-icl-provenance">
+<p>
+<strong>RoboFail five-example ICL uses manually selected and constructed external demonstrations.</strong> We select one subtask from each of five other real-robot trajectories in the original RoboFail recordings, forming two successful and three failed image–question–answer examples. These are not complete trajectories randomly sampled from a training split. The five examples and their order are fixed before this ICL run and reused for all 57 test questions, without parameter fine-tuning. Outcome accuracy and composite ROUGE-L are computed from the same responses.</p>
+<details class="research-detail">
+<summary>Sources, fixed order, and annotations of the five examples</summary>
+<p>The demonstrations come from the original real-robot RoboFail recordings released with REFLECT<sup class="citation">
+<a href="#ref-reflect" aria-label="REFLECT / RoboFail">[4]</a>
+</sup>. Our source and visual audit found that none of these five episodes appears among the 15 trajectory groups underlying the 57 test questions; no test images or answers serve as demonstrations. This correspondence is our audit, not an author-released split or identity mapping, and does not establish independence of environment, embodiment, or pretraining data.</p>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th>Fixed order</th>
+<th>Source episode</th>
+<th>Demonstrated subtask</th>
+<th>Demonstration answer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>appleInFridge1</td>
+<td>Pick up the bowl containing the apple</td>
+<td>Failure: picked up the empty blue bowl</td>
+</tr>
+<tr>
+<td>2</td>
+<td>secureObjects1</td>
+<td>Pick up the knife</td>
+<td>Success</td>
+</tr>
+<tr>
+<td>3</td>
+<td>appleInFridge2</td>
+<td>Put the bowl containing the apple inside the fridge</td>
+<td>Failure: placed it on top of the fridge</td>
+</tr>
+<tr>
+<td>4</td>
+<td>appleInFridge4</td>
+<td>Pick up the apple</td>
+<td>Success</td>
+</tr>
+<tr>
+<td>5</td>
+<td>heatPotato1</td>
+<td>Turn on the microwave</td>
+<td>Failure: the door was still open</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The three failure answers adapt the authors’ episode-level failure descriptions and were checked against the original frames. The two success answers are our visual annotations of successful subtasks. Demonstration montages use raw RGB frames at author action boundaries, ordered in time with future regions left white. These are not AHA’s original five demonstrations, and exact image preprocessing is not guaranteed to match AHA.</p>
+<p>The examples were fixed before this external five-example run and were not searched or replaced based on its ICL scores. Zero-shot results were already available during selection, so this was neither blinded nor preregistered sampling. Each request supplies the five image–question–answer pairs in order, followed by the current test question. All 57 test questions and their original inputs are retained.</p>
+</details>
+</div>
 <p>We evaluate gpt-6-astra on 57 RoboFail<sup class="citation">
 <a href="#ref-reflect" aria-label="REFLECT / RoboFail">[4]</a>
 </sup> subtask questions. Inputs are subtask descriptions and keyframe montages; outputs are Yes/No outcome judgments and textual explanations. ICL prepends a fixed set of five external image–question–reference-answer demonstrations to the test question; zero-shot prompting omits them.</p>
@@ -1346,7 +1402,7 @@
 <details class="research-detail">
 <summary>Full results and distinct RoboFail adaptations</summary>
 <p class="">The false-alarm rate falls from 78.26% to 8.70%, while the miss rate rises from 5.88% to 17.65% and failure recall falls from 94.12% to 82.35%.</p>
-<p class="">The five external demonstrations are disjoint from the test trajectories.</p>
+<p class="">Our source and visual audit found no overlap between the five demonstration episodes and test trajectories; see the <a href="#robofail-icl-provenance">demonstration provenance</a>.</p>
 <div class="table-scroll" role="region" aria-label="Results from this study and the AHA report." tabindex="0">
 <table>
 <caption>Table S2. Results from this study and the AHA report.</caption>
@@ -1935,6 +1991,7 @@
 <section id="explanations" class="result-topic" data-toc>
 <h3>2.4 Failure explanations and scores</h3>
 <p class="">We analyze composite ROUGE-L for the same responses as Section 2.3, separating the contributions of success recognition and failure explanation.</p>
+<p class="fine">ICL here uses exactly the same <a href="#robofail-icl-provenance">five manually constructed external demonstrations</a> as outcome classification; examples were not reselected and the model was not queried again for the explanation metric.</p>
 <h4 id="explanation-scores" data-toc>2.4.1 Overall performance and baseline comparison</h4>
 <p class="">Composite ROUGE-L is <strong>0.499</strong> with five-example ICL versus <strong>0.185</strong> zero-shot. The success-recognition term rises from <strong>0.0877 to 0.3684 (+0.2807)</strong>, and the failure-explanation term from <strong>0.0969 to 0.1305 (+0.0336)</strong>.</p>
 <p class="">gpt-6-astra’s five-example ICL composite score is above the AHA-reported values for AHA-13B Vicuna (0.290), AHA-13B Llama-2 (0.280), AHA-7B (0.204), and five-shot GPT-4o (0.236)<sup class="citation">
@@ -2158,7 +2215,7 @@
 <li>
 <strong>Independent ranking:</strong> one randomly selected training trajectory at each of three score levels—high, middle, and low—without requiring a task match. The middle reference score is not the test set’s suboptimal label.</li>
 <li>
-<strong>RoboFail:</strong> five fixed external image–question–answer demonstrations, reported disjoint from test trajectories.</li>
+<strong>RoboFail:</strong> five external image–question–answer demonstrations manually selected and constructed from five other original real-robot RoboFail episodes (two successes, three failures), not randomly sampled from a training split. Every test question uses the same examples and order; see the <a href="#robofail-icl-provenance">demonstration provenance</a>.</li>
 </ul>
 <p class="method-note">Direct preference is evaluated only in the zero-shot setting.</p>
 <p class="">
