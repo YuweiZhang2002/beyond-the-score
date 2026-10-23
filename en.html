@@ -82,13 +82,13 @@
 <h2>Key takeaways</h2>
 <ul>
 <li>
-<strong>Without additional evaluation-task fine-tuning, gpt-6-astra is competitive with specialized reward models at comparing trajectory quality.</strong> Its zero-shot ranking Kendall τ<sub>a</sub> is <strong>0.8166</strong>, above the reported values of <strong>0.655 for Robometer and 0.675 for RynnValue-8B</strong>; direct preference accuracy reaches <strong>92.4%</strong>.</li>
+<strong>Zero-shot trajectory quality ranking exceeds the reported results of two specialized reward models.</strong> Without additional evaluation-task fine-tuning, gpt-6-astra achieves a Kendall τ<sub>a</sub> of <strong>0.8166</strong>, above the reported values of <strong>0.655 for Robometer and 0.675 for RynnValue-8B</strong>; direct preference accuracy reaches <strong>92.4%</strong>.</li>
 <li>
-<strong>In-context examples improve gpt-6-astra’s outcome judgments, but not every evaluation task benefits.</strong> Adding five examples raises RoboFail outcome accuracy from <strong>64.91% to 85.96%</strong>; adding three reference trajectories for ranking lowers τ<sub>a</sub> from <strong>0.8166 to 0.7953</strong>.</li>
+<strong>In-context examples substantially improve outcome judgments, but not every evaluation task benefits.</strong> Adding five examples raises RoboFail outcome accuracy from <strong>64.91% to 85.96%</strong>; adding three reference trajectories for ranking lowers τ<sub>a</sub> from <strong>0.8166 to 0.7953</strong>.</li>
 <li>
-<strong>gpt-6-astra’s progress scores can reflect task advancement and execution errors, but its judgments of task success still contain mistakes.</strong> Zero-shot progress estimation reaches a VOC of <strong>93.6</strong>. In the cases examined, scores fall after an object slips and rise after a successful retry, yet the model can also judge a successful endpoint as incomplete.</li>
+<strong>Progress scores can reflect task advancement and execution errors, but judgments of task success still contain mistakes.</strong> Zero-shot progress estimation reaches a VOC of <strong>93.6</strong>. In the cases examined, scores fall after an object slips and rise after a successful retry, yet the model can also judge a successful endpoint as incomplete.</li>
 <li>
-<strong>gpt-6-astra’s judgments of key states and failure causes remain imperfect.</strong> It can misread object states that determine success, miss the specific reason for failure, or assign equal scores to executions of different quality. These errors affect completion judgments, corrective feedback, and trajectory selection, respectively.</li>
+<strong>Key-state recognition and failure diagnosis remain imperfect.</strong> The model can misread object states that determine success, miss the specific reason for failure, or assign equal scores to executions of different quality. These errors affect completion judgments, corrective feedback, and trajectory selection, respectively.</li>
 </ul>
 </section>
 <section id="overview" class="" data-toc>
@@ -439,7 +439,7 @@
 </figure>
 </details>
 <h4 id="preference-results" data-toc>2.1.2 Direct preference</h4>
-<p>Direct preference presents two trajectories together and asks the model to choose the better execution. On 1,192 fixed trajectory pairs, gpt-6-astra, GPT-5.6-sol, and DeepSeek-V4.1-Flash achieve accuracies of <strong>92.4%, 90.7%, and 82.2%</strong>, respectively. The gap between gpt-6-astra and GPT-5.6-sol is 1.7 percentage points. As a reference, Robometer reports 82.5% accuracy<sup class="citation">
+<p>Direct preference presents two trajectories together and asks the model to choose the better execution. On 1,192 fixed trajectory pairs, gpt-6-astra, GPT-5.6-sol, and DeepSeek-V4.1-Flash achieve accuracies of <strong>92.4%, 90.7%, and 82.2%</strong>, respectively, averaged with equal weight across the six data sources. The gap between gpt-6-astra and GPT-5.6-sol is 1.7 percentage points. As a reference, Robometer reports 82.5% accuracy<sup class="citation">
 <a href="#ref-robometer" aria-label="Robometer">[2]</a>
 </sup>.</p>
 <figure class="figure">
@@ -635,6 +635,9 @@
 </details>
 <h4 id="quality-results-summary" data-toc>2.1.4 Summary</h4>
 <div class="section-summary" id="literature">
+<p>
+<strong>gpt-6-astra’s zero-shot trajectory ranking exceeds the reported results of two specialized reward models, and direct preference accuracy reaches 92.4%.</strong>
+</p>
 <p>In the error cases, inversions and ties account for most of the lost credit. Explicit criteria for task success and execution quality would help distinguish errors in state recognition from disagreements about the quality standard itself.</p>
 </div>
 </section>
